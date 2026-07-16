@@ -1,0 +1,4 @@
+interface:
+  display_name: "Review Issues"
+  short_description: "Audit epic-to-issue creation"
+  default_prompt: "Use $review-issues to review generated issue files and GitHub issues against an epic, then write the next docs/REPORT_<n>.md."

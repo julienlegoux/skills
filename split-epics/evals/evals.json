@@ -1,0 +1,17 @@
+{
+  "skill_name": "split-epics",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "In this repo, split docs/PLAN.md into epics.",
+      "expected_output": "docs/epics/epic-1-.../EPIC_1.md, epic-2-.../EPIC_2.md, epic-3-.../EPIC_3.md, each with a real GitHub milestone + tracking issue, dependency between epic 1 and 2 preserved.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "We have a roadmap doc under docs/ somewhere for our ticketing tool -- can you detach the epics from it into their own folders?",
+      "expected_output": "Finds docs/planning/2026-roadmap.md among decoys, creates EPIC_5.md and EPIC_6.md (preserving the plan's own numbering), with real GitHub milestones + issues.",
+      "files": []
+    }
+  ]
+}

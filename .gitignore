@@ -1,0 +1,6 @@
+# Eval workspaces and viewer artifacts — regenerable, large, not part of skill history
+*-workspace/
+eval-workspace/
+viewer.log
+nohup.out
+__pycache__/

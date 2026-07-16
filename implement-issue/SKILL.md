@@ -1,0 +1,209 @@
+---
+name: implement-issue
+description: Implement a single issue produced by the create-issues skill (a numbered .md under docs/epics/epic-N-slug/issues/ with a linked GitHub issue) as one focused PR — reconcile previously merged PRs to done, pick or resolve the target issue, branch, implement test-first (strict red-green TDD against the acceptance criteria), open a PR that closes the GitHub issue, and keep both the OKF bundle and the GitHub issue's status in sync at every transition. Use this whenever the user asks to "implement issue 3 of epic 2", "work on the next issue", "pick up the next task", "start issue 04", "do the next unblocked issue", "turn issue N into a PR", or generally wants to execute/build one of the issues in docs/epics/ — even if they just say "let's keep going on epic 2" after issues exist.
+---
+
+# Implement an Issue
+
+`create-issues` sized every issue to become one focused PR. This skill is the execution
+half of that contract: take one issue from `status: open` to an open pull request, with
+the code, tests, and bookkeeping that lets the next run (and the epic's GitHub progress
+bar) know where things stand.
+
+## Status lifecycle
+
+This skill owns the tail of the issue lifecycle that `create-issues` starts:
+
+`draft` → `open` (create-issues) → **`in-progress`** (branch created) →
+**`pr-open`** (PR exists, `gh_pr` recorded) → **`done`** (PR merged — set by the
+reconcile step of a *later* run, since merging happens outside this skill).
+
+Every status write also refreshes the file's `timestamp` and updates the matching
+bullet in that epic's `issues/index.md`, per the bundle's OKF conventions. This skill
+adds one extension field to issue frontmatter: `gh_pr: <PR number>` (and sets no other
+new fields — conformant OKF consumers tolerate extensions).
+
+## Step 1: Reconcile previous PRs
+
+Do this first, before even resolving which issue to work on — the whole point of
+`depends_on` is that yesterday's merge is what unblocks today's issue, so stale
+statuses give wrong answers about what's workable.
+
+Sweep `docs/epics/*/issues/*.md` for `status: pr-open` and check each recorded PR:
+
+```bash
+gh pr view <gh_pr> --json state,mergedAt -q .state
+```
+
+- `MERGED` → set `status: done`, refresh `timestamp`, update the epic's
+  `issues/index.md` bullet. If `docs/epics/log.md` exists, append a completion entry
+  (same date-grouped format `split-epics` uses); never create `log.md` if absent.
+  Then verify the GitHub issue actually closed — `Closes #N` normally does it at
+  merge, but if the keyword was missed the issue is still open: close it yourself
+  (`gh issue close <gh_issue> --comment "Completed by PR #<gh_pr>"`) so GitHub and
+  the bundle never disagree about what's done.
+- `CLOSED` without merge → don't guess what happened. Report it to the user and leave
+  the status as-is; a human closed that PR for a reason the frontmatter can't know.
+- `OPEN` → nothing to do; mention it in the final report so the user remembers it's
+  awaiting review.
+
+Commit reconcile updates directly on the up-to-date default branch (they describe
+work that *already merged* — putting them on the new feature branch would hold
+finished facts hostage to an unmerged PR). If pushing to the default branch is
+blocked by protection rules, say so and leave the commit local rather than failing.
+
+If `gh` is unavailable or unauthenticated, skip reconciliation with a clear note —
+don't let bookkeeping block implementation.
+
+## Step 2: Resolve the target issue
+
+- **User names it** ("issue 3 of epic 2", a slug, a GitHub `#number`, a path) — use
+  that. If they name an epic but not an issue, or say "the next one", auto-pick: the
+  lowest-numbered issue with `status: open` whose `depends_on` entries are all `done`
+  (this is why reconcile runs first). If several epics are in play and the user didn't
+  scope it, prefer the lowest-numbered epic with unblocked work.
+- **Nothing is unblocked** — don't grab a blocked issue silently. Show what's open,
+  what each is waiting on, and where those blockers stand (e.g. "02 waits on 01,
+  whose PR #14 is open awaiting review").
+- **The named issue has unmet dependencies** — stop and show which. The user can
+  explicitly override ("do it anyway"); dependency order is a default, not a cage.
+- **Already `in-progress`** — a previous run started it. Look for its branch and offer
+  to resume there rather than starting over.
+- **Already `pr-open` or `done`** — point at the existing PR and refuse to duplicate
+  the work unless the user explicitly asks for a redo.
+
+## Step 3: Read the full spec
+
+The issue's `.md` file is canonical, but it was written before any code existed, and
+humans comment on GitHub, not in the repo:
+
+1. Read the issue file in full — Summary, Scope, **Out of scope** (binding, see
+   Step 5), Acceptance criteria, Relevant files, Dependencies.
+2. Fetch the live issue: `gh issue view <gh_issue> --comments`. Fold in anything new —
+   clarifications, scope changes, "actually use library X" comments. If a comment
+   *contradicts* the file on something material, surface the conflict and ask which
+   wins instead of silently picking one.
+3. Read the epic's `EPIC_<n>.md` for the surrounding goal, and skim the `depends_on`
+   issues' files to know what the codebase should already contain by now.
+
+## Step 4: Learn how this repo builds and ships
+
+The issue file recorded conventions as of creation time; verify against the repo now:
+
+- `CLAUDE.md` / `AGENTS.md` / `CONTRIBUTING.md` — test requirements, commit style,
+  anything that belongs in the Definition of Done.
+- How tests actually run here (test runner, lint, typecheck, build) — find the real
+  commands, don't assume.
+- Branch naming: check existing branches / merged PR head names for a convention. If
+  none is visible, use `issue-<gh_issue>-<slug>` (the GitHub number is unique across
+  epics; the local `<nn>` isn't).
+- `.github/PULL_REQUEST_TEMPLATE.md` — if it exists, the PR body must follow it.
+
+## Step 5: Branch and mark in-progress
+
+From the up-to-date default branch, create the feature branch. First commit on it:
+the issue file's frontmatter flipped to `status: in-progress` (plus `timestamp` and
+the `issues/index.md` bullet). The status change travels with the PR — anyone reading
+the branch sees a self-consistent bundle, and `main` keeps saying `open` until the
+work actually lands, which is true.
+
+Mirror the same transition on GitHub, where teammates actually watch progress:
+
+```bash
+gh issue comment <gh_issue> --body "Started work on branch \`<branch-name>\`."
+```
+
+If the repo uses status labels (Step 4 will have shown them, e.g. `in progress`,
+`status: wip`), move the issue's label too. Skip silently if `gh` is unavailable —
+same rule as reconciliation, bookkeeping never blocks implementation.
+
+## Step 6: Implement, test-first
+
+Work strictly test-driven, one acceptance criterion at a time:
+
+1. **Red** — write the test that expresses the criterion, run it, and *watch it fail*.
+   A test you've never seen fail proves nothing: it might pass vacuously, test the
+   wrong thing, or not run at all. The observed failure is the evidence that the test
+   is actually connected to the behavior it claims to check.
+2. **Green** — write the minimum implementation that makes it pass, and run it again.
+3. **Refactor** — clean up with the test as your safety net, then move to the next
+   criterion.
+
+No implementation code before its failing test exists — the temptation to "just write
+it and backfill tests" is exactly how acceptance criteria end up demonstrably untested
+in the PR. If a criterion genuinely can't be expressed as an automated test (e.g. a
+docs-only change), say so explicitly in the PR body rather than skipping quietly.
+
+If the repo has no test infrastructure at all, set up the minimal conventional runner
+for its stack (nothing fancy — the smallest thing that lets tests run in CI and
+locally) and flag that addition prominently in the PR; it's a scope addition the
+reviewer should consciously accept.
+
+Two boundaries the issue already drew:
+
+- **Acceptance criteria are the definition of done.** Treat them as a literal
+  checklist; each one ends up demonstrably true, with the test written in step Red
+  proving it.
+- **Out of scope means out.** Adjacent problems you notice (refactors, bugs in
+  neighboring code, "while I'm here" improvements) get *noted in the final report* as
+  candidate follow-up issues — they don't get done. Scope creep here is precisely what
+  breaks the one-issue-one-reviewable-PR sizing that the whole pipeline exists for.
+
+Finish by running the *full* test suite and lint — not just your new tests — and fix
+what breaks, including pre-existing tests your change disturbed.
+
+## Step 7: Size check
+
+Compare against the default branch: `git diff --stat <default-branch>...HEAD`. The
+issue targeted ~500 changed lines (its `size` field predicted S/M/L). If the real diff
+blew past ~1000: **open the PR anyway, but flag it loudly** — a prominent warning at
+the top of the PR body (actual line count vs. the issue's predicted size, and where
+the growth came from), and the same in your report to the user. Include a sentence on
+how the issue *could* have been split — that feeds back into sizing the next epic's
+issues better. Don't silently ship an oversize PR as if it were normal.
+
+## Step 8: Open the PR and write back
+
+1. Commit and push the branch. Write the PR body to a temp file (safer than `--body`
+   for multi-paragraph text) and create the PR:
+
+   ```bash
+   gh pr create --title "<issue title>" --body-file <tmpfile> \
+     --milestone "<the issue's milestone title>"
+   ```
+
+   The body must contain `Closes #<gh_issue>` (so the merge closes the sub-issue and
+   moves the epic's progress bar), a summary of what changed and why, the acceptance
+   criteria as a checked checklist, how it was tested (real commands, real output
+   summary), a link to the issue's `.md` file in the bundle, and the oversize warning
+   from Step 7 if applicable — all shaped to the repo's PR template when one exists.
+
+2. Capture the new PR number, then update the issue file once more: `status: pr-open`,
+   `gh_pr: <number>`, refreshed `timestamp`; update `issues/index.md`; append a
+   `log.md` entry if that file exists. Commit and push — the open PR picks up the
+   bookkeeping commit automatically.
+
+3. Update the GitHub issue to match: comment with the PR link
+   (`gh issue comment <gh_issue> --body "PR opened: <pr-url> — will close this issue
+   on merge."`) and, if the repo uses status labels, move the label to its
+   review/PR-open state. The `Closes #N` keyword links the PR in GitHub's UI, but the
+   explicit comment makes the state change visible in the issue's timeline and in
+   notifications — the local `.md` and the GitHub issue should tell the same story at
+   every transition.
+
+**If pushing or `gh pr create` fails** (no remote, no auth, protected setup): stop
+gracefully. Leave the branch intact and the status at `in-progress` (it's the truth —
+no PR exists), and tell the user exactly what's ready locally and which command failed,
+so they can push themselves and re-run the skill to finish the write-back.
+
+## Step 9: Report
+
+End with a summary the user can act on:
+
+- **Reconciled**: which issues moved to `done` (with PR links); any closed-unmerged
+  PRs or still-open PRs worth chasing.
+- **Implemented**: the issue, the branch, the PR link, final diff size vs. predicted
+  size, test results (actual numbers, not "tests pass").
+- **Follow-ups**: out-of-scope discoveries worth turning into new issues.
+- **Next up**: which issue becomes unblocked once this PR merges — the natural next
+  invocation of this skill.

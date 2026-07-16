@@ -1,0 +1,4 @@
+interface:
+  display_name: "Review Epics"
+  short_description: "Audit plan-to-epic creation"
+  default_prompt: "Use $review-epics to review generated epics against docs/PLAN.md and write the next docs/REPORT_<n>.md."
