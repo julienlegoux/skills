@@ -1,6 +1,6 @@
 ---
 name: review-epics
-description: Review the output of the split-epics skill against the source plan document. Use when the user asks to audit, check, verify, QA, or review created epics, docs/epics/, EPIC_N.md files, GitHub epic issues, milestones, or plan-to-epic conversion against plan.md, docs/PLAN.md, or another planning document. Writes a numbered docs/REPORT_N.md review report with prioritized findings.
+description: Review the output of the split-epics skill against the source plan document. Use when the user asks to audit, check, verify, QA, or review created epics, docs/epics/, EPIC_N.md files, GitHub epic issues, milestones, or plan-to-epic conversion against docs/planning/SCOPE.md (the define-scope deliverable), a legacy plan.md / docs/PLAN.md, or another planning document. Writes a numbered docs/REPORT_N.md review report with prioritized findings.
 ---
 
 # Review Epics
@@ -17,8 +17,12 @@ file this skill should create or update during review is the new report file.
 Resolve the source plan first:
 
 - Use the path the user provided.
-- Otherwise prefer `docs/PLAN.md`, `docs/plan.md`, `plan.md`, then the only plausible
-  planning markdown file under `docs/`.
+- Otherwise prefer `docs/planning/SCOPE.md` — the define-scope skill's deliverable and
+  split-epics' primary input. Never treat its siblings `SPECS.md`/`CONVENTIONS.md` or
+  the decision docs under `docs/planning/*/` as the plan — they are context, not the
+  document that was split.
+- Then fall back to `docs/PLAN.md`, `docs/plan.md`, `plan.md`, then the only plausible
+  planning markdown file under `docs/` outside `docs/planning/` and `docs/epics/`.
 - If multiple plausible plans exist, ask which one to use.
 
 Resolve the generated epics:
@@ -28,9 +32,11 @@ Resolve the generated epics:
 - If an epic frontmatter `source` points to a heading or file, compare it to the
   matching plan section when possible.
 
-Also read relevant workflow context if present: `CLAUDE.md`, `AGENTS.md`,
-`CONTRIBUTING.md`, `.github/ISSUE_TEMPLATE/`, and any repo docs that define planning
-or issue conventions.
+Also read relevant workflow context if present: `docs/planning/SPECS.md` and
+`docs/planning/CONVENTIONS.md` (the planning-bundle context split-epics links into
+each epic's `## Context` section), `CLAUDE.md`, `AGENTS.md`, `CONTRIBUTING.md`,
+`.github/ISSUE_TEMPLATE/`, and any repo docs that define planning or issue
+conventions.
 
 ## Step 2: Verify GitHub State When Available
 
@@ -74,6 +80,12 @@ Check at least these areas:
 - **OKF structure** - `docs/epics/index.md` is the bundle root index, each `EPIC_<n>.md`
   has required frontmatter, cross-links are bundle-relative absolute paths, and
   `resource` is present only when a backing GitHub issue exists.
+- **Context links** - When `docs/planning/SPECS.md` / `docs/planning/CONVENTIONS.md`
+  exist, each epic's `## Context` section links each one that exists via a plain
+  relative path (e.g. `../../planning/SPECS.md` — these cross bundle boundaries, so
+  bundle-relative leading-`/` links are wrong here), and the section is omitted
+  entirely when neither exists. Epics reference these docs, never copy their content
+  — the planning docs stay the single source of truth.
 - **GitHub linkage** - `status`, `gh_issue`, `milestone`, and `resource` agree with
   each other and with GitHub when verified.
 

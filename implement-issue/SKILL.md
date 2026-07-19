@@ -90,6 +90,9 @@ humans comment on GitHub, not in the repo:
 
 The issue file recorded conventions as of creation time; verify against the repo now:
 
+- The epic's `## Context` links — typically `docs/planning/CONVENTIONS.md` (the
+  repo's decided standards) and `docs/planning/SPECS.md` (the decided stack) — these
+  are the project's authoritative standards when they exist.
 - `CLAUDE.md` / `AGENTS.md` / `CONTRIBUTING.md` — test requirements, commit style,
   anything that belongs in the Definition of Done.
 - How tests actually run here (test runner, lint, typecheck, build) — find the real

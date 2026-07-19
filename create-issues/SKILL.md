@@ -46,6 +46,9 @@ is `null`, stop and tell the user to run `split-epics` first — everything down
 Before drafting a single issue, check what already exists so the issues you write fit
 the repo rather than reading as generic filler:
 
+- The epic's `## Context` links — typically `docs/planning/SPECS.md` (the decided
+  stack, so issue sizing and file paths match reality) and
+  `docs/planning/CONVENTIONS.md` (repo standards) — read whichever exist in full.
 - `CLAUDE.md`, `AGENTS.md`, `CONTRIBUTING.md`, `docs/CONVENTIONS.md` (or similar) —
   coding standards, required testing, commit/branch naming, review expectations.
 - `.github/PULL_REQUEST_TEMPLATE.md` and `.github/ISSUE_TEMPLATE/` — if a template

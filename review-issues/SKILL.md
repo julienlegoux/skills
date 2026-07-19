@@ -26,8 +26,13 @@ Read the target `EPIC_<n>.md` in full, including frontmatter and body. Then read
 - Every markdown issue file under that epic's `issues/` folder.
 - The epic's `issues/index.md`, if present.
 - `docs/epics/index.md`, if useful for cross-epic dependencies.
-- The original plan when the epic frontmatter `source` points to it, or when the user
-  explicitly asks to compare all the way back to `plan.md` / `docs/PLAN.md`.
+- The docs linked from the epic's `## Context` section — typically
+  `docs/planning/SPECS.md` and `docs/planning/CONVENTIONS.md` — since issue sizing,
+  file paths, and conventions should be judged against the stack and standards
+  decided there.
+- The original plan when the epic frontmatter `source` points to it (typically
+  `docs/planning/SCOPE.md`, or a legacy `plan.md` / `docs/PLAN.md`), or when the
+  user explicitly asks to compare all the way back to it.
 
 Also read relevant workflow context if present: `CLAUDE.md`, `AGENTS.md`,
 `CONTRIBUTING.md`, `.github/ISSUE_TEMPLATE/`, `.github/PULL_REQUEST_TEMPLATE.md`, and
@@ -77,7 +82,9 @@ Check at least these areas:
   Acceptance criteria / Definition of done, Relevant files / areas, Dependencies, and
   PR size note are concrete and project-aware.
 - **Project conventions** - Required tests, linting, issue templates, labels, and repo
-  standards discovered from project docs are reflected in the issue bodies.
+  standards discovered from project docs — including `docs/planning/CONVENTIONS.md`
+  and the stack decided in `docs/planning/SPECS.md` when the epic links them — are
+  reflected in the issue bodies.
 - **OKF structure** - Issue frontmatter includes required OKF and extension fields,
   cross-links are valid, `resource` appears only when a GitHub issue exists, and
   `issues/index.md` has no frontmatter.
