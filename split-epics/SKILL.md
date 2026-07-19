@@ -1,6 +1,6 @@
 ---
 name: split-epics
-description: Split a planning document (e.g. produced by /plan and living under docs/) into one folder per epic — docs/epics/epic-N-slug/EPIC_N.md — then create a GitHub milestone and a tracking issue for each epic. Use this whenever the user asks to "break the plan into epics", "split the plan doc", "create epic folders", "detach epics from the plan", or wants to turn a planning doc into trackable epics before handing individual epics to the create-issues skill. Trigger even if they just say "turn docs/PLAN.md into epics" or "set up epics for this project" without using the word "split".
+description: Split a planning document — typically docs/planning/SCOPE.md produced by the define-scope skill, or any plan doc under docs/ — into one folder per epic — docs/epics/epic-N-slug/EPIC_N.md — then create a GitHub milestone and a tracking issue for each epic, linking the planning bundle's SPECS.md/CONVENTIONS.md into each epic as context. Use this whenever the user asks to "break the plan into epics", "split the plan doc", "split the scope", "create epic folders", "detach epics from the plan", or wants to turn a planning doc into trackable epics before handing individual epics to the create-issues skill. Trigger even if they just say "turn the scope into epics" or "set up epics for this project" without using the word "split".
 ---
 
 # Split Epics from a Plan
@@ -41,8 +41,14 @@ here:
 Look in `docs/` for the planning document. Common cases, in order of likelihood:
 
 - The user names the file directly ("split docs/PLAN.md into epics") — use that.
+- `docs/planning/SCOPE.md` exists — use it. This is the define-scope skill's
+  deliverable and the primary expected input; its `## Milestone N:` headings are
+  written to match this skill's boundary detection. Never treat the sibling
+  `SPECS.md`/`CONVENTIONS.md` as split candidates — they are context (Step 2b),
+  and the decision docs under `docs/planning/*/` aren't plans at all.
 - A single obvious candidate exists (`docs/PLAN.md`, `docs/plan.md`, or the only
-  markdown file in `docs/` that isn't already under `docs/epics/`) — use it.
+  markdown file in `docs/` that isn't already under `docs/epics/` or
+  `docs/planning/`) — use it.
 - Multiple candidates exist — list them with their first heading and ask the user
   which one to split.
 
@@ -89,6 +95,21 @@ it's the one most likely to touch that area; "Out of scope" is for that epic's o
 boundary decisions. Instead, carry a plan-wide constraint into the "Notes" section of
 every epic it's actually relevant to, and say plainly that it's project-wide rather
 than specific to this epic.
+
+## Step 2b: Gather project-wide context docs
+
+Epic boundaries come solely from the plan doc — but if the planning bundle has
+sibling deliverables, every epic should link them rather than anyone re-copying their
+content. Check for `docs/planning/SPECS.md` (technical specs from define-specs) and
+`docs/planning/CONVENTIONS.md` (repo standards from define-conventions). Whichever
+exist go into each epic's `## Context` section (see the Step 3 template) so that
+`create-issues` sizes issues against the real stack and `implement-issue` finds the
+project's standards — reference, never copy; the planning docs stay the single source
+of truth. If neither exists, omit the `## Context` section entirely.
+
+These links cross from the `docs/epics/` bundle into the `docs/planning/` bundle, so
+bundle-relative (leading-`/`) links don't apply — use plain relative paths from the
+epic file, e.g. `../../planning/SPECS.md`.
 
 ## Step 3: Draft epic numbers, slugs, and files
 
@@ -137,6 +158,11 @@ source: <path to the plan doc>#<heading or anchor this came from>
 ## Dependencies
 <other epics this depends on / blocks, or "None". Link dependency epics OKF-style —
 bundle-relative, e.g. `[Epic 1](/epic-1-core-note-crud/EPIC_1.md)`.>
+
+## Context
+<only if Step 2b found planning-bundle siblings — plain relative links, e.g.
+`[Technical specs](../../planning/SPECS.md)`, `[Conventions](../../planning/CONVENTIONS.md)`.
+Omit this section entirely if none exist.>
 
 ## Notes
 <anything else worth preserving from the plan — open questions, risks, alternatives considered>
