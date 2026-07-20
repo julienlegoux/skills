@@ -3,8 +3,7 @@
   "description": "Planning-to-PR workflow skills (define-scope/specs/conventions, split-epics, create-issues, implement-issue, reviews) plus OKF docs tooling and improve-skill.",
   "version": "0.1.0",
   "author": {
-    "name": "Julien Legoux",
-    "email": "lgx.julien@gmail.com"
+    "name": "Julien Legoux"
   },
   "skills": [
     "./"

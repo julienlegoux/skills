@@ -2,8 +2,7 @@
   "name": "julien-skills",
   "description": "Julien's Claude Code skills: planning-to-PR workflow and OKF documentation tooling.",
   "owner": {
-    "name": "Julien Legoux",
-    "email": "lgx.julien@gmail.com"
+    "name": "Julien Legoux"
   },
   "plugins": [
     {
