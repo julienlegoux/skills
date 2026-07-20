@@ -4,3 +4,4 @@ eval-workspace/
 viewer.log
 nohup.out
 __pycache__/
+failed-attempt/
