@@ -3,7 +3,7 @@ type: Conventions Baseline
 title: "Personal conventions baseline"
 description: "Default repo standards applied to every project unless a project decides a deviation"
 tags: [conventions, baseline]
-timestamp: 2026-07-19T00:00:00Z
+timestamp: 2026-07-20T13:00:00Z
 ---
 
 # Personal conventions baseline
@@ -43,8 +43,17 @@ timestamp: 2026-07-19T00:00:00Z
 
 ## Testing
 
-- Features and fixes are built test-first (strict red-green, as implement-issue runs
-  it): failing test → minimal pass → refactor.
+- Strict red-green test-first (failing test → minimal pass → refactor, as
+  implement-issue runs it) is mandatory wherever correctness is an *assertable
+  behavior*: domain/business logic, calculations, data transforms, and trust
+  boundaries (APIs, validation, handlers). This is where the test is the spec and a
+  bug costs the most.
+- Code whose correctness is *visual fidelity to a given design* (UI ported from a
+  canonical mockup) is not red-green TDD'd — there is nothing meaningful to make go
+  red first. Cover its interactive logic with behavior tests written alongside the
+  component, and the end-to-end journeys with e2e; verify static markup visually
+  against the design. The dividing line: assertable behavior → test-first; design
+  reproduction → behavior tests + e2e.
 - Tests live beside or mirror the source structure; test names state the behavior
   being asserted, not the method being called.
 - Prefer integration-level tests over heavy mocking where the real thing is cheap;
