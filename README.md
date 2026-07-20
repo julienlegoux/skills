@@ -1,5 +1,3 @@
-# 🧰 julien-skills
-
 **Claude Code skills for taking a project from raw idea to merged PR** — plus documentation tooling and a self-improvement loop.
 
 This repo is a [Claude Code plugin marketplace](https://code.claude.com/docs/en/plugin-marketplaces). One command installs everything:
