@@ -183,10 +183,12 @@ gh issue create \
   --label <whatever convention Step 2 found, or the epic label as a fallback>
 ```
 
-Capture the new issue's number, then attach it as a sub-issue of the epic:
+Capture the new issue's number, then attach it as a sub-issue of the epic. The
+sub-issues API needs the child's *numeric id* (not its `#number`); send it with `-F`:
 
 ```bash
-bash scripts/link_sub_issue.sh <owner>/<repo> <epic_gh_issue_number> <new_issue_number>
+child_id=$(gh api "repos/<owner>/<repo>/issues/<new_issue_number>" --jq '.id')
+gh api -X POST "repos/<owner>/<repo>/issues/<epic_gh_issue_number>/sub_issues" -F sub_issue_id="$child_id"
 ```
 
 **Idempotency:** if an issue's `.md` already has `gh_issue` set, skip creating it again
