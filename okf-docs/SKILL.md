@@ -41,6 +41,17 @@ Everything else in the spec — recommended fields, index formatting, citation
 numbering — is strong convention, not a hard requirement. Follow it anyway;
 it's what makes the bundle pleasant rather than merely valid.
 
+## Ignoring files (`.okfignore`)
+
+A bundle root may contain a `.okfignore`: one gitignore-style pattern per
+line, `#` comments allowed. A pattern containing `/` matches from the bundle
+root; one without matches any path segment (so `sources` ignores a whole
+directory anywhere). No `!` negation. Matched files are **not part of the
+bundle**: the validator skips them, they need no frontmatter, and they must
+not be listed in any `index.md`. Use it for non-knowledge markdown that has
+to live inside the tree — raw source material, generated reports, a repo
+README — especially when the bundle root is the project root.
+
 ## Workflow
 
 **1. Find or establish the bundle root.**

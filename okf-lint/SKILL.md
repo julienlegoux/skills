@@ -31,7 +31,10 @@ mechanical part cheap and deterministic; the reading is the job.
 
 **1. Locate the bundle root.** Usually a `knowledge/` or `docs/` directory
 whose files carry OKF frontmatter. If the user pointed at a specific
-directory, use it. If several candidates exist, ask once.
+directory, use it. If several candidates exist, ask once. Check for a
+`.okfignore` at the root; ignored files are out of scope for the lint pass
+(the inventory script already skips them) — don't report findings on them,
+though you may still read them as evidence.
 
 **2. Run the inventory script:**
 
@@ -73,8 +76,11 @@ the domain as you go, and look for:
 
 **4. Write the report** to `LINT_REPORT_<N>.md` **next to the bundle root,
 never inside it** (a report inside the bundle would itself be a
-non-conformant concept). `<N>` is one more than the highest existing report
-number, so history is kept.
+non-conformant concept). Exception: when the bundle root *is* the project
+root there is no "next to" — put the report in the root and make sure
+`LINT_REPORT_*.md` is covered by `.okfignore`, adding the pattern if missing
+(this is the one write to the bundle tree the skill is allowed). `<N>` is
+one more than the highest existing report number, so history is kept.
 
 ## Report structure
 

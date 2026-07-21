@@ -15,6 +15,7 @@ list fields.
 import argparse
 import re
 import sys
+from fnmatch import fnmatch
 from pathlib import Path
 
 RESERVED = {"index.md", "log.md"}
@@ -50,6 +51,33 @@ def parse_frontmatter_fields(fm_lines):
     return fields
 
 
+def load_ignore(bundle_root):
+    """Read .okfignore at the bundle root: one gitignore-lite pattern per line.
+    Blank lines and # comments are skipped. No negation support."""
+    patterns = []
+    f = bundle_root / ".okfignore"
+    if f.is_file():
+        for line in f.read_text(encoding="utf-8").splitlines():
+            line = line.strip()
+            if line and not line.startswith("#"):
+                patterns.append(line.rstrip("/"))
+    return patterns
+
+
+def is_ignored(rel_posix, patterns):
+    """A pattern containing '/' fnmatches the root-relative path or any of its
+    directory prefixes; a pattern without '/' matches any single path segment."""
+    parts = rel_posix.split("/")
+    prefixes = ["/".join(parts[:i]) for i in range(1, len(parts) + 1)]
+    for pat in patterns:
+        if "/" in pat:
+            if any(fnmatch(p, pat) for p in prefixes):
+                return True
+        elif any(fnmatch(seg, pat) for seg in parts):
+            return True
+    return False
+
+
 def resolve_link(target, bundle_root, current_dir):
     if target.startswith(("http://", "https://", "mailto:", "#")):
         return None  # external or in-page anchor, not a bundle-relative link
@@ -75,7 +103,9 @@ def main():
 
     errors = []
     warnings = []
-    md_files = sorted(bundle_root.rglob("*.md"))
+    ignore = load_ignore(bundle_root)
+    md_files = sorted(p for p in bundle_root.rglob("*.md")
+                      if not is_ignored(p.relative_to(bundle_root).as_posix(), ignore))
 
     for path in md_files:
         rel = path.relative_to(bundle_root)

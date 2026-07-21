@@ -13,6 +13,7 @@ import argparse
 import re
 import sys
 from collections import defaultdict
+from fnmatch import fnmatch
 from datetime import date, datetime
 from pathlib import Path
 
@@ -61,6 +62,33 @@ def parse_frontmatter(fm_lines):
     return fields
 
 
+def load_ignore(bundle_root):
+    """Read .okfignore at the bundle root: one gitignore-lite pattern per line.
+    Blank lines and # comments are skipped. No negation support."""
+    patterns = []
+    f = bundle_root / ".okfignore"
+    if f.is_file():
+        for line in f.read_text(encoding="utf-8").splitlines():
+            line = line.strip()
+            if line and not line.startswith("#"):
+                patterns.append(line.rstrip("/"))
+    return patterns
+
+
+def is_ignored(rel_posix, patterns):
+    """A pattern containing '/' fnmatches the root-relative path or any of its
+    directory prefixes; a pattern without '/' matches any single path segment."""
+    parts = rel_posix.split("/")
+    prefixes = ["/".join(parts[:i]) for i in range(1, len(parts) + 1)]
+    for pat in patterns:
+        if "/" in pat:
+            if any(fnmatch(p, pat) for p in prefixes):
+                return True
+        elif any(fnmatch(seg, pat) for seg in parts):
+            return True
+    return False
+
+
 def resolve_link(target, bundle_root, current_dir):
     if target.startswith(("http://", "https://", "mailto:", "#")):
         return None
@@ -103,6 +131,8 @@ def section(title):
 
 
 def main():
+    if hasattr(sys.stdout, "reconfigure"):
+        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("bundle_root", type=Path)
     args = parser.parse_args()
@@ -111,7 +141,9 @@ def main():
         print(f"error: {root} is not a directory", file=sys.stderr)
         return 2
 
-    md_files = sorted(root.rglob("*.md"))
+    ignore = load_ignore(root)
+    md_files = sorted(p for p in root.rglob("*.md")
+                      if not is_ignored(p.relative_to(root).as_posix(), ignore))
     concepts, indexes, logs = {}, {}, {}
     for path in md_files:
         rel = path.relative_to(root).as_posix()
@@ -154,7 +186,8 @@ def main():
                 if resolved is not None:
                     listed[resolved] = (i, m.group(1), m.group(3).strip())
         siblings = [p for p in idir.iterdir()
-                    if (p.suffix == ".md" and p.name not in RESERVED) or p.is_dir()]
+                    if ((p.suffix == ".md" and p.name not in RESERVED) or p.is_dir())
+                    and not is_ignored(p.relative_to(root).as_posix(), ignore)]
         for p in siblings:
             if p.resolve() not in listed and not (p.is_dir() and not any(p.rglob("*.md"))):
                 print(f"- {rel}: does NOT list {p.relative_to(root).as_posix()}")
