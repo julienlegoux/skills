@@ -158,15 +158,18 @@ Also write or update `docs/epics/epic-<n>-<slug>/issues/index.md` (no frontmatte
 * [<title>](./01-<slug>.md) - <size>, draft
 ```
 
-## Step 5: Show the breakdown and confirm
+## Step 5: Show the breakdown and proceed
 
 List all drafted issues for the epic: number, title, size, dependencies. Flag any
-sized L prominently and say why it couldn't be split further. This is the point to
-catch a bad split — once Step 6 runs, GitHub issues and sub-issue links exist for
-real and are more annoying to unwind than local files.
+sized L prominently and say why it couldn't be split further. Then continue straight
+into Step 6 — creation is the default, not something to ask permission for: the user
+invoked the skill to get issues, and a bad split is cheap to fix after the fact
+(edit the `.md`, `gh issue edit`, close strays).
 
-Wait for explicit confirmation (including sign-off on any resizing/re-splitting the
-user asks for) before touching GitHub.
+The exception is when the user asked for review (at invocation or mid-run — "let me
+review first", "one by one", "step by step"): then go issue by issue instead —
+display each issue in full (frontmatter + body), wait for sign-off or edits, create
+it on GitHub, and move to the next.
 
 ## Step 6: Create the GitHub issues
 
@@ -206,5 +209,13 @@ issue via its `resource` field).
 If `docs/epics/log.md` exists, append an entry per issue created (see `split-epics`'
 Step 7 for the log format). Don't create it if it doesn't already exist.
 
-Report a summary: issues created (with links), their sizes, and a reminder that the
-epic's GitHub issue now shows them as sub-issues/progress.
+Then commit and push — don't leave the bundle dirty or ask whether to: the GitHub
+issues already exist at this point, so an uncommitted bundle is drift the next
+session would have to reconcile. Stage only what this run touched (the epic's
+`issues/` folder, plus `log.md` if appended), commit following the repo's commit
+conventions (e.g. `docs: add Epic <n> issues`), and push to the branch the repo's
+conventions say doc/issue work lands on (the integration trunk — e.g. `develop`
+under git-flow — otherwise the current branch).
+
+Report a summary: issues created (with links), their sizes, the commit pushed, and
+a reminder that the epic's GitHub issue now shows them as sub-issues/progress.
