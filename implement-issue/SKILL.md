@@ -126,6 +126,24 @@ the in-progress one (`gh issue edit <gh_issue> --add-label "status: in-progress"
 Skip silently if `gh` is unavailable — same rule as reconciliation, bookkeeping
 never blocks implementation.
 
+Labels cover the issue list, but a GitHub Projects board is a third, separate
+surface: its Status field ignores labels entirely, and the only built-in
+automation is closed→Done — nothing ever moves an item to "In Progress", so a
+board-tracked repo shows stale status for the whole life of the branch unless
+this flow sets it. Check `gh issue view <gh_issue> --json projectItems`; if the
+issue sits on a project whose Status has an in-progress-like option, set it:
+
+```bash
+gh project item-list <number> --owner <owner> --format json   # item id (match content.url)
+gh project field-list <number> --owner <owner> --format json  # Status field id + option ids
+gh project item-edit --project-id <id> --id <item-id> --field-id <field-id> \
+  --single-select-option-id <option-id>
+```
+
+Editing projects needs the `project` auth scope; if `gh` refuses on scopes,
+mention `gh auth refresh -s project` in the report and move on — bookkeeping
+never blocks implementation.
+
 ## Step 6: Implement, test-first
 
 Work strictly test-driven, one acceptance criterion at a time:
@@ -207,7 +225,10 @@ issues better. Don't silently ship an oversize PR as if it were normal.
    (`gh issue comment <gh_issue> --body "PR opened: <pr-url> — will close this issue
    on merge."`) and swap the status label (`gh issue edit <gh_issue>
    --remove-label "status: in-progress" --add-label "status: pr-open"` — the
-   labels Step 5 ensured exist). The `Closes #N` keyword links the PR in GitHub's UI, but the
+   labels Step 5 ensured exist), and if Step 5 found a Projects board, move its
+   Status likewise (an in-review/pr-open-like option if one exists, else leave it
+   at in progress — Done arrives via the board's own closed→Done automation at
+   merge). The `Closes #N` keyword links the PR in GitHub's UI, but the
    explicit comment makes the state change visible in the issue's timeline and in
    notifications — the local `.md` and the GitHub issue should tell the same story at
    every transition.
