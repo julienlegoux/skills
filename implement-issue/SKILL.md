@@ -41,7 +41,8 @@ gh pr view <gh_pr> --json state,mergedAt -q .state
   Then verify the GitHub issue actually closed — `Closes #N` normally does it at
   merge, but if the keyword was missed the issue is still open: close it yourself
   (`gh issue close <gh_issue> --comment "Completed by PR #<gh_pr>"`) so GitHub and
-  the bundle never disagree about what's done.
+  the bundle never disagree about what's done. Also remove any status label this
+  flow added — a closed issue isn't `pr-open`.
 - `CLOSED` without merge → don't guess what happened. Report it to the user and leave
   the status as-is; a human closed that PR for a reason the frontmatter can't know.
 - `OPEN` → nothing to do; mention it in the final report so the user remembers it's
@@ -116,9 +117,14 @@ Mirror the same transition on GitHub, where teammates actually watch progress:
 gh issue comment <gh_issue> --body "Started work on branch \`<branch-name>\`."
 ```
 
-If the repo uses status labels (Step 4 will have shown them, e.g. `in progress`,
-`status: wip`), move the issue's label too. Skip silently if `gh` is unavailable —
-same rule as reconciliation, bookkeeping never blocks implementation.
+Then mark the issue itself as in progress — a comment shows in the timeline, but
+only a label is visible from the issue list. GitHub issues have no native status
+field, so labels carry it: if Step 4 showed the repo already has status labels
+(e.g. `in progress`, `status: wip`), use those; otherwise create a minimal pair
+once (`gh label create "status: in-progress"` and `"status: pr-open"`) and apply
+the in-progress one (`gh issue edit <gh_issue> --add-label "status: in-progress"`).
+Skip silently if `gh` is unavailable — same rule as reconciliation, bookkeeping
+never blocks implementation.
 
 ## Step 6: Implement, test-first
 
@@ -199,8 +205,9 @@ issues better. Don't silently ship an oversize PR as if it were normal.
 
 3. Update the GitHub issue to match: comment with the PR link
    (`gh issue comment <gh_issue> --body "PR opened: <pr-url> — will close this issue
-   on merge."`) and, if the repo uses status labels, move the label to its
-   review/PR-open state. The `Closes #N` keyword links the PR in GitHub's UI, but the
+   on merge."`) and swap the status label (`gh issue edit <gh_issue>
+   --remove-label "status: in-progress" --add-label "status: pr-open"` — the
+   labels Step 5 ensured exist). The `Closes #N` keyword links the PR in GitHub's UI, but the
    explicit comment makes the state change visible in the issue's timeline and in
    notifications — the local `.md` and the GitHub issue should tell the same story at
    every transition.
