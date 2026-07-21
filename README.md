@@ -4,7 +4,7 @@ This repo is a [Claude Code plugin marketplace](https://code.claude.com/docs/en/
 
 ```
 /plugin marketplace add julienlegoux/skills
-/plugin install planning-skills@julien-skills
+/plugin install skills@lx-engine
 ```
 
 ---
@@ -64,8 +64,8 @@ Both write a prioritized `docs/REPORT_N.md` instead of silently "fixing" things.
 ```
 skills/
 ├── .claude-plugin/
-│   ├── marketplace.json   ← marketplace "julien-skills"
-│   └── plugin.json        ← plugin "planning-skills" (bundles every skill below)
+│   ├── marketplace.json   ← marketplace "lx-engine"
+│   └── plugin.json        ← plugin "skills" (bundles every skill below)
 ├── define-scope/SKILL.md
 ├── define-specs/SKILL.md
 ├── ...one folder per skill

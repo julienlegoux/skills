@@ -1,12 +1,12 @@
 {
-  "name": "julien-skills",
+  "name": "lx-engine",
   "description": "Julien's Claude Code skills: planning-to-PR workflow and OKF documentation tooling.",
   "owner": {
     "name": "Julien Legoux"
   },
   "plugins": [
     {
-      "name": "planning-skills",
+      "name": "skills",
       "source": "./",
       "description": "Planning-to-PR workflow skills (define-scope/specs/conventions, split-epics, create-issues, implement-issue, reviews) plus OKF docs tooling and improve-skill."
     }

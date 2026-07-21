@@ -1,5 +1,5 @@
 {
-  "name": "planning-skills",
+  "name": "skills",
   "description": "Planning-to-PR workflow skills (define-scope/specs/conventions, split-epics, create-issues, implement-issue, reviews) plus OKF docs tooling and improve-skill.",
   "version": "0.1.0",
   "author": {
