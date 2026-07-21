@@ -152,6 +152,17 @@ Two boundaries the issue already drew:
   candidate follow-up issues — they don't get done. Scope creep here is precisely what
   breaks the one-issue-one-reviewable-PR sizing that the whole pipeline exists for.
 
+One discovery that must NOT stay informal: implementation sometimes proves a decided
+standard wrong (a pinned version the ecosystem can't satisfy, a mandated library that
+breaks the build). When you deviate from SPECS/CONVENTIONS or the issue spec to make
+acceptance criteria pass, record it as a file — `docs/epics/<epic>/deviations/<same
+filename as the issue>.md`, following the bundle's doc conventions — stating what was
+decided, what blocked it (verified versions/errors, not vibes), alternatives
+considered, and the concrete trigger for revisiting. Keep that folder's `index.md`
+listing it, and commit it on the issue branch so it lands with the PR. A deviation
+that lives only in a PR body is invisible to the next issue that trips over the same
+wall.
+
 Finish by running the *full* test suite and lint — not just your new tests — and fix
 what breaks, including pre-existing tests your change disturbed.
 
@@ -206,7 +217,8 @@ End with a summary the user can act on:
 - **Reconciled**: which issues moved to `done` (with PR links); any closed-unmerged
   PRs or still-open PRs worth chasing.
 - **Implemented**: the issue, the branch, the PR link, final diff size vs. predicted
-  size, test results (actual numbers, not "tests pass").
+  size, test results (actual numbers, not "tests pass"), and any deviation files
+  written.
 - **Follow-ups**: out-of-scope discoveries worth turning into new issues.
 - **Next up**: which issue becomes unblocked once this PR merges — the natural next
   invocation of this skill.
