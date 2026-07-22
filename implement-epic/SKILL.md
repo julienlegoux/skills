@@ -1,0 +1,177 @@
+---
+name: implement-epic
+description: Supervise the implementation of ALL remaining issues in an epic by delegating each one to a subagent running the implement-issue skill — pick an adapted model and reasoning effort per issue, wait for CI, merge green PRs into the integration branch (develop) with a merge commit, and loop until the epic is done. Use this whenever the user asks to "finish epic 2", "implement the rest of the issues in epic N", "do the whole epic", "keep merging until the epic is done", "run epic 3 end to end", or wants issues from docs/epics/ implemented with subagents while the main session supervises — even if they phrase it as "implement the remaining issues" or "keep going until everything is green and merged".
+---
+
+# Implement an Epic
+
+`create-issues` sized every issue in the epic to be one focused PR, and
+`implement-issue` turns one issue into one PR. This skill is the layer above: run
+that loop for every remaining issue in an epic — delegate, watch CI, merge, repeat —
+until the epic's board shows all `done`.
+
+## You are a supervisor — protect your context
+
+This loop can span many issues, many CI waits, and hours of wall-clock time. Your
+context is the scarcest resource in the room: every source file you read, every
+diff you inspect, every log you study rides along in every later decision, and a
+bloated supervisor starts making sloppy calls exactly when the last issues land.
+So the division of labor is absolute:
+
+- **Never implement anything yourself.** No code edits, no running tests, no
+  reading source files, no reviewing diffs. If a task needs doing — implementing,
+  fixing CI, resolving a merge conflict, even bookkeeping — spawn a subagent.
+- **What you may hold:** the epic's issue list (frontmatter fields only), subagent
+  final reports, PR numbers and check states, and short `gh` JSON answers to
+  questions you asked.
+- **When a subagent's report is long,** keep its conclusions (PR number, test
+  results, deviations, follow-ups) and let the rest go — don't re-derive its work.
+
+The temptation to "just quickly fix" a one-line CI failure yourself is exactly how
+supervisors drown. A subagent fixes it just as fast, and you stay clear-headed.
+
+## Step 1: Map the epic
+
+1. Locate the epic folder (`docs/epics/epic-<n>-<slug>/`). Read `issues/index.md`
+   and each issue's **frontmatter only** (`issue`, `slug`, `size`, `status`,
+   `gh_issue`, `gh_pr`, `depends_on`) — the bodies are for the implementers.
+2. Determine the **integration branch**: the one the user named; else `develop` if
+   it exists; else the repo's default branch. All PRs in this run target it, and
+   every implementer must be told about it explicitly — `implement-issue` defaults
+   to the default branch otherwise.
+3. Verify `gh auth status` works. If not, stop — this whole flow is built on `gh`.
+4. Build the board: which issues are `done`, `pr-open` (PR to check on),
+   `in-progress` (a previous run started it — resume it, don't restart), `open`
+   and unblocked, or blocked and on what.
+
+## Step 2: The loop
+
+Repeat until no issue in the epic remains short of `done`:
+
+1. **Settle inherited state first.** Any `pr-open` issue from this epic: check its
+   PR — merged → fine (statuses self-heal, see Bookkeeping); open → adopt it into
+   the CI-watch/merge flow below before starting new work; closed unmerged →
+   surface to the user, don't guess.
+2. **Pick the next issue**: lowest-numbered `open` issue whose `depends_on` are all
+   `done`. If nothing is unblocked but issues remain, stop and report what's
+   blocking (see Stopping conditions).
+3. **Choose model and effort** for it (next section), then spawn an implementer
+   subagent with the prompt template below.
+4. **From its report**, record the PR number and the essentials. Then watch CI and
+   merge (see CI and merging).
+5. Loop.
+
+Run **one issue at a time**. Merging into a single integration branch serializes
+integration anyway, and parallel implementers touching adjacent code buy you merge
+conflicts that cost more than the parallelism saves. If the user explicitly asks
+for parallel execution, only pair issues with no dependency path between them and
+visibly disjoint file footprints — and still merge their PRs one at a time.
+
+## Choosing model and effort per issue
+
+This is the supervisor's real judgment call, and it's why the issue frontmatter
+carries `size`. Match the horsepower to the work — a frontier model on a
+rename-and-wire-up issue burns money for nothing, and a small model on a
+migration-with-concurrency issue burns a CI round instead:
+
+| Issue profile | Model | Effort steer in the prompt |
+|---|---|---|
+| S and mechanical — docs, config, boilerplate, CRUD copying an existing pattern, renames | `haiku` | "This is a small, well-specified task. Implement it directly without over-engineering; the acceptance criteria are the whole job." |
+| M, or S with real logic — a typical feature slice with tests | `sonnet` | Normal prompt, no special steer. |
+| L, or any size touching architecture, data model/migrations, auth/security, concurrency, public API shape, or cross-cutting refactors | `opus` (or the session's model if stronger) | "Think hard about design before writing tests; this issue has structural consequences." |
+
+Judge from the **title, size, and one-line scope in `index.md`** — not the full
+body. Two overrides:
+
+- **When unsure, go one tier up.** A red CI round costs more than the model
+  savings, in both tokens and wall-clock.
+- **Escalate after failure.** If an issue's CI is still red after two fix rounds,
+  or an implementer reports it couldn't finish, retry with the next tier up and
+  higher effort, as a fresh agent with the failure summary in its prompt.
+
+Mechanism: set the Agent tool's `model` parameter. If the harness also exposes an
+effort/thinking parameter, set it to match the tier; otherwise the effort steer
+lives in the prompt as above.
+
+## Implementer prompt template
+
+```
+Invoke the implement-issue skill and follow it to implement issue <nn> of epic <n>
+(<epic folder path>).
+
+Constraints from the supervisor:
+- Integration branch is `<branch>`: branch off it and open the PR against it
+  (this overrides implement-issue's default-branch assumption).
+- Do NOT merge the PR yourself — the supervisor handles merging.
+- <effort steer from the table>
+
+Report back, concisely: PR number and URL, final diff size vs predicted size,
+test results (real numbers), any deviation files written, out-of-scope follow-ups
+you noted, and anything that blocked you.
+```
+
+## CI and merging
+
+**Watch checks** without babysitting them in the foreground:
+
+```bash
+gh pr checks <pr> --watch --fail-fast
+```
+
+Run it in the background and act on the result. If the repo has **no checks
+configured**, there's nothing to wait on: rely on the implementer's reported test
+results, note the absence of CI once in the final report, and merge.
+
+**Green → merge with a merge commit, always:**
+
+```bash
+gh pr merge <pr> --merge --delete-branch
+```
+
+Never `--squash` or `--rebase` in this flow: the merge commit preserves each
+issue's own commit history (including its red-green TDD trail) and keeps the
+integration branch's first-parent line reading as one merge per issue. If the
+repo's settings forbid merge commits, stop and tell the user — don't silently
+squash to get past it.
+
+**Red → fix round.** Pull only the failure headline (`gh pr checks <pr>` plus
+`gh run view --log-failed` if needed — skim for the failing job name and error,
+don't study logs at length). Then message the **same implementer agent** (its
+context already holds the whole implementation) with the failure summary and ask
+it to fix and push. Two failed fix rounds → escalate per the model table. Still
+red after escalation → stop and report; don't thrash CI all afternoon.
+
+**Merge conflict** (integration branch moved since the PR branched): have the
+implementer merge the integration branch into its feature branch, resolve, and
+push — merge, not rebase, consistent with the merge-commit policy.
+
+## Bookkeeping
+
+You never edit bundle files yourself. `implement-issue`'s own reconcile step flips
+merged PRs' issues to `done` at the start of the *next* run — so intermediate
+statuses self-heal as the loop turns. That leaves exactly one gap: after the
+**final** merge there is no next implementer. Close it by spawning one small
+(`haiku`) subagent: "Invoke the implement-issue skill and run ONLY its Step 1
+reconcile pass, then stop and report what it updated."
+
+## Stopping conditions
+
+Stop the loop and report — rather than pushing through — when:
+
+- **All issues are `done`.** The good ending.
+- **Nothing is unblocked** but open issues remain (e.g. waiting on a PR a human
+  opened, or a dependency outside this epic). Show the dependency picture.
+- **An issue stays red after escalation.** Leave its branch and PR intact, state
+  exactly where it stands and what fails.
+- **The user needs to decide something** an implementer surfaced — a spec
+  contradiction, a forbidden merge-commit setting, a closed-unmerged PR.
+
+## Final report
+
+- **Merged**: each issue with its PR link, in merge order.
+- **Models used**: which tier ran each issue (and any escalations) — the user is
+  paying for this judgment, show it.
+- **Test/CI summary**: per-issue results as reported, plus any repos-has-no-CI note.
+- **Deviations**: every deviation file implementers reported, aggregated.
+- **Follow-ups**: out-of-scope discoveries collected from all reports.
+- **Left over**: anything not `done` and precisely why.
