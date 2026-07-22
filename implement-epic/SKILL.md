@@ -46,26 +46,37 @@ supervisors drown. A subagent fixes it just as fast, and you stay clear-headed.
 
 ## Step 2: The loop
 
+The dependency graph, not a queue, drives scheduling: **run every unblocked issue
+concurrently; serialize only the merges.** Implementation is the slow part and
+independent issues don't need to wait on each other — but PRs land into the
+integration branch one at a time, in a deliberate order.
+
 Repeat until no issue in the epic remains short of `done`:
 
 1. **Settle inherited state first.** Any `pr-open` issue from this epic: check its
    PR — merged → fine (statuses self-heal, see Bookkeeping); open → adopt it into
-   the CI-watch/merge flow below before starting new work; closed unmerged →
-   surface to the user, don't guess.
-2. **Pick the next issue**: lowest-numbered `open` issue whose `depends_on` are all
-   `done`. If nothing is unblocked but issues remain, stop and report what's
-   blocking (see Stopping conditions).
-3. **Choose model and effort** for it (next section), then spawn an implementer
-   subagent with the prompt template below.
-4. **From its report**, record the PR number and the essentials. Then watch CI and
-   merge (see CI and merging).
-5. Loop.
+   the CI-watch/merge flow below; closed unmerged → surface to the user, don't
+   guess.
+2. **Spawn the whole frontier.** Every `open` issue whose `depends_on` are all
+   `done` (or already merged this run) gets an implementer subagent now — choose
+   each one's model and effort (next section), then launch them **in one batch**
+   so they run concurrently. Cap the frontier at ~4 in-flight implementers; more
+   mostly buys merge-conflict churn on a shared integration branch.
+3. **As each PR appears**, record its number and the report's essentials, and
+   start watching its checks in the background (see CI and merging).
+4. **Merge one at a time.** When one or more PRs are green, merge the
+   lowest-numbered issue's PR first (dependency order is numbered order within an
+   epic). After each merge, every still-open PR is now behind the integration
+   branch — any that CI flags as conflicting gets a sync round (see Merge
+   conflict below); the rest just merge when their turn comes.
+5. **Each merge may unblock new issues** — go back to step 2 and spawn them
+   without waiting for the rest of the current wave.
 
-Run **one issue at a time**. Merging into a single integration branch serializes
-integration anyway, and parallel implementers touching adjacent code buy you merge
-conflicts that cost more than the parallelism saves. If the user explicitly asks
-for parallel execution, only pair issues with no dependency path between them and
-visibly disjoint file footprints — and still merge their PRs one at a time.
+One caveat worth judgment: two independent issues that obviously stomp the same
+files (the index said so, or the epic's scope makes it plain) are better run
+back-to-back than concurrently — the second one's rework costs more than the
+overlap saves. Dependency-unrelated ≠ file-disjoint; use the scope lines in
+`index.md` to spot this.
 
 ## Choosing model and effort per issue
 
