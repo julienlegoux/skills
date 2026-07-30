@@ -130,8 +130,10 @@ Constraints from the supervisor:
 - Do NOT delete remote branches. Do NOT use `git stash` — `refs/stash` is shared
   across worktrees, so stashing corrupts concurrent agents' work; use a patch file
   or a throwaway commit.
-- Bookkeeping: edit only your OWN issue file. Leave `issues/index.md` and the epic
-  log to the final reconcile pass.
+- Bookkeeping: keep `issues/index.md` and the epic log updated as implement-issue
+  requires — an OKF index that disagrees with its own docs is broken. Expect
+  conflicts there, since siblings are writing the same lines; resolve as a union
+  that keeps every issue's line, never by clobbering a sibling's status.
 - Commit and push incrementally, so a transient failure mid-run costs no progress.
 - Once your PR is open, report and END your turn. Do NOT watch or poll CI — that's
   the supervisor's job and waiting loops burn your context for nothing.
@@ -211,15 +213,23 @@ statuses self-heal as the loop turns. That leaves exactly one gap: after the
 (`haiku`) subagent: "Invoke the implement-issue skill and run ONLY its Step 1
 reconcile pass, then stop and report what it updated."
 
-**Concurrency makes bookkeeping the main source of merge conflicts.** Every
-implementer writes status into the same shared files, so each merge leaves every
-other open PR conflicting on lines unrelated to its own work. Unchecked this
-dominates the run — a wave of four PRs can cost more sync rounds than the
-implementation did. Two things keep it small: implementers touch only their own
-issue file (which conflicts with nobody), and when a shared-file conflict does
-happen the resolution is always a union — every issue keeps its line, and merged
-ones read `done`. Say that in the sync request, so nobody clobbers a sibling's
-status while resolving.
+**Concurrency makes bookkeeping the main source of merge conflicts — a cost to
+manage, not to avoid.** `implement-issue` updates `issues/index.md` and the epic log
+on every status write, because an OKF index that disagrees with its own docs is
+broken and a stale index is worse than a conflicted one. So do not tell implementers
+to skip it. The consequence is structural: each merge leaves the other open PRs
+conflicting on index lines unrelated to their work, and a wave of four PRs can cost
+more sync rounds than the implementation did. Keep that cheap:
+
+- **Always state the resolution rule** in the sync request: it is a **union** —
+  every issue keeps its own line, merged issues read `done`, nobody clobbers a
+  sibling's status. Left to guess, implementers resolve by overwriting and silently
+  revert each other's bookkeeping.
+- **Merge promptly once green.** Conflict cost scales with how long PRs sit open
+  alongside each other, not with the epic's size.
+- **On a bookkeeping-heavy epic** — many small issues all touching one index — a
+  narrower frontier can finish sooner than a wide one. Sync rounds are real
+  wall-clock and they serialize on you.
 
 ## Stopping conditions
 
