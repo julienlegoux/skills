@@ -1,6 +1,6 @@
 ---
 name: define-change
-description: Brownfield planning for ONE feature or serious change to an existing app (the brownfield pipeline is map-codebase → define-change → create-issues → implement-epic). Turn a feature idea, change request, or rant into a decided change plan — grounded in an impact audit of the actual code, decided through a user-triaged decision ledger under docs/planning/changes/, and delivered as a docs/epics/epic-N-slug/EPIC_N.md (with GitHub milestone + tracking issue) that create-issues consumes unchanged. Use whenever the user wants to "add a feature to this app", "plan this change", "I want to build X into the existing app", "make a serious change", "plan a refactor" or "plan a migration", "turn this feature idea into an epic/issues", or continues after map-codebase. Also use to RESUME — if docs/planning/changes/ has a change with open decisions, pick up where it left off. Do NOT use for brand-new projects (that's define-scope) or trivial one-file fixes (just do those directly).
+description: Brownfield planning for one feature or serious change to an existing app — audit the code's blast radius, decide how the change lands through a user-triaged ledger under docs/planning/changes/, and deliver an EPIC_N.md (with GitHub milestone + tracking issue) that create-issues consumes unchanged. Use for planning a feature, refactor, or migration in existing code (not brand-new projects, not trivial one-file fixes), or to resume a change ledger with open decisions.
 ---
 
 # Define Change
@@ -20,20 +20,11 @@ One change = one epic. That's the contract; the size guard in Step 2 protects it
 
 ## Output format: OKF
 
-Both directories this skill touches are [Open Knowledge Format](https://github.com/GoogleCloudPlatform/knowledge-catalog/blob/main/okf/SPEC.md)
-(OKF v0.1) bundles — and they are *separate* bundles, which matters for links:
-
-- `docs/planning/` — established by the planning skills or `map-codebase`. This skill
-  adds `changes/change-<N>-<slug>/` (Decision concept docs + a non-root `index.md`
-  with no frontmatter). Links inside this bundle are bundle-relative with a leading
-  `/` (e.g. `/changes/change-1-csv-export/03-migration.md`).
-- `docs/epics/` — its own bundle root. If absent, establish it: `docs/epics/index.md`
-  with `okf_version: "0.1"` as its only frontmatter, and `docs/epics/log.md`
-  (`## YYYY-MM-DD` headings, newest first). (`split-epics` historically didn't
-  create `log.md` here — a deliberate divergence; if the bundle already exists from
-  either origin, append to what's there and create `log.md` only if missing.) Links from an epic file into
-  `docs/planning/` cross bundles, so bundle-relative paths don't apply — use plain
-  relative paths (`../../planning/SPECS.md`), exactly as `split-epics` does.
+Both directories this skill touches — `docs/planning/` (where it adds
+`changes/change-<N>-<slug>/`) and `docs/epics/` (which it establishes if absent,
+including `log.md`) — are separate OKF v0.1 bundles. The bundle and link rules,
+epic file schema, decision doc template, and English-content rule are defined
+once in `references/pipeline-interfaces.md` — read it before writing anything.
 
 Layout this skill owns:
 
@@ -140,16 +131,14 @@ move for a category you considered and ruled out):
 
 Add project-specific decisions the audit raises that no list anticipates. Number in
 dependency order, record `depends_on`. One file per decision,
-`docs/planning/changes/change-<N>-<slug>/<nn>-<slug>.md`, using define-scope's exact
-Decision template (Question / Options / Recommendation / Verdict sections; `status`,
-`verdict`, `decided_via`, `depends_on` frontmatter) with these fields instead:
-`tags: [decision, change]`, `phase: change`, plus extension fields `change: <N>` and
-`change_slug: <slug>`. Ground every Question in audit facts (name the files, the
-contracts, the row counts) and every Recommendation in SPECS.md/CONVENTIONS.md —
-"it depends" is not a recommendation.
+`docs/planning/changes/change-<N>-<slug>/<nn>-<slug>.md`, using the shared Decision
+doc template from `references/pipeline-interfaces.md` (`tags: [decision, change]`,
+`phase: change`, plus the `change`/`change_slug` extension fields). Ground every
+Question in audit facts (name the files, the contracts, the row counts) and every
+Recommendation in SPECS.md/CONVENTIONS.md — "it depends" is not a recommendation.
 
-Create `change-<N>-<slug>/index.md` (no frontmatter) listing every decision:
-`* [Title](<nn>-<slug>.md) - <status>: <recommendation or verdict, one line>`.
+Create `change-<N>-<slug>/index.md` (no frontmatter) listing every decision
+mechanically: `* [Title](<nn>-<slug>.md) - <status>`.
 
 ## Step 4: Triage — the batch pass
 
@@ -181,34 +170,10 @@ OKF section above). Pick the epic number `<N>` — next free across `docs/epics/
 regardless of which skill created the existing epics — and the epic slug (usually
 the change slug).
 
-**2. Write `docs/epics/epic-<N>-<slug>/EPIC_<N>.md`** — format-identical to
-split-epics output so `create-issues` works unchanged:
-
-```markdown
----
-type: Epic
-title: "<title>"
-description: "<one-sentence summary of the change's goal>"
-tags: [epic, change]
-timestamp: <ISO 8601 — now>
-epic: <N>
-slug: <slug>
-status: draft
-gh_issue: null
-milestone: null
-source: docs/planning/changes/change-<N'>-<slug>/index.md
----
-
-# Epic <N>: <title>
-
-## Goal
-## Scope
-## Out of scope
-## Acceptance criteria
-## Dependencies
-## Context
-## Notes
-```
+**2. Write `docs/epics/epic-<N>-<slug>/EPIC_<N>.md`** — the epic file template
+from `references/pipeline-interfaces.md`, format-identical to split-epics output
+so `create-issues` works unchanged, with `tags: [epic, change]` and
+`source: docs/planning/changes/change-<N'>-<slug>/index.md`.
 
 Fill the body from the decided ledger only — settled fact, no option-weighing. Goal
 from the intake + approach verdict; Scope from the approach/migration/rollout
