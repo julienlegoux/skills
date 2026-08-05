@@ -1,6 +1,6 @@
 ---
 name: improve-skill
-description: Improve an existing skill based on how it performed during the current session. Use whenever the user runs /improve-skill, complains that a skill misbehaved or underperformed, says things like "the X skill should have done Y", "update the skill so it...", "that skill missed a step, fix it", or wants to fold lessons learned this session back into a skill — even if they don't name a specific skill. Diagnoses the problem from the conversation, proposes a concrete edit, and after approval updates the dev copy in D:\Project\skills, commits it, and reinstalls to ~/.claude/skills.
+description: Fold lessons from the current session back into the skill that caused them — diagnose from the conversation, propose a concrete edit, and after approval update the dev copy in D:\Project\skills, commit, and reinstall to ~/.claude/skills. Use whenever the user runs /improve-skill, says a skill misbehaved, or wants a skill updated with what this session taught.
 ---
 
 # Improve Skill
@@ -52,6 +52,16 @@ When drafting the edit, hold to the principles good skills are built on:
 - **Keep it lean.** If the diagnosis is that an existing instruction causes wasted work or confusion, the right edit is often a deletion or rewrite, not an addition. Watch total length — a SKILL.md creeping past ~500 lines needs restructuring, not more bullets.
 - **Preserve identity.** Never change the `name` field or directory name; the description should only change when the problem is triggering (skill didn't fire when it should have, or fired when it shouldn't).
 
+## How to write skill edits — the structural rules
+
+The skills in this repo follow a deliberate context-engineering shape (single-source interfaces, slim descriptions, progressive disclosure, tiered prescriptiveness). Session-lesson edits must not erode it:
+
+- **A lesson becomes a stated invariant with its why, not another prescriptive step.** Prefer judgment + rationale over new rules. Hard rules are reserved for two cases: irreversible/safety actions, and prompts consumed by smaller models (the implementer templates) — there, prescriptive is deliberate, not debt.
+- **Pipeline formats and schemas change in `_shared/pipeline-interfaces.md` only.** Never re-describe an epic/issue schema, status lifecycle, or link rule inline in a SKILL.md — that re-creates the drift the shared reference exists to kill. Point to `references/pipeline-interfaces.md` instead.
+- **New templates, recipes, and edge-case handling go to the skill's `references/`**, not the always-loaded SKILL.md body. SKILL.md holds the decision flow and invariants; bulk goes behind a pointer.
+- **Frontmatter descriptions stay 1–2 sentences (what + when).** Never grow them back with trigger-phrase lists — the whole listing rides in every session's context, and a bloated description degrades routing for all skills, not just this one.
+- **Never soften hard guardrails when rewording around them.** Never-squash, no direct push to the integration branch, and union bookkeeping resolution are irreversible-safety rules; an edit that turns one into "prefer to..." is a regression even if it reads better.
+
 ## Step 4: Apply, commit, reinstall
 
 Once approved, do all three — an updated dev copy that never gets reinstalled is a silent no-op:
@@ -66,6 +76,6 @@ Once approved, do all three — an updated dev copy that never gets reinstalled 
    ```powershell
    pwsh <this-skill-dir>/scripts/reinstall.ps1 -SkillName <skill-name>
    ```
-   It mirrors the dev copy into the installed root, excluding dev-only files (`evals/`, `.git`). Pass `-DevRoot`/`-InstalledRoot` if non-default paths are in play.
+   It first runs `_shared/sync.ps1` (propagating `_shared/pipeline-interfaces.md` into every pipeline skill's `references/`), then mirrors the dev copy into the installed root, excluding dev-only files (`evals/`, `.git`). Pass `-DevRoot`/`-InstalledRoot` if non-default paths are in play. If the edit touched `_shared/pipeline-interfaces.md`, reinstall every pipeline skill (split-epics, define-change, create-issues, implement-issue, implement-epic), not just the one being improved — their installed copies all embed it.
 
 Finish by confirming what changed in one or two sentences, and remind the user that the updated instructions take effect the next time the skill is invoked — a changed *description* (triggering) may need a fresh session to be picked up.
