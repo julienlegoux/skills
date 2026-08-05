@@ -23,8 +23,12 @@ actually fall.
    a metric, "I use it daily". Must be checkable, not aspirational.
 8. **Constraints** — Externally imposed limits: deadline, budget, mandated tech or
    platform, compliance. These bound what specs may later choose.
-9. **Milestones / phasing** — How the work phases into independently shippable chunks
-   (weeks-sized). Directly becomes the `## Milestone N:` headings that split-epics
-   cuts on — this decision shapes the entire downstream pipeline.
-10. **Risks & assumptions** — What could sink the project and what is being assumed
+9. **Existing systems of record & integrations** — What already holds the truth this
+   project must respect or connect to: an existing GitHub/issue tracker, a CRM, a
+   spreadsheet someone lives in, an API the users already depend on. Surfacing these
+   late reworks decisions that silently assumed a blank slate.
+10. **Milestones / phasing** — How the work phases into independently shippable chunks
+    (weeks-sized). Directly becomes the `## Milestone N:` headings that split-epics
+    cuts on — this decision shapes the entire downstream pipeline.
+11. **Risks & assumptions** — What could sink the project and what is being assumed
     without proof. Cheap to write down now, expensive to discover in epic 3.

@@ -1,6 +1,6 @@
 ---
 name: define-scope
-description: First of the three planning skills (define-scope → define-specs → define-conventions). Turn a raw project idea — a sentence, a brain-dump, a rant — into a decided, documented scope (docs/planning/SCOPE.md) through a decision ledger the user triages, so the user owns every decision without being interrogated about details. Use whenever the user wants to start planning a project, "define the scope", "scope out this idea", "start a new project plan", "figure out what v1 is", or brings a project idea and asks where to start. Also use to RESUME scoping — if docs/planning/scope/ exists with open decisions, this skill picks up where it left off.
+description: First of the three planning skills (define-scope → define-specs → define-conventions) — turn a raw project idea into a decided docs/planning/SCOPE.md through a decision ledger the user triages. Use when starting to plan a new project, figuring out what v1 is, or resuming a scoping run with open decisions under docs/planning/scope/.
 ---
 
 # Define Scope
@@ -23,6 +23,11 @@ by walking a decision ledger that the *user* controls.
    gaps and deep-dives of items the user flagged.
 4. **Nothing is finalized until the user confirms.** The deliverable is only written
    from the decided set after explicit confirmation.
+
+One shared rule with the rest of the pipeline: everything written to disk (decision
+docs, indexes, logs, SCOPE.md) is in **English**, regardless of the conversation
+language — bundles outlive the conversation and are read by other sessions, agents,
+and tools. The conversation itself stays in the user's language.
 
 ## Output format: OKF
 
@@ -53,8 +58,11 @@ docs/planning/
 
 If `docs/planning/scope/` already exists, this is a resume, not a fresh start. Read
 `scope/index.md` and every decision doc, report the tally (decided / open / n-a), and
-jump to the step matching the state: open decisions → Step 3 or 4; all decided but no
-`SCOPE.md` → Step 5. Never re-ask a decision that already has a verdict.
+**restate the project premise** (see the premise gate in Step 1) for a quick
+confirmation before continuing — a resume that silently inherits a wrong premise
+compounds it across every remaining decision. Then jump to the step matching the
+state: open decisions → Step 3 or 4; all decided but no `SCOPE.md` → Step 5. Never
+re-ask a decision that already has a verdict.
 
 ## Step 1: Intake
 
@@ -71,6 +79,13 @@ questions ("who is this for?", "is there a deadline?"), not decision-making; kee
 few and stop as soon as you can enumerate sensibly. Do not interrogate: if you can
 draft a credible recommendation for an area without asking, don't ask — the triage
 pass exists precisely so the user can correct you cheaply.
+
+**End intake with the premise gate.** Before enumerating anything, state the project
+premise in three lines — *what* is being built, *for whom*, and *relative to what*
+(greenfield, a rewrite of X, a layer on top of Y) — and get the user's confirmation.
+Every recommendation in the ledger silently assumes this framing; a premise
+misunderstanding discovered mid-triage invalidates the entire ledger, which is the
+most expensive rework this skill can produce.
 
 ## Step 2: Enumerate the decision ledger
 
@@ -117,8 +132,12 @@ depends_on: []      # slugs of decisions this one depends on
 ```
 
 Every `open` decision must have a real recommendation before Step 3 — "it depends" is
-not a recommendation. Create `scope/index.md` (no frontmatter) listing every decision:
-`* [Title](<nn>-<slug>.md) - <status>: <recommendation or verdict, one line>`.
+not a recommendation. Create `scope/index.md` (no frontmatter) listing every decision
+with a **mechanical** line: `* [Title](<nn>-<slug>.md) - <status>`. No recommendation
+prose in the index — recommendations live in the decision docs and change as verdicts
+land; an index that repeats them needs an edit for every ripple and rots into
+disorder. When many statuses change, rewrite the affected index section wholesale
+rather than patching line by line.
 
 ## Step 3: Triage — the batch pass
 
@@ -132,6 +151,12 @@ Ask the user to mark each item **accept** (recommendation becomes the verdict) o
 "accept all", "accept all except 3 and 7", "discuss 2, 5; accept the rest" are all
 fine. So is reclassifying an N/A back to open.
 
+**The N/A list needs its own explicit confirmation** — never fold it into a general
+"accept all". An N/A is you deciding an area doesn't apply, and a wrong N/A silently
+deletes a pillar of the user's project (it has happened: three core pillars auto-N/A'd
+in one session). Before any deep-dive begins, ask the user to confirm the N/A list
+as its own question, and treat "accept all" as covering the open decisions only.
+
 Record the accepts immediately: `status: decided`, `verdict` = the recommended option,
 `decided_via: triage`, fill the Verdict section, refresh `timestamp`, update
 `scope/index.md`.
@@ -142,6 +167,18 @@ Walk the *discuss* items strictly in dependency order, **one at a time, waiting 
 each answer**. For each: restate the question, present the options with trade-offs,
 give your recommendation, and let the user decide. Record the verdict
 (`decided_via: discussion`) with the user's rationale.
+
+Keep the presentations terse: one line per option, one short paragraph for the
+recommendation — the detail already lives in the decision doc, and a deep-dive pass
+that re-prints it for every item exhausts the context window mid-ledger. If the user
+asks to go one-by-one over a large set (more than ~15 items), still run a fast
+accept/discuss pass first — "one by one" usually means "don't decide without me",
+not "print every doc"; walking 40 items at full depth serves nobody.
+
+When a verdict names a concept the ledger deferred or hasn't defined yet ("defer
+auth to the plugin system"), define that concept in one clause right in the Verdict
+section — the next reader (and the next skill) shouldn't have to reverse-engineer
+what the deferral meant.
 
 **After every verdict, refresh the still-open decisions.** Re-check each open decision
 whose `depends_on` includes the one just decided (and any others the verdict plausibly
