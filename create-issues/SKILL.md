@@ -1,6 +1,6 @@
 ---
 name: create-issues
-description: Break down a single epic (an EPIC_N.md produced by the split-epics skill, under docs/epics/) into small, right-sized GitHub issues — aiming for roughly one 500-line PR per issue and never approaching 1000 — write one .md file per issue under that epic's issues/ folder, then create each as a real GitHub issue attached to the epic's milestone and linked as a native GitHub sub-issue of the epic's tracking issue. Use this whenever the user asks to "create issues for epic 2", "break this epic into tasks", "turn this epic into tickets/PRs", or "split epic N into issues". Reads the repo's own conventions (CLAUDE.md, CONTRIBUTING.md, existing labels, lint/test setup) so generated issues actually fit the project instead of reading as generic boilerplate.
+description: Break one epic (docs/epics/epic-N-slug/EPIC_N.md) into PR-sized issues — one .md file each plus a real GitHub issue on the epic's milestone, linked as a native sub-issue of the epic's tracking issue. Use whenever the user wants an epic broken into tasks, tickets, or issues.
 ---
 
 # Create Issues for an Epic
@@ -16,20 +16,11 @@ milestone/sub-issue linkage if the user explicitly wants standalone issues.
 
 ## Output format: OKF
 
-`docs/epics/` is an [Open Knowledge Format](https://github.com/GoogleCloudPlatform/knowledge-catalog/blob/main/okf/SPEC.md)
-(OKF v0.1) bundle — `split-epics` established it, and every issue file this skill adds
-must fit the same rules:
-
-- Each issue's `.md` needs YAML frontmatter with a non-empty `type` field, plus OKF's
-  other recommended fields (`title`, `description`, `tags`, `timestamp`, and `resource`
-  once the GitHub issue exists) alongside this skill's own extension fields (`epic`,
-  `issue`, `slug`, `size`, `status`, `gh_issue`, `depends_on`).
-- The epic's `issues/` folder gets its own `docs/epics/epic-<n>-<slug>/issues/index.md`
-  — a non-root OKF index file, so (unlike the bundle-root `docs/epics/index.md`) it
-  carries **no frontmatter at all**, not even `okf_version`.
-- Cross-links (an issue depending on another, or linking back to its epic) use
-  bundle-relative absolute paths (leading `/`, relative to `docs/epics/`), e.g.
-  `[Epic 1](/epic-1-core-note-crud/EPIC_1.md)`.
+`docs/epics/` is an OKF v0.1 bundle — `split-epics` (or `define-change`)
+established it, and every issue file this skill adds must fit the same rules. The
+issue file schema, index and link conventions, status lifecycle, and the
+English-content rule are defined once in `references/pipeline-interfaces.md` —
+read it before drafting anything.
 
 ## Step 1: Resolve the target epic
 
@@ -102,55 +93,27 @@ depend on issue 3), 1-indexed, zero-padded to two digits.
 ## Step 4: Draft the issue files
 
 Slug the title the same way `split-epics` does (lowercase kebab-case, ASCII, ~40 char
-cap). Write each to `docs/epics/epic-<n>-<slug>/issues/<nn>-<slug>.md` — frontmatter
-opens with OKF's fields, then this skill's own extension fields (most start empty,
-filled in once the GitHub issue exists in Step 7):
+cap). Write each to `docs/epics/epic-<n>-<slug>/issues/<nn>-<slug>.md` using the
+issue file template in `references/pipeline-interfaces.md` — `status: draft`,
+`gh_issue: null`, no `resource` yet (both arrive in Step 7). Section content
+guidance: Summary = what this PR does and why, in the epic's context; Scope = the
+specific bounded change; Out of scope = explicitly not this issue, especially
+anything a reviewer might expect to see but shouldn't; Acceptance criteria as a
+checklist including any testing requirement pulled from CONTRIBUTING.md etc.;
+Relevant files / areas = the real paths Step 2 verified (or the explicit
+greenfield caveat); Dependencies = blocked by / blocks, or "None"; PR size note =
+"Target ~500 changed lines; if this grows past ~1000, split it before opening the
+PR."
 
-```markdown
----
-type: Issue
-title: "<title>"
-description: "<one-sentence summary of what this PR does>"
-tags: [epic-<n>]
-timestamp: <ISO 8601 datetime, e.g. 2026-07-05T14:30:00Z — set to now>
-epic: <n>
-issue: <nn>
-slug: <slug>
-size: S|M|L
-status: draft
-gh_issue: null
-depends_on: [<nn>, ...]   # other issue numbers in this epic, or []
----
+Prefer acceptance criteria that are executable over prose: a concrete command and
+its expected outcome, a named test that must pass, an observable behavior with its
+input and output. An implementer (often a smaller model) turns "criterion → failing
+test" mechanically when the criterion is testable, and stalls or improvises when
+it's vibes. Likewise, carry file-level findings into the issue body as real paths
+(`src/x.ts:120`, the named contract that breaks) rather than summarizing them away.
 
-# <title>
-
-## Summary
-<what this PR does and why, in the context of the epic's goal>
-
-## Scope
-<the specific, bounded change>
-
-## Out of scope
-<explicitly not this issue, especially anything a reviewer might expect to see but shouldn't>
-
-## Acceptance criteria / Definition of done
-- <criterion, including any testing requirement pulled from CONTRIBUTING.md etc.>
-
-## Relevant files / areas
-<best-guess paths or modules this touches>
-
-## Dependencies
-<blocked by / blocks, or "None". Link OKF-style, bundle-relative, e.g.
-`[Epic 1](/epic-1-core-note-crud/EPIC_1.md)` or `[Issue 01](./01-add-note-model.md)`.>
-
-## PR size note
-Target ~500 changed lines; if this grows past ~1000, split it before opening the PR.
-```
-
-Don't add `resource` yet — the GitHub issue doesn't exist until Step 6. Add it in Step 7.
-
-Also write or update `docs/epics/epic-<n>-<slug>/issues/index.md` (no frontmatter — see
-"Output format: OKF" above) listing every issue in this batch:
+Also write or update `docs/epics/epic-<n>-<slug>/issues/index.md` (no frontmatter —
+non-root index) listing every issue in this batch:
 
 ```markdown
 # Issues — Epic <n>: <title>
