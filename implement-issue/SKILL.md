@@ -1,6 +1,6 @@
 ---
 name: implement-issue
-description: Implement a single issue produced by the create-issues skill (a numbered .md under docs/epics/epic-N-slug/issues/ with a linked GitHub issue) as one focused PR — reconcile previously merged PRs to done, pick or resolve the target issue, branch, implement test-first (strict red-green TDD against the acceptance criteria), open a PR that closes the GitHub issue, and keep both the OKF bundle and the GitHub issue's status in sync at every transition. Use this whenever the user asks to "implement issue 3 of epic 2", "work on the next issue", "pick up the next task", "start issue 04", "do the next unblocked issue", "turn issue N into a PR", or generally wants to execute/build one of the issues in docs/epics/ — even if they just say "let's keep going on epic 2" after issues exist.
+description: Implement a single issue from docs/epics/ (produced by create-issues) as one focused, test-first PR — reconcile merged PRs, branch, strict red-green TDD against the acceptance criteria, open the PR, keep the bundle and GitHub issue in sync. Use whenever the user wants one issue executed ("implement issue 3 of epic 2", "do the next unblocked issue", "keep going on epic 2").
 ---
 
 # Implement an Issue
@@ -12,16 +12,12 @@ bar) know where things stand.
 
 ## Status lifecycle
 
-This skill owns the tail of the issue lifecycle that `create-issues` starts:
-
-`draft` → `open` (create-issues) → **`in-progress`** (branch created) →
-**`pr-open`** (PR exists, `gh_pr` recorded) → **`done`** (PR merged — set by the
-reconcile step of a *later* run, since merging happens outside this skill).
-
-Every status write also refreshes the file's `timestamp` and updates the matching
-bullet in that epic's `issues/index.md`, per the bundle's OKF conventions. This skill
-adds one extension field to issue frontmatter: `gh_pr: <PR number>` (and sets no other
-new fields — conformant OKF consumers tolerate extensions).
+The issue file format, the full status lifecycle (`draft → open → in-progress →
+pr-open → done`, who writes each transition, what every status write must also
+update), and the GitHub facts about non-default integration branches are defined in
+`references/pipeline-interfaces.md` — read it first. This skill owns the
+`open → in-progress → pr-open` transitions and the `pr-open → done` reconcile of
+*earlier* runs' issues (merging happens outside this skill).
 
 ## Step 1: Reconcile previous PRs
 
@@ -38,20 +34,26 @@ gh pr view <gh_pr> --json state,mergedAt -q .state
 - `MERGED` → set `status: done`, refresh `timestamp`, update the epic's
   `issues/index.md` bullet. If `docs/epics/log.md` exists, append a completion entry
   (same date-grouped format `split-epics` uses); never create `log.md` if absent.
-  Then verify the GitHub issue actually closed — `Closes #N` normally does it at
-  merge, but if the keyword was missed the issue is still open: close it yourself
-  (`gh issue close <gh_issue> --comment "Completed by PR #<gh_pr>"`) so GitHub and
-  the bundle never disagree about what's done. Also remove any status label this
-  flow added — a closed issue isn't `pr-open`.
+  Then close the GitHub issue if it's still open
+  (`gh issue close <gh_issue> --comment "Completed by PR #<gh_pr>"`). This is the
+  **normal path**, not a fallback: `Closes #N` only auto-closes on merges into the
+  repo's *default* branch, so any PR that merged into an integration branch (e.g.
+  `develop`) left its issue open by design (see
+  `references/pipeline-interfaces.md`). Also remove any status label this flow
+  added — a closed issue isn't `pr-open`.
 - `CLOSED` without merge → don't guess what happened. Report it to the user and leave
   the status as-is; a human closed that PR for a reason the frontmatter can't know.
 - `OPEN` → nothing to do; mention it in the final report so the user remembers it's
   awaiting review.
 
-Commit reconcile updates directly on the up-to-date default branch (they describe
-work that *already merged* — putting them on the new feature branch would hold
-finished facts hostage to an unmerged PR). If pushing to the default branch is
-blocked by protection rules, say so and leave the commit local rather than failing.
+Commit reconcile updates directly on the branch the epic's statuses live on — the
+**integration branch** when one is in play (the branch the merged PRs targeted),
+otherwise the default branch. They describe work that *already merged there*;
+putting them on the new feature branch would hold finished facts hostage to an
+unmerged PR, and putting them on the default branch when the epic lives on
+`develop` updates a copy of the bundle nobody downstream reads. If pushing to that
+branch is blocked by protection rules, say so and leave the commit local rather
+than failing.
 
 If `gh` is unavailable or unauthenticated, skip reconciliation with a clear note —
 don't let bookkeeping block implementation.
@@ -105,7 +107,9 @@ The issue file recorded conventions as of creation time; verify against the repo
 
 ## Step 5: Branch and mark in-progress
 
-From the up-to-date default branch, create the feature branch. First commit on it:
+From the up-to-date default branch (or the integration branch, when a supervisor
+or the user named one — fetch first, branch from `origin/<branch>`), create the
+feature branch. First commit on it:
 the issue file's frontmatter flipped to `status: in-progress` (plus `timestamp` and
 the `issues/index.md` bullet). The status change travels with the PR — anyone reading
 the branch sees a self-consistent bundle, and `main` keeps saying `open` until the
@@ -210,8 +214,10 @@ issues better. Don't silently ship an oversize PR as if it were normal.
      --milestone "<the issue's milestone title>"
    ```
 
-   The body must contain `Closes #<gh_issue>` (so the merge closes the sub-issue and
-   moves the epic's progress bar), a summary of what changed and why, the acceptance
+   The body must contain `Closes #<gh_issue>` (it links the PR to the issue in
+   GitHub's UI — but note it only auto-closes on default-branch merges; on an
+   integration branch the reconcile step closes the issue, see
+   `references/pipeline-interfaces.md`), a summary of what changed and why, the acceptance
    criteria as a checked checklist, how it was tested (real commands, real output
    summary), a link to the issue's `.md` file in the bundle, and the oversize warning
    from Step 7 if applicable — all shaped to the repo's PR template when one exists.
@@ -239,6 +245,13 @@ no PR exists), and tell the user exactly what's ready locally and which command 
 so they can push themselves and re-run the skill to finish the write-back.
 
 ## Step 9: Report
+
+If a permission-classifier outage or repeated transient failures block one final
+command (a push, the `gh pr create`, a label edit), don't retry in a loop and
+don't report the run as failed: state the **single remaining command** verbatim,
+note that everything else is done, and end the turn. A supervisor (or the user)
+treats such a report as retryable — the work is intact and one approved retry
+finishes it.
 
 End with a summary the user can act on:
 
