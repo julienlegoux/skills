@@ -220,16 +220,19 @@ For each epic, update its `EPIC_<n>.md` frontmatter: `status: open`, `gh_issue: 
 concept represents) and a refreshed `timestamp`. Update the matching bullet in
 `docs/epics/index.md` to link the issue and reflect the new status.
 
-If `docs/epics/log.md` exists (OKF's optional reserved log file — flat, date-grouped,
-newest first), append an entry per epic created, e.g.:
+Append an entry per epic created to `docs/epics/log.md` — OKF's reserved log file,
+flat, date-grouped, newest first — creating the file when this run established the
+bundle:
 
 ```markdown
 ## 2026-07-05
 * **Creation**: Established [Epic 1: User auth](/epic-1-user-auth/EPIC_1.md).
 ```
 
-Don't create `log.md` if it doesn't already exist — it's optional, and adding it
-unprompted is a call for the user to make, not this skill.
+Creating it is this skill's job precisely because it founds the bundle: every later
+skill in the pipeline only ever *appends* to a log that already exists, so a bundle
+founded without one never gets a history at all — and the epics that started it would
+be the one event nobody recorded.
 
 Report a final summary to the user: epics created, issue numbers/links, and a reminder
 that `create-issues` can now be run per epic to break each one into PR-sized issues.
