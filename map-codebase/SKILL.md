@@ -1,6 +1,6 @@
 ---
 name: map-codebase
-description: Brownfield counterpart of define-specs + define-conventions — reverse-engineer an EXISTING codebase into the docs/planning/ OKF bundle (SPECS.md + CONVENTIONS.md) by reading the code instead of interviewing the user, so downstream skills (define-change, create-issues, implement-issue) work on legacy apps exactly as on greenfield ones. Use whenever the user asks to "map the codebase", "reverse-engineer the specs", "generate SPECS/CONVENTIONS from the code", "document the current architecture/conventions as a planning bundle", "bootstrap the planning bundle for this existing app", or wants to plan a change to an existing app that has no docs/planning/ bundle yet — run this first, then define-change (brownfield chain: map-codebase → define-change → create-issues → implement-epic). Also use to RESUME (docs/planning/mapping/ has open decisions) or to REFRESH a stale map after the code moved on.
+description: Reverse-engineer an existing codebase into the docs/planning/ bundle (SPECS.md + CONVENTIONS.md) by reading the code instead of interviewing the user — the brownfield entry point before define-change. Use to map, bootstrap, or refresh the planning bundle for an existing app, or to resume open decisions under docs/planning/mapping/.
 ---
 
 # Map Codebase
