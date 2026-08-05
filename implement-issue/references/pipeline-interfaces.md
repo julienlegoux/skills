@@ -34,10 +34,11 @@ Reserved files, as the pipeline uses them:
   frontmatter. **Non-root** `index.md` files (e.g. an epic's `issues/index.md`, a
   ledger's `index.md`) carry no frontmatter at all.
 - `log.md` uses `## YYYY-MM-DD` headings, newest first. Append to a `log.md` that
-  exists; never create one that doesn't. One exception: the skill that
-  *establishes* the `docs/epics/` bundle may create `log.md` alongside the root
-  `index.md` (`define-change` does; `split-epics` historically doesn't — both are
-  conformant).
+  exists; never create one that doesn't — with one exception: the skill that
+  *establishes* a bundle creates `log.md` alongside the root `index.md`. Both
+  establishers of `docs/epics/` (`split-epics`, `define-change`) do, so a later
+  skill's "append if it exists" reliably appends instead of silently dropping the
+  bundle's history.
 - Index bullets are **mechanical**: `* [Title](file.md) - <status or one-line
   description>`, tracking the target file's frontmatter — no recommendation prose,
   no commentary. When statuses change, update the bullet; when repeated edits have
