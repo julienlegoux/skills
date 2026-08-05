@@ -1,6 +1,6 @@
 ---
 name: define-conventions
-description: Third of the three planning skills (define-scope → define-specs → define-conventions). Instantiate the user's personal conventions baseline for a project — filtered by the stack in docs/planning/SPECS.md — and decide only the DEVIATIONS through a user-triaged decision ledger, writing docs/planning/CONVENTIONS.md. Use whenever the user wants to "define conventions", "set up coding standards", "make the conventions doc", "establish repo standards", or continue planning after define-specs. Also use to RESUME if docs/planning/conventions/ has open decisions.
+description: Third of the three planning skills (define-scope → define-specs → define-conventions) — instantiate the personal conventions baseline filtered by the stack in SPECS.md, decide only the deviations through a user-triaged ledger, and write docs/planning/CONVENTIONS.md. Use when defining repo standards after define-specs, or resuming open decisions under docs/planning/conventions/.
 ---
 
 # Define Conventions
@@ -71,6 +71,18 @@ Do **not** re-open baseline items just to confirm them — that would rebuild th
 thirty-question interrogation this design exists to kill. If the baseline covers it
 and nothing about this project argues otherwise, it's settled by default.
 
+Two boundaries on what may enter the ledger at all:
+
+- **Never ledger PR/issue sizing or splitting rules.** Sizing is owned by
+  `create-issues` and `split-epics` — a conventions doc that also states line-count
+  targets creates a second source of truth that drifts from the skills that
+  actually enforce it.
+- **Stress-test every recommendation against SCOPE.md and SPECS.md before
+  presenting it.** A deviation recommendation that contradicts a decided scope
+  constraint or the decided stack wastes a triage round at best and plants a
+  contradiction in the bundle at worst; if the tension is real, say so in the
+  Question section and let the user arbitrate knowingly.
+
 Decision docs use the shared template, `docs/planning/conventions/<nn>-<slug>.md`
 (`tags: [decision, conventions]`, `phase: conventions`, same status fields as the
 other planning skills), each with a concrete recommendation. Dependency order rarely
@@ -94,6 +106,12 @@ pull any baseline item into the ledger at this point. Record accepts immediately
 One at a time, waiting for each answer: question, options, trade-offs,
 recommendation, user's verdict (`decided_via: discussion`). Refresh any still-open
 items a verdict affects.
+
+Label the options **A / B / C** and record a verdict only on an explicit letter or
+an unambiguous restatement of one option. Conversational assent ("yeah that's it",
+voice-input fragments) is not a verdict — you can't tell *which* option it blesses;
+re-ask with the letters rather than guessing, and say why you're re-asking so it
+doesn't read as a loop.
 
 **Promotion check:** when a deviation's rationale is not project-specific ("actually I
 always want it this way"), say so and suggest promoting it into `assets/baseline.md`

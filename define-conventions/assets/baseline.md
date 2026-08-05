@@ -37,9 +37,13 @@ timestamp: 2026-07-20T13:00:00Z
 - Conventional commit messages: `feat:`, `fix:`, `chore:`, `docs:`, `refactor:`,
   `test:` — imperative mood, no trailing period in the subject.
 - One branch per issue, named `issue-<n>-<slug>`; branches are short-lived.
-- PRs target roughly 500 changed lines and never approach 1000 (matches how
-  create-issues sizes issues); a PR closes exactly one issue via `Closes #<n>`.
-- CI (lint + tests) must be green before merge; no force-pushes to main.
+- A PR closes exactly one issue via `Closes #<n>`. (PR sizing is owned by the
+  create-issues/split-epics skills — not restated here, so there is one source of
+  truth for it.)
+- The merge gate is green CI (lint + tests). No second human approval is required:
+  in the supervised pipeline, implement-epic merges green PRs automatically, and a
+  review pass is a reviewer-checklist option a project opts into, not a default.
+- No force-pushes to main.
 
 ## Testing
 
