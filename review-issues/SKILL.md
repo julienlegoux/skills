@@ -1,6 +1,6 @@
 ---
 name: review-issues
-description: Review the output of the create-issues skill against an epic and, when useful, the original plan. Use when the user asks to audit, check, verify, QA, or review generated issue files, docs/epics/*/issues/, GitHub issues, sub-issues, milestones, or epic-to-issue conversion after running create-issues. Writes a numbered docs/REPORT_N.md review report with prioritized findings.
+description: Review create-issues output against its epic (and the plan when useful) — coverage, sizing, ordering, OKF fields, GitHub linkage — and write a prioritized docs/REPORT_N.md. Use when the user asks to audit, QA, or review generated issues.
 ---
 
 # Review Issues
