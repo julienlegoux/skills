@@ -1,6 +1,6 @@
 ---
 name: review-epics
-description: Review the output of the split-epics skill against the source plan document. Use when the user asks to audit, check, verify, QA, or review created epics, docs/epics/, EPIC_N.md files, GitHub epic issues, milestones, or plan-to-epic conversion against docs/planning/SCOPE.md (the define-scope deliverable), a legacy plan.md / docs/PLAN.md, or another planning document. Writes a numbered docs/REPORT_N.md review report with prioritized findings.
+description: Review split-epics output against the source plan — coverage, boundaries, ordering, OKF structure, GitHub state — and write a prioritized docs/REPORT_N.md. Use when the user asks to audit, QA, or review created epics against the plan or scope.
 ---
 
 # Review Epics
