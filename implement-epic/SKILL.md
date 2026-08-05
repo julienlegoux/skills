@@ -1,6 +1,6 @@
 ---
 name: implement-epic
-description: Supervise the implementation of ALL remaining issues in an epic by delegating each one to a subagent running the implement-issue skill — pick an adapted model and reasoning effort per issue, wait for CI, merge green PRs into the integration branch (develop) with a merge commit, and loop until the epic is done. Use this whenever the user asks to "finish epic 2", "implement the rest of the issues in epic N", "do the whole epic", "keep merging until the epic is done", "run epic 3 end to end", or wants issues from docs/epics/ implemented with subagents while the main session supervises — even if they phrase it as "implement the remaining issues" or "keep going until everything is green and merged".
+description: Supervise the implementation of all remaining issues in an epic by delegating each one to an implement-issue subagent, watching CI, and merging green PRs into the integration branch until every issue is done. Use whenever the user wants an entire epic from docs/epics/ (or its remaining issues) implemented end to end.
 ---
 
 # Implement an Epic
@@ -9,6 +9,11 @@ description: Supervise the implementation of ALL remaining issues in an epic by 
 `implement-issue` turns one issue into one PR. This skill is the layer above: run
 that loop for every remaining issue in an epic — delegate, watch CI, merge, repeat —
 until the epic's board shows all `done`.
+
+Shared formats, the issue status lifecycle, and the GitHub facts this flow leans on
+live in `references/pipeline-interfaces.md` — read it before Step 1. The two facts
+that bite hardest: on a non-default integration branch **`Closes #N` never
+auto-closes** the issue, and **a CONFLICTING PR gets zero CI runs**.
 
 ## You are a supervisor — protect your context
 
@@ -29,25 +34,38 @@ So the division of labor is absolute:
 
 The temptation to "just quickly fix" a one-line CI failure yourself is exactly how
 supervisors drown. A subagent fixes it just as fast, and you stay clear-headed.
+This rule holds even when subagents are failing for environmental reasons (outages,
+permission stalls) — idle waiting is cheaper than context bloat.
 
 ## Step 1: Map the epic
 
 1. Locate the epic folder (`docs/epics/epic-<n>-<slug>/`). Read `issues/index.md`
-   and each issue's **frontmatter only** (`issue`, `slug`, `size`, `status`,
-   `gh_issue`, `gh_pr`, `depends_on`) — the bodies are for the implementers.
+   and each issue's **frontmatter only** (the fields in
+   `references/pipeline-interfaces.md`) — the bodies are for the implementers.
 2. Determine the **integration branch**: the one the user named; else `develop` if
    it exists; else the repo's default branch. All PRs in this run target it, and
    every implementer must be told about it explicitly — `implement-issue` defaults
    to the default branch otherwise.
-3. **Preflight the permissions this loop depends on**, before spawning anything.
-   `gh auth status` must work — the flow is built on `gh`. But auth is not enough:
-   restrictive permission modes can deny `gh pr merge` even when `gh` itself works.
-   Discovering that after several PRs are green strands the run, and you cannot fix
-   it yourself — widening your own permissions is itself blocked. So settle it in
-   your opening message: if merging looks gated, ask for it up front. Direct
-   `git push` to the integration branch is commonly blocked too; assume it is and
-   tell implementers, so they don't each rediscover it and improvise a workaround.
-4. Build the board: which issues are `done`, `pr-open` (PR to check on),
+3. **Ask the user to pre-approve merging in your opening message — always.**
+   `gh auth status` must work (the flow is built on `gh`), but a clean auth check
+   proves nothing about permission gating: restrictive permission modes can deny
+   `gh pr merge` even when every other `gh` call works, and there is no preflight
+   command that detects it. Discovering the gate after several PRs are green
+   strands the run, and you cannot widen your own permissions. So the opening
+   message always asks the user to pre-approve merging (e.g. `/permissions` allow
+   `Bash(gh pr merge:*)`). Assume direct `git push` to the integration branch is
+   blocked too, and tell implementers so — otherwise each one rediscovers it and
+   improvises a workaround.
+4. **Identify the required CI check(s)** for the integration branch now (recipe in
+   `references/ci-and-merging.md`), so green means the right jobs passed. Failing
+   third-party checks that aren't required (preview deploys, review bots) are
+   notes to surface to the user — never merge blockers, never fix rounds.
+5. **Scan for human-gates.** Read the issues' scope/acceptance-criteria lines in
+   `index.md` for actions no agent can perform — DNS changes, third-party
+   dashboards, real-device testing, e-mail inboxes. List them in the opening
+   message and track them as explicit user-gates on the board; surfacing them
+   mid-run stalls the loop at its least convenient moment.
+6. Build the board: which issues are `done`, `pr-open` (PR to check on),
    `in-progress` (a previous run started it — resume it, don't restart), `open`
    and unblocked, or blocked and on what.
 
@@ -67,17 +85,20 @@ Repeat until no issue in the epic remains short of `done`:
 2. **Spawn the whole frontier.** Every `open` issue whose `depends_on` are all
    `done` (or already merged this run) gets an implementer subagent now — choose
    each one's model and effort (next section), then launch them **in one batch**
-   so they run concurrently. Cap the frontier at ~4 in-flight implementers; more
-   mostly buys merge-conflict churn on a shared integration branch. Give each one
-   its own git worktree (`isolation: "worktree"`) — concurrent agents sharing a
-   checkout clobber each other's branches and uncommitted work.
+   so they run concurrently, each with `isolation: "worktree"` (concurrent agents
+   sharing a checkout clobber each other's branches and uncommitted work). The
+   prompt template — including the worktree operating manual implementers need to
+   survive their isolation — is in `references/implementer-prompt.md`; use it.
+   Cap the frontier at ~4 in-flight implementers; more mostly buys merge-conflict
+   churn on a shared integration branch.
 3. **As each PR appears**, record its number and the report's essentials, and
    start watching its checks in the background (see CI and merging).
 4. **Merge one at a time.** When one or more PRs are green, merge the
    lowest-numbered issue's PR first (dependency order is numbered order within an
-   epic). After each merge, every still-open PR is now behind the integration
-   branch — any that CI flags as conflicting gets a sync round (see Merge
-   conflict below); the rest just merge when their turn comes.
+   epic). Right after each merge, close that issue's GitHub issue — `Closes #N`
+   never fires on a non-default base. After each merge, every still-open PR is now
+   behind the integration branch — any that CI flags as conflicting gets a sync
+   round; the rest just merge when their turn comes.
 5. **Each merge may unblock new issues** — go back to step 2 and spawn them
    without waiting for the rest of the current wave.
 
@@ -113,69 +134,30 @@ Mechanism: set the Agent tool's `model` parameter. If the harness also exposes a
 effort/thinking parameter, set it to match the tier; otherwise the effort steer
 lives in the prompt as above.
 
-## Implementer prompt template
+## Mid-run permission denials
 
-```
-Invoke the implement-issue skill and follow it to implement issue <nn> of epic <n>
-(<epic folder path>).
-
-Constraints from the supervisor:
-- Integration branch is `<branch>`: branch off the LATEST `origin/<branch>` (fetch
-  first) and open the PR against `<branch>` — confirm with
-  `gh pr view <n> --json baseRefName` after creating it. This overrides
-  implement-issue's default-branch assumption.
-- Do NOT merge the PR yourself — the supervisor handles merging.
-- Do NOT push directly to `<branch>`; if bookkeeping seems to need it, put it on
-  your own branch instead.
-- Do NOT delete remote branches. Do NOT use `git stash` — `refs/stash` is shared
-  across worktrees, so stashing corrupts concurrent agents' work; use a patch file
-  or a throwaway commit.
-- Bookkeeping: keep `issues/index.md` and the epic log updated as implement-issue
-  requires — an OKF index that disagrees with its own docs is broken. Expect
-  conflicts there, since siblings are writing the same lines; resolve as a union
-  that keeps every issue's line, never by clobbering a sibling's status.
-- Commit and push incrementally, so a transient failure mid-run costs no progress.
-- Once your PR is open, report and END your turn. Do NOT watch or poll CI — that's
-  the supervisor's job and waiting loops burn your context for nothing.
-- <effort steer from the table>
-- <traps earlier issues in this epic hit the hard way — a required env var, a
-  boundary the test tier can't see. Pass them forward; it saves a red CI round.>
-
-Report back, concisely: PR number and URL, final diff size vs predicted size,
-test results (real numbers), any deviation files written, out-of-scope follow-ups
-you noted, and anything that blocked you.
-```
+When a command you or a subagent needs gets denied mid-run, there are exactly two
+moves you never make: **never edit permission settings yourself** (widening your
+own permissions is both blocked and not yours to decide), and **never hand the
+user a command to run themselves** (it fractures the run's state across two
+actors). The protocol: state plainly what's blocked and what it's blocking, ask
+for the go-ahead, then retry the **identical** command — in auto modes a denial
+clears on explicit user approval, so the retry succeeds without any settings
+change.
 
 ## CI and merging
 
-**Watch checks** without babysitting them in the foreground:
+Command recipes — watching checks, the false-green verification, zero-CI-runs
+diagnosis, failure-headline extraction — are in `references/ci-and-merging.md`.
+The policy:
 
-```bash
-gh pr checks <pr> --watch --fail-fast
-```
+**Green means verified green.** A passing `gh pr checks` exit code is not proof:
+confirm the required job ran by name and that a workflow run exists for the
+current head. Zero runs → diagnose with `mergeable` FIRST — a conflicting PR gets
+no CI, and no empty commit fixes that.
 
-Run it in the background — but do not treat its exit code as proof of a pass.
-`gh pr checks` reports success when the required job is *absent*, and a push
-occasionally produces no workflow run at all (a dropped event). That combination is
-a convincing false green on a PR nothing ever tested. Confirm a run exists for the
-current head before calling anything green:
-
-```bash
-gh api "repos/<owner>/<repo>/actions/runs?head_sha=$(gh pr view <pr> --json headRefOid -q .headRefOid)" -q .total_count
-```
-
-Zero → nothing was tested; have the implementer push again (an empty commit
-suffices) and re-check. Also confirm the required job appears by name in the
-`gh pr checks` output, not merely that the command exited 0.
-
-If the repo has **no checks configured**, there's nothing to wait on: rely on the
-implementer's reported test results, note the absence of CI once in the final
-report, and merge.
-
-**Green → verify the target, then merge with a merge commit, always:**
-
-An implementer can open its PR against the repo default instead of the integration
-branch. Unwinding a merge into the wrong branch costs far more than the check does:
+**Merge with a merge commit, always** — after verifying the PR's base is the
+integration branch:
 
 ```bash
 gh pr view <pr> --json baseRefName -q .baseRefName   # must be the integration branch
@@ -188,67 +170,100 @@ integration branch's first-parent line reading as one merge per issue. If the
 repo's settings forbid merge commits, stop and tell the user — don't silently
 squash to get past it.
 
-**Red → fix round.** Pull only the failure headline (`gh pr checks <pr>` plus
-`gh run view --log-failed` if needed — skim for the failing job name and error,
-don't study logs at length). Then message the **same implementer agent** (its
-context already holds the whole implementation) with the failure summary and ask
-it to fix and push. Two failed fix rounds → escalate per the model table. Still
-red after escalation → stop and report; don't thrash CI all afternoon.
+**Red → fix round.** Pull only the failure headline, then message the **same
+implementer agent** (its context already holds the whole implementation) with the
+fix-round message from `references/implementer-prompt.md`. Two failed fix rounds →
+escalate per the model table. Still red after escalation → stop and report; don't
+thrash CI all afternoon.
 
-**Merge conflict** (integration branch moved since the PR branched): have the
-implementer merge the integration branch into its feature branch, resolve, and
-push — merge, not rebase, consistent with the merge-commit policy.
+**Merge conflict** (integration branch moved since the PR branched): send the
+implementer the sync-round message — merge the integration branch into the feature
+branch (merge, not rebase, consistent with the merge-commit policy), union
+resolution on bookkeeping files, push.
 
-**An implementer that dies mid-run** (transient API 500/529, context exhaustion)
-has not necessarily lost its work. Check whether its PR and pushed commits already
-exist before assuming anything, and prefer resuming it by message — its context is
-intact — over spawning a replacement that has to rediscover everything.
+**An implementer that dies mid-run** has not necessarily lost its work. Check
+whether its PR and pushed commits already exist before assuming anything. For a
+transient death (API 500/529, context exhaustion), prefer resuming it by message —
+its context is intact — over spawning a replacement that has to rediscover
+everything. For a death by **session or usage limit**, the limit applies to
+replacements too: verify what was pushed, snapshot the board in a short report,
+and stop cleanly until the limit resets — don't spawn fresh agents into the same
+wall.
 
 ## Bookkeeping
 
 You never edit bundle files yourself. `implement-issue`'s own reconcile step flips
 merged PRs' issues to `done` at the start of the *next* run — so intermediate
-statuses self-heal as the loop turns. That leaves exactly one gap: after the
-**final** merge there is no next implementer. Close it by spawning one small
-(`haiku`) subagent: "Invoke the implement-issue skill and run ONLY its Step 1
-reconcile pass, then stop and report what it updated."
+statuses self-heal as the loop turns. Two scoping rules keep that sane under
+concurrency:
+
+- **Implementers settle only their own `depends_on` chain** (their prompt says so)
+  — epic-wide reconciliation while siblings run would have every agent rewriting
+  every line.
+- **After the final merge there is no next implementer.** Close the gap with the
+  final-reconcile agent (prompt in `references/implementer-prompt.md`) — it
+  carries the same integration-branch constraints as implementers, because a
+  reconcile PR merged into the wrong branch is still a wrong-branch merge.
 
 **Concurrency makes bookkeeping the main source of merge conflicts — a cost to
-manage, not to avoid.** `implement-issue` updates `issues/index.md` and the epic log
-on every status write, because an OKF index that disagrees with its own docs is
-broken and a stale index is worse than a conflicted one. So do not tell implementers
-to skip it. The consequence is structural: each merge leaves the other open PRs
-conflicting on index lines unrelated to their work, and a wave of four PRs can cost
-more sync rounds than the implementation did. Keep that cheap:
+manage, not to avoid.** `implement-issue` updates `issues/index.md` and the epic
+log on every status write, because an OKF index that disagrees with its own docs
+is broken and a stale index is worse than a conflicted one. So do not tell
+implementers to skip it. The consequence is structural: each merge leaves the
+other open PRs conflicting on index lines unrelated to their work. Keep that
+cheap:
 
 - **Always state the resolution rule** in the sync request: it is a **union** —
   every issue keeps its own line, merged issues read `done`, nobody clobbers a
-  sibling's status. Left to guess, implementers resolve by overwriting and silently
-  revert each other's bookkeeping.
+  sibling's status. Left to guess, implementers resolve by overwriting and
+  silently revert each other's bookkeeping.
 - **Merge promptly once green.** Conflict cost scales with how long PRs sit open
   alongside each other, not with the epic's size.
 - **On a bookkeeping-heavy epic** — many small issues all touching one index — a
   narrower frontier can finish sooner than a wide one. Sync rounds are real
   wall-clock and they serialize on you.
 
+## UI epics: verify the rendered app
+
+Green CI proves the tests pass, not that the UI works — a whole epic can close on
+green checks while the deployed app breaks on a phone. On an epic that changes
+user-facing UI, before writing the final report: verify the deployed or preview
+build in a browser at both mobile and desktop widths (delegate to a subagent with
+browser tools if available; otherwise say plainly that no rendered-app
+verification happened). The final report then includes the preview URL and a
+short check-on-device list for the user. Every deviation found gets its own
+disposition — fix now, accept, or defer with a named trigger — not a line in an
+aggregate list.
+
 ## Stopping conditions
 
 Stop the loop and report — rather than pushing through — when:
 
 - **All issues are `done`.** The good ending.
-- **Nothing is unblocked** but open issues remain (e.g. waiting on a PR a human
-  opened, or a dependency outside this epic). Show the dependency picture.
+- **Nothing is unblocked** but open issues remain (a human-gate from Step 1, a PR
+  a human opened, a dependency outside this epic). Show the dependency picture.
 - **An issue stays red after escalation.** Leave its branch and PR intact, state
   exactly where it stands and what fails.
 - **The user needs to decide something** an implementer surfaced — a spec
   contradiction, a forbidden merge-commit setting, a closed-unmerged PR.
+- **The toolchain itself is down** — permission-classifier outage, repeated 5xx
+  from the API or GitHub. After two or three spaced retries, stop cleanly: report
+  the repo state (branches, open PRs, board), list the literal commands that
+  remain, and tell the user to clear any goal/Stop hook that would keep relaunching
+  you into the outage. An implementer report that ends with "one command left,
+  blocked by outage" is retryable later, not failed — record it as such.
 
 ## Final report
 
 - **Merged**: each issue with its PR link, in merge order.
 - **Models used**: which tier ran each issue (and any escalations) — the user is
   paying for this judgment, show it.
-- **Test/CI summary**: per-issue results as reported, plus any repos-has-no-CI note.
+- **Test/CI summary**: per-issue results as reported, plus any repo-has-no-CI note.
+- **UI verification** (UI epics): preview URL, widths checked, deviations with
+  their dispositions.
 - **Deviations**: every deviation file implementers reported, aggregated.
 - **Follow-ups**: out-of-scope discoveries collected from all reports.
-- **Left over**: anything not `done` and precisely why.
+- **Left over**: anything not `done` and precisely why — including human-gates
+  still waiting on the user.
+- **Cleanup offer**: leftover worktrees and merged remote branches (recipe in
+  `references/ci-and-merging.md`) — offer, don't silently delete.
