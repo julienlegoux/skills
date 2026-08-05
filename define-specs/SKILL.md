@@ -1,6 +1,6 @@
 ---
 name: define-specs
-description: Second of the three planning skills (define-scope → define-specs → define-conventions). Decide a project's one-way technical doors — stack, architecture, data model, auth, integrations, deployment — through a user-triaged decision ledger, and write the result to docs/planning/SPECS.md. Use whenever the user wants to "define the specs", "spec out the stack", "make the technical plan", "decide the architecture", or continue planning after define-scope. Also use to RESUME — if docs/planning/specs/ exists with open decisions, pick up where it left off.
+description: Second of the three planning skills (define-scope → define-specs → define-conventions) — decide a project's one-way technical doors (stack, architecture, data model, auth, deployment) through a user-triaged decision ledger, writing docs/planning/SPECS.md. Use when deciding the stack or architecture after define-scope, or resuming open decisions under docs/planning/specs/.
 ---
 
 # Define Specs
