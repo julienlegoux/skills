@@ -1,6 +1,6 @@
 ---
 name: split-epics
-description: Split a planning document — typically docs/planning/SCOPE.md produced by the define-scope skill, or any plan doc under docs/ — into one folder per epic — docs/epics/epic-N-slug/EPIC_N.md — then create a GitHub milestone and a tracking issue for each epic, linking the planning bundle's SPECS.md/CONVENTIONS.md into each epic as context. Use this whenever the user asks to "break the plan into epics", "split the plan doc", "split the scope", "create epic folders", "detach epics from the plan", or wants to turn a planning doc into trackable epics before handing individual epics to the create-issues skill. Trigger even if they just say "turn the scope into epics" or "set up epics for this project" without using the word "split".
+description: Split a planning document (typically docs/planning/SCOPE.md) into one folder per epic under docs/epics/ — each with an EPIC_N.md, a GitHub milestone, and a tracking issue — ready for create-issues. Use whenever the user wants a plan or scope turned into trackable epics.
 ---
 
 # Split Epics from a Plan
@@ -16,25 +16,11 @@ the breakdown before anything is created there.
 
 ## Output format: OKF
 
-Every file this skill writes under `docs/epics/` must be a conformant [Open Knowledge
-Format](https://github.com/GoogleCloudPlatform/knowledge-catalog/blob/main/okf/SPEC.md)
-(OKF v0.1) bundle, so any OKF-aware tool or agent — not just this skill and
-`create-issues` — can read `docs/epics/` as structured knowledge. The rules that matter
-here:
-
-- Every concept file (every `EPIC_<n>.md`) needs YAML frontmatter with a non-empty
-  `type` field. Everything else in frontmatter beyond OKF's own recommended fields
-  (`title`, `description`, `resource`, `tags`, `timestamp`) is a normal OKF "extension"
-  field — producers can add whatever they need, and conformant consumers must tolerate
-  it, so this skill's own tracking fields (`epic`, `slug`, `status`, `gh_issue`,
-  `milestone`, `source`) live there unchanged.
-- `docs/epics/` is the bundle root. Its directory listing is `docs/epics/index.md` —
-  OKF reserves this filename, so it replaces what would otherwise be a `README.md`.
-  Only the bundle-root `index.md` may declare `okf_version: "0.1"`; index files have no
-  other frontmatter, and non-root index files (if any) have none at all.
-- Cross-links between concept files use bundle-relative absolute paths (leading `/`,
-  relative to `docs/epics/`) rather than plain relative paths — more stable as the
-  bundle grows.
+Every file this skill writes under `docs/epics/` must be a conformant OKF v0.1
+bundle, so any OKF-aware tool or agent — not just this skill and `create-issues` —
+can read `docs/epics/` as structured knowledge. The epic file schema, bundle and
+link rules, index conventions, and the English-content rule are defined once in
+`references/pipeline-interfaces.md` — read it before writing anything.
 
 ## Step 1: Find the plan doc
 
@@ -121,56 +107,15 @@ epic file, e.g. `../../planning/SPECS.md`.
 - Folder: `docs/epics/epic-<n>-<slug>/`
 - File: `docs/epics/epic-<n>-<slug>/EPIC_<n>.md`
 
-Use this template for each `EPIC_<n>.md` — frontmatter opens with the OKF fields
-(`type` is required; `title`/`description`/`tags`/`timestamp` are OKF's recommended
-fields), followed by this skill's own extension fields, most of which start empty and
-get filled in once the GitHub issue/milestone are created in Step 6/7:
-
-```markdown
----
-type: Epic
-title: "<title>"
-description: "<one-sentence summary of the epic's goal>"
-tags: [epic]
-timestamp: <ISO 8601 datetime, e.g. 2026-07-05T14:30:00Z — set to now>
-epic: <n>
-slug: <slug>
-status: draft
-gh_issue: null
-milestone: null
-source: <path to the plan doc>#<heading or anchor this came from>
----
-
-# Epic <n>: <title>
-
-## Goal
-<why this epic exists, what it unlocks>
-
-## Scope
-<what's included>
-
-## Out of scope
-<what's explicitly excluded, if the plan says>
-
-## Acceptance criteria
-- <criterion>
-
-## Dependencies
-<other epics this depends on / blocks, or "None". Link dependency epics OKF-style —
-bundle-relative, e.g. `[Epic 1](/epic-1-core-note-crud/EPIC_1.md)`.>
-
-## Context
-<only if Step 2b found planning-bundle siblings — plain relative links, e.g.
-`[Technical specs](../../planning/SPECS.md)`, `[Conventions](../../planning/CONVENTIONS.md)`.
-Omit this section entirely if none exist.>
-
-## Notes
-<anything else worth preserving from the plan — open questions, risks, alternatives considered>
-```
-
-Don't add a `resource` field yet — OKF omits it for concepts that don't have an
-underlying asset yet, and the epic's GitHub issue doesn't exist until Step 6. Add it
-then (see Step 7).
+Write each `EPIC_<n>.md` using the epic file template in
+`references/pipeline-interfaces.md` — frontmatter starts at `status: draft` with
+`gh_issue`/`milestone` null (filled in Steps 6/7) and no `resource` field yet.
+Section content mapping from the plan: Goal = why this epic exists and what it
+unlocks; Scope = what's included; Out of scope = what the plan explicitly
+excludes; Acceptance criteria as stated or inferable; Dependencies links other
+epics bundle-relative or reads "None"; Context = the Step 2b links (omit the
+section if none); Notes = anything else worth preserving — open questions, risks,
+alternatives considered, plan-wide constraints relevant here.
 
 Carry content over faithfully rather than compressing it — this file, not the original
 plan, is what `create-issues` and future readers will treat as the source of truth for
