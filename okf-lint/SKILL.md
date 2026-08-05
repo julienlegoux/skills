@@ -1,6 +1,6 @@
 ---
 name: okf-lint
-description: Semantic linter for OKF (Open Knowledge Format) knowledge bundles — the companion reviewer to okf-docs. Rummages through an existing bundle of markdown docs and hunts for what a mechanical validator can't see - contradictions between docs, index/log drift, duplicated or overlapping concepts, tag and type inconsistencies, stale timestamps, placeholder leftovers, and general weirdness. Use whenever the user asks to lint, audit, review, sanity-check, or "look over" a knowledge bundle or a knowledge/ or docs/ directory of markdown docs, asks "does anything look off / inconsistent in the docs", mentions okf-lint by name, or wants a consistency pass after a batch of doc edits. Produces a severity-ranked findings report; never modifies the bundle.
+description: Semantic linter for OKF knowledge bundles — finds what a mechanical validator can't see (contradictions, index/log drift, duplicate concepts, taxonomy inconsistencies, stale content) and writes a severity-ranked report without modifying the bundle. Use whenever the user wants a knowledge bundle or docs directory audited, linted, or sanity-checked.
 ---
 
 # OKF Lint
