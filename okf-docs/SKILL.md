@@ -1,6 +1,6 @@
 ---
 name: okf-docs
-description: Enforce Google's Open Knowledge Format (OKF) — a lightweight markdown + YAML-frontmatter spec for knowledge bundles — on any documentation, notes, runbooks, reference material, or knowledge-base content this session writes to disk. Use this whenever creating or editing a concept doc, an index.md, a log.md, or anything described as a "knowledge bundle" / "knowledge catalog" / "agent-readable docs", and whenever the user mentions OKF or Open Knowledge Format by name. Default to applying it any time a session produces substantive markdown documentation (design notes, playbooks, table/API/metric references, incident write-ups), not just when OKF is named explicitly — skip it only for truly incidental scratch files. Also use to validate an existing directory of markdown docs against the spec.
+description: Write and structurally validate documentation as Open Knowledge Format (OKF) bundles — markdown + YAML frontmatter with maintained index.md and log.md. Use whenever a session writes substantive markdown documentation (skip only incidental scratch files), whenever the user mentions OKF or knowledge bundles, or to validate an existing docs directory against the spec.
 ---
 
 # OKF Docs
@@ -40,6 +40,17 @@ A bundle is only OKF-conformant if:
 Everything else in the spec — recommended fields, index formatting, citation
 numbering — is strong convention, not a hard requirement. Follow it anyway;
 it's what makes the bundle pleasant rather than merely valid.
+
+Two working rules that sit above the spec:
+
+- **Bundle content is written in English by default**, regardless of the
+  conversation language. A bundle outlives its conversation and is read by other
+  sessions, agents, and tools; mixed-language bundles have had to be reworked
+  wholesale. Deviate only if the user explicitly asks for another language.
+- **In ideation sessions, draft concepts in the chat first** and write them into
+  the bundle only after the user validates them. A bundle is a curated record,
+  not a scratchpad — writing every half-formed idea to disk turns later curation
+  into cleanup.
 
 ## Ignoring files (`.okfignore`)
 
@@ -109,6 +120,11 @@ frontmatter, missing `type`, misused reserved filenames, malformed `log.md`
 date headings) and separately reports warnings (missing recommended fields,
 broken cross-links) that are worth fixing but don't make the bundle invalid.
 Fix errors before considering the doc done; use judgment on warnings.
+
+**Then stop.** Once the bundle is established and valid, the job is done — don't
+pitch the planning-skill chain or other follow-on workflows unprompted. The user
+who wanted docs got docs; upselling a pipeline they didn't ask about reads as
+noise, and they know where the other skills are.
 
 ## Quick reference
 
