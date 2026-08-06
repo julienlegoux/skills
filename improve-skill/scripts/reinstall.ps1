@@ -1,10 +1,40 @@
 # Reinstall a skill: mirror its dev copy into the installed skills folder,
 # excluding dev-only artifacts (evals, git metadata, viewer logs).
+#
+# The dev root is discovered, never hardcoded — this script also ships inside the
+# *installed* copy of improve-skill, where deriving the root from its own location
+# would point at the install folder and mirror it onto itself. Resolution order:
+# -DevRoot, then $env:SKILLS_DEV_ROOT, then this script's grandparent if it looks
+# like the repo (i.e. it holds _shared/sync.ps1).
 param(
     [Parameter(Mandatory = $true)][string]$SkillName,
-    [string]$DevRoot = "D:\Project\skills",
+    [string]$DevRoot,
     [string]$InstalledRoot = (Join-Path $HOME ".claude\skills")
 )
+
+function Test-DevRoot([string]$path) {
+    $path -and (Test-Path (Join-Path $path "_shared\sync.ps1"))
+}
+
+if (-not $DevRoot) {
+    $candidate = $env:SKILLS_DEV_ROOT
+    if (-not (Test-DevRoot $candidate)) {
+        $candidate = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
+    }
+    if (-not (Test-DevRoot $candidate)) {
+        Write-Error "Can't locate the skills dev repo. Pass -DevRoot <path>, or set SKILLS_DEV_ROOT to your clone of the skills repo."
+        exit 1
+    }
+    $DevRoot = $candidate
+}
+
+$DevRoot = (Resolve-Path $DevRoot).Path
+$InstalledRoot = if (Test-Path $InstalledRoot) { (Resolve-Path $InstalledRoot).Path } else { $InstalledRoot }
+
+if ($DevRoot -eq $InstalledRoot) {
+    Write-Error "DevRoot and InstalledRoot are the same folder ($DevRoot) — refusing to mirror it onto itself."
+    exit 1
+}
 
 $src = Join-Path $DevRoot $SkillName
 $dst = Join-Path $InstalledRoot $SkillName

@@ -42,14 +42,21 @@ pwsh improve-skill/scripts/reinstall.ps1 -SkillName define-scope
 ```
 
 ```
-D:\Project\skills\<skill>\  ──robocopy /MIR──▶  %USERPROFILE%\.claude\skills\<skill>\
-                                excluding evals\, .git, viewer.log
+<dev-root>\<skill>\  ──robocopy /MIR──▶  %USERPROFILE%\.claude\skills\<skill>\
+                         excluding evals\, .git, viewer.log
 ```
 
 `/MIR` means the destination is made *identical*, deletions included — which is why
-the installed copy is never the place to edit. Pass `-DevRoot` / `-InstalledRoot` for
-non-default paths. The script runs `_shared/sync.ps1` first, so a mirror can never
-ship a stale contract. Full loop: [Skill lifecycle](/skill-lifecycle.md).
+the installed copy is never the place to edit. The script runs `_shared/sync.ps1`
+first, so a mirror can never ship a stale contract.
+
+Neither script hardcodes a clone path, so the repo works on any machine and for
+anyone who clones it. `reinstall.ps1` resolves the dev root from `-DevRoot`, then
+`$env:SKILLS_DEV_ROOT`, then its own grandparent when that folder holds
+`_shared/sync.ps1` — true of the dev copy, false of the installed copy, which is
+exactly the case it must not mistake for the source. Set `SKILLS_DEV_ROOT` once if
+you invoke the installed copy of the script. `-InstalledRoot` overrides the
+destination. Full loop: [Skill lifecycle](/skill-lifecycle.md).
 
 # Why each skill is self-contained
 

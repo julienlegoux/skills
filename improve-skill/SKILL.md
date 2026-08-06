@@ -1,6 +1,6 @@
 ---
 name: improve-skill
-description: Fold lessons from the current session back into the skill that caused them — diagnose from the conversation, propose a concrete edit, and after approval update the dev copy in D:\Project\skills, commit, and reinstall to ~/.claude/skills. Use whenever the user runs /improve-skill, says a skill misbehaved, or wants a skill updated with what this session taught.
+description: Fold lessons from the current session back into the skill that caused them — diagnose from the conversation, propose a concrete edit, and after approval update the dev copy in the skills repo, commit, and reinstall to ~/.claude/skills. Use whenever the user runs /improve-skill, says a skill misbehaved, or wants a skill updated with what this session taught.
 ---
 
 # Improve Skill
@@ -9,18 +9,20 @@ Fold what just happened in this session back into the skill that caused it. The 
 
 ## Paths
 
-- **Dev root** (source of truth): `D:\Project\skills\<skill-name>\`
-- **Installed root** (what Claude Code actually loads): `%USERPROFILE%\.claude\skills\<skill-name>\`
+- **Dev root** (source of truth): the local clone of the skills repo — recognisable by `_shared/sync.ps1` plus one folder per skill. Referred to below as `<dev-root>`.
+- **Installed root** (what Claude Code actually loads): `~/.claude/skills/<skill-name>/`
 
-Never edit the installed copy directly — it gets overwritten on reinstall. All edits go to the dev copy. If the user or a test harness specifies different roots, use those instead.
+Resolve `<dev-root>` at the start of the run rather than assuming a path — the repo is cloned wherever its owner puts it. Take the first that holds `_shared/sync.ps1`: a root the user or test harness names, the current working repo, `$env:SKILLS_DEV_ROOT`. If none does, ask the user where their clone lives instead of guessing.
+
+Never edit the installed copy directly — it gets overwritten on reinstall. All edits go to the dev copy.
 
 ## Step 1: Identify the target skill
 
 If the user named a skill, use it. Otherwise, scan the current conversation for skills that were invoked this session (Skill tool calls, `<command-name>` blocks, or the user following a skill's workflow). One obvious candidate → state your assumption and proceed ("I'll assume you mean `split-epics`, which we used earlier — stop me if not"). Several candidates or none → ask which skill they mean before doing anything else.
 
-Then verify the skill has a dev copy: `D:\Project\skills\<name>\SKILL.md` must exist. If it doesn't, this skill only manages skills developed in the dev folder — tell the user so, name where the skill actually lives (a plugin, a third-party install in `.claude\skills`, etc.), and suggest the skill-creator skill if they want to adopt it into the dev folder first. Don't edit anything outside the dev root.
+Then verify the skill has a dev copy: `<dev-root>/<name>/SKILL.md` must exist. If it doesn't, this skill only manages skills developed in the dev folder — tell the user so, name where the skill actually lives (a plugin, a third-party install in `.claude\skills`, etc.), and suggest the skill-creator skill if they want to adopt it into the dev folder first. Don't edit anything outside the dev root.
 
-Before editing, quickly check whether the installed copy has drifted from the dev copy (e.g. `git -C D:\Project\skills diff` is clean but the installed SKILL.md differs). If it has drifted, surface that to the user before proceeding — someone edited the installed copy directly, and reinstalling will silently discard those edits.
+Before editing, quickly check whether the installed copy has drifted from the dev copy (e.g. `git -C <dev-root> diff` is clean but the installed SKILL.md differs). If it has drifted, surface that to the user before proceeding — someone edited the installed copy directly, and reinstalling will silently discard those edits.
 
 ## Step 2: Diagnose from the session
 
@@ -69,13 +71,13 @@ Once approved, do all three — an updated dev copy that never gets reinstalled 
 1. **Apply** the approved edit to the dev copy.
 2. **Commit** in the dev repo with a message that captures the lesson, so history reads as a changelog of what each session taught:
    ```
-   git -C D:\Project\skills add <skill-name> && git -C D:\Project\skills commit -m "improve <skill-name>: <what changed and why>"
+   git -C <dev-root> add <skill-name> && git -C <dev-root> commit -m "improve <skill-name>: <what changed and why>"
    ```
    If the dev folder isn't a git repo (fresh machine), `git init` it and make an initial commit of everything first.
-3. **Reinstall** by running the bundled sync script from this skill's directory:
+3. **Reinstall** by running the script from the *dev* copy, so it derives the dev root from its own location:
    ```powershell
-   pwsh <this-skill-dir>/scripts/reinstall.ps1 -SkillName <skill-name>
+   pwsh <dev-root>/improve-skill/scripts/reinstall.ps1 -SkillName <skill-name>
    ```
-   It first runs `_shared/sync.ps1` (propagating each `_shared/*-interfaces.md` into the `references/` of the skills that consume it), then mirrors the dev copy into the installed root, excluding dev-only files (`evals/`, `.git`). Pass `-DevRoot`/`-InstalledRoot` if non-default paths are in play. If the edit touched a shared interface, reinstall every skill in that file's audience — read the map at the top of `_shared/sync.ps1` — not just the one being improved, since their installed copies each embed it.
+   It first runs `_shared/sync.ps1` (propagating each `_shared/*-interfaces.md` into the `references/` of the skills that consume it), then mirrors the dev copy into the installed root, excluding dev-only files (`evals/`, `.git`). If you run the installed copy of the script instead, pass `-DevRoot <dev-root>` — it refuses to guess rather than mirror the install folder onto itself. `-InstalledRoot` overrides the destination. If the edit touched a shared interface, reinstall every skill in that file's audience — read the map at the top of `_shared/sync.ps1` — not just the one being improved, since their installed copies each embed it.
 
 Finish by confirming what changed in one or two sentences, and remind the user that the updated instructions take effect the next time the skill is invoked — a changed *description* (triggering) may need a fresh session to be picked up.

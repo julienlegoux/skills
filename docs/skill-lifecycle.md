@@ -13,8 +13,13 @@ one of them is ever edited:
 
 | Root | Path | Role |
 |---|---|---|
-| Dev | `D:\Project\skills\<skill>\` | Source of truth. All edits go here. |
+| Dev | `<dev-root>\<skill>\` | Source of truth. All edits go here. |
 | Installed | `%USERPROFILE%\.claude\skills\<skill>\` | What Claude Code actually loads. Overwritten on every reinstall. |
+
+`<dev-root>` is wherever the repo is cloned — no script hardcodes it. `sync.ps1`
+derives it from its own location; `reinstall.ps1` takes `-DevRoot`, then
+`$env:SKILLS_DEV_ROOT`, then its own grandparent if that folder holds
+`_shared/sync.ps1`, and errors out rather than guessing.
 
 Editing the installed copy is the one mistake that loses work silently: the next
 reinstall mirrors over it. `improve-skill` checks for that drift before touching

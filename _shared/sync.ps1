@@ -7,8 +7,11 @@
 # epic shouldn't carry the epic schema, and a skill that writes decision docs must
 # carry their template. Add a skill to the audience below when it starts obeying the
 # interface, not when it merely touches the same bundle.
+#
+# Path-independent: this script lives in <repo>/_shared/, so the repo root is its
+# parent. Never hardcode a machine-specific path here — the repo is cloned anywhere.
 param(
-    [string]$DevRoot = "D:\Project\skills"
+    [string]$DevRoot = (Split-Path -Parent $PSScriptRoot)
 )
 
 $ledgerSkills   = @('define-scope', 'define-specs', 'define-conventions', 'define-change', 'map-codebase')
