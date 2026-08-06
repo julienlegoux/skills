@@ -21,13 +21,14 @@ keep them agreeing on the same file formats.
 │   └── plugin.json               ← plugin "lx"
 ├── skills/                       ← the plugin's default skills directory
 │   ├── _shared/
+│   │   ├── authoring-interfaces.md ← how a skill here is written, for the meta skills
 │   │   ├── bundle-interfaces.md  ← rules for anything written under docs/
 │   │   ├── ledger-interfaces.md  ← the decision doc, for ledger-driven skills
 │   │   └── pipeline-interfaces.md ← epic/issue schemas, for epic-to-PR skills
 │   ├── define-scope/
 │   │   ├── SKILL.md
 │   │   └── references/
-│   └── ...one folder per skill (14 today)
+│   └── ...one folder per skill (15 today)
 ├── docs/                         ← this bundle
 └── README.md
 ```
@@ -72,10 +73,11 @@ standalone tooling around it:
 | Pipeline | `define-scope`, `define-specs`, `define-conventions`, `split-epics`, `map-codebase`, `define-change`, `create-issues`, `implement-issue`, `implement-epic` |
 | Review companions | `review-epics`, `review-issues` |
 | Knowledge tooling | `okf-docs`, `okf-lint` |
-| Meta | `improve-skill` |
+| Meta | `create-skill`, `improve-skill` |
 
-Only the pipeline skills consume `_shared/` contracts — see
-[Shared interfaces](/shared-interfaces.md) for who gets what and why.
+The pipeline skills consume the three output contracts in `_shared/`; the meta skills
+consume the authoring one. See [Shared interfaces](/shared-interfaces.md) for who
+gets what and why.
 
 # Citations
 

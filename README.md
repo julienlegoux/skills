@@ -79,6 +79,7 @@ Both write a prioritized `docs/REPORT_N.md` instead of silently "fixing" things.
 
 | Skill | What it does |
 |---|---|
+| [`create-skill`](skills/create-skill/SKILL.md) | Add a skill to this repo — prove the need repeats, place it against the existing ones, draft it to the authoring contract |
 | [`improve-skill`](skills/improve-skill/SKILL.md) | Fold lessons from the current session back into the skill that caused them: diagnose → propose → apply → commit |
 
 ---
@@ -91,6 +92,7 @@ Both write a prioritized `docs/REPORT_N.md` instead of silently "fixing" things.
 │   └── plugin.json               ← plugin "lx" (bundles every skill below)
 ├── skills/
 │   ├── _shared/
+│   │   ├── authoring-interfaces.md ← how a skill here is written, for the meta skills
 │   │   ├── bundle-interfaces.md  ← rules for anything written under docs/
 │   │   ├── ledger-interfaces.md  ← the decision doc, for ledger-driven skills
 │   │   └── pipeline-interfaces.md ← epic/issue schemas, for epic-to-PR skills
@@ -112,6 +114,7 @@ What the skills agree on lives in `skills/_shared/`, split by audience so no ski
 | [`bundle-interfaces.md`](skills/_shared/bundle-interfaces.md) | English content, bundle & link rules, reserved `index.md`/`log.md`, committing what you write | every skill that writes under `docs/` |
 | [`ledger-interfaces.md`](skills/_shared/ledger-interfaces.md) | the decision doc schema and reopening rule | the ledger-driven planning skills |
 | [`pipeline-interfaces.md`](skills/_shared/pipeline-interfaces.md) | epic & issue schemas, status lifecycle, GitHub facts on integration branches | the epic-to-PR skills |
+| [`authoring-interfaces.md`](skills/_shared/authoring-interfaces.md) | how a skill in this repo is shaped: description contract, progressive disclosure, tiered prescriptiveness | `create-skill`, `improve-skill` |
 
 One file per contract, read in place by its audience as `../_shared/<file>` — no generated copies, so an edit is live everywhere at once. The trade: a skill folder is not portable on its own. The repo is the unit.
 

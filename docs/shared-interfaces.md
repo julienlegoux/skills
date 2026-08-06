@@ -23,6 +23,12 @@ don't apply to it. A skill that never writes an epic shouldn't ship the epic sch
 | [`bundle-interfaces.md`](../skills/_shared/bundle-interfaces.md) | English-only content, the two bundles (`docs/planning/`, `docs/epics/`) and their link forms, reserved `index.md`/`log.md`, committing what you write | every skill that writes under `docs/` |
 | [`ledger-interfaces.md`](../skills/_shared/ledger-interfaces.md) | the decision doc schema and the reopening rule | the ledger-driven planning skills |
 | [`pipeline-interfaces.md`](../skills/_shared/pipeline-interfaces.md) | epic & issue schemas, the issue status lifecycle, GitHub facts about non-default integration branches | the epic-to-PR skills |
+| [`authoring-interfaces.md`](../skills/_shared/authoring-interfaces.md) | how a skill in this repo is shaped: anatomy, the description contract, progressive disclosure, tiered prescriptiveness, identity | the meta skills — `create-skill`, `improve-skill` |
+
+The first three govern what skills write into a *user's* project. The fourth governs
+how the skills themselves are written; it exists because `create-skill` and
+`improve-skill` need the same answer to "what does a good skill here look like", and
+a rule stated twice is a rule that drifts.
 
 There is no audience registry to maintain: a skill joins an audience by pointing at
 the file, and leaves it by deleting the pointer. Point at an interface when the skill

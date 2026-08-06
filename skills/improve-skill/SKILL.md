@@ -22,7 +22,7 @@ Resolve `<repo>` at the start of the run rather than assuming a path — it is c
 
 If the user named a skill, use it. Otherwise, scan the current conversation for skills that were invoked this session (Skill tool calls, `<command-name>` blocks, or the user following a skill's workflow). One obvious candidate → state your assumption and proceed ("I'll assume you mean `split-epics`, which we used earlier — stop me if not"). Several candidates or none → ask which skill they mean before doing anything else.
 
-Then verify it lives in this repo: `<repo>/skills/<name>/SKILL.md` must exist. If it doesn't, this skill only manages skills in the repo — tell the user so, name where the skill actually lives (another plugin, a third-party install in `.claude/skills`, etc.), and suggest the skill-creator skill if they want to adopt it into the repo first. Don't edit anything outside `<repo>`.
+Then verify it lives in this repo: `<repo>/skills/<name>/SKILL.md` must exist. If it doesn't, this skill only manages skills in the repo — tell the user so, name where the skill actually lives (another plugin, a third-party install in `.claude/skills`, etc.), and suggest `create-skill` if they want to adopt it into the repo first. Don't edit anything outside `<repo>`.
 
 ## Step 2: Diagnose from the session
 
@@ -45,24 +45,14 @@ Present the proposal before touching any file. Show:
 2. **The edit** — the affected passage as before/after (or "new section:" for additions), not a vague summary
 3. **Rationale** — why this fixes the general case, not just today's incident
 
-Then wait for explicit approval. If the user pushes back or refines, revise the proposal and re-present. Do not edit, commit, or reinstall anything before the user approves.
+Then wait for explicit approval. If the user pushes back or refines, revise the proposal and re-present. Do not edit or commit anything before the user approves.
 
-When drafting the edit, hold to the principles good skills are built on:
+The shape every skill in this repo holds to — the description contract, progressive disclosure, tiered prescriptiveness, the shared-contract rule, identity — is defined in `../_shared/authoring-interfaces.md`. A session-lesson edit must not erode it, so read it before drafting.
+
+Two things matter on top of that, because an edit is not a blank page:
 
 - **Generalize.** The session is one sample. Fix the class of failure, not the literal incident — a skill patched with today's file names or one-off details will fail tomorrow. If the fix only makes sense for this session, it belongs in the conversation, not the skill.
-- **Explain why, don't just command.** Prefer "do X because Y" over bolded MUSTs. A model that understands the reason applies the instruction to situations the wording didn't anticipate.
-- **Keep it lean.** If the diagnosis is that an existing instruction causes wasted work or confusion, the right edit is often a deletion or rewrite, not an addition. Watch total length — a SKILL.md creeping past ~500 lines needs restructuring, not more bullets.
-- **Preserve identity.** Never change the `name` field or directory name; the description should only change when the problem is triggering (skill didn't fire when it should have, or fired when it shouldn't).
-
-## How to write skill edits — the structural rules
-
-The skills in this repo follow a deliberate context-engineering shape (single-source interfaces, slim descriptions, progressive disclosure, tiered prescriptiveness). Session-lesson edits must not erode it:
-
-- **A lesson becomes a stated invariant with its why, not another prescriptive step.** Prefer judgment + rationale over new rules. Hard rules are reserved for two cases: irreversible/safety actions, and prompts consumed by smaller models (the implementer templates) — there, prescriptive is deliberate, not debt.
-- **Shared formats and rules change in `_shared/` only.** Three interfaces, split by audience: `bundle-interfaces.md` (English content, bundle/link rules, reserved files, committing what you write — every skill that writes under `docs/`), `ledger-interfaces.md` (the decision doc — ledger-driven skills), `pipeline-interfaces.md` (epic/issue schemas, status lifecycle, GitHub facts — epic-to-PR skills). Never re-describe one of those inline in a SKILL.md; point to `../_shared/<file>` instead. There is one file on disk per interface and no generated copies, so an edit there is live for every skill that points at it. When a rule stops fitting its audience, split the interface rather than telling readers to skip sections, and repoint the skills that follow the new file.
-- **New templates, recipes, and edge-case handling go to the skill's `references/`**, not the always-loaded SKILL.md body. SKILL.md holds the decision flow and invariants; bulk goes behind a pointer.
-- **Frontmatter descriptions stay 1–2 sentences (what + when).** Never grow them back with trigger-phrase lists — the whole listing rides in every session's context, and a bloated description degrades routing for all skills, not just this one.
-- **Never soften hard guardrails when rewording around them.** Never-squash, no direct push to the integration branch, and union bookkeeping resolution are irreversible-safety rules; an edit that turns one into "prefer to..." is a regression even if it reads better.
+- **Subtract before adding.** When the diagnosis is that an existing instruction caused wasted work or confusion, the right edit is a deletion or a rewrite. A skill only ever grows if every lesson becomes a new bullet.
 
 ## Step 4: Apply and commit
 
