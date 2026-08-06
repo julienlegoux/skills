@@ -15,31 +15,45 @@ keep them agreeing on the same file formats.
 # Layout
 
 ```
-skills/
+<repo>/
 ├── .claude-plugin/
 │   ├── marketplace.json          ← marketplace "lx-engine"
-│   └── plugin.json               ← plugin "skills"
-├── _shared/
-│   ├── bundle-interfaces.md      ← rules for anything written under docs/
-│   ├── ledger-interfaces.md      ← the decision doc, for ledger-driven skills
-│   ├── pipeline-interfaces.md    ← epic/issue schemas, for epic-to-PR skills
-│   └── sync.ps1                  ← copies each into its audience's references/
-├── define-scope/
-│   ├── SKILL.md
-│   └── references/
-├── ...one folder per skill (14 today)
+│   └── plugin.json               ← plugin "lx"
+├── skills/                       ← the plugin's default skills directory
+│   ├── _shared/
+│   │   ├── bundle-interfaces.md  ← rules for anything written under docs/
+│   │   ├── ledger-interfaces.md  ← the decision doc, for ledger-driven skills
+│   │   └── pipeline-interfaces.md ← epic/issue schemas, for epic-to-PR skills
+│   ├── define-scope/
+│   │   ├── SKILL.md
+│   │   └── references/
+│   └── ...one folder per skill (13 today)
+├── meta/                         ← invisible to the plugin
+│   ├── _shared/authoring-interfaces.md
+│   ├── create-skill/SKILL.md
+│   └── improve-skill/SKILL.md
 ├── docs/                         ← this bundle
 └── README.md
 ```
+
+`_shared/` sits *among* the skills rather than above them: it has no `SKILL.md`, so
+discovery ignores it, and being a sibling keeps every pointer to it a plain
+`../_shared/<file>`.
+
+`meta/` holds the two skills that author this repo. They need a clone, git and push
+rights, so shipping them to someone who merely installed the plugin would hand over
+buttons that can only refuse. Being outside `skills/` is what keeps them out — the
+default discovery is not restrictable, and the manifest's `skills` field only ever
+*adds* paths.
 
 # Anatomy of a skill
 
 | Path | Role |
 |---|---|
 | `<skill>/SKILL.md` | Always loaded when the skill fires. Holds the decision flow and the invariants — not bulk. |
-| `<skill>/references/` | Progressive disclosure: templates, schemas, edge cases the skill reads only when it needs them. Also where synced copies of `_shared/*.md` land. |
+| `<skill>/references/` | Progressive disclosure: templates, schemas, edge cases the skill reads only when it needs them — the ones specific to *this* skill. Shared contracts are read from `../_shared/`, never copied in. |
 | `<skill>/assets/` | Files the skill copies or instantiates (e.g. `define-conventions/assets/baseline.md`). |
-| `<skill>/scripts/` | Executables the skill runs (e.g. `improve-skill/scripts/reinstall.ps1`, `okf-docs/scripts/validate_okf.py`). |
+| `<skill>/scripts/` | Executables the skill runs (e.g. `okf-docs/scripts/validate_okf.py`). |
 | `<skill>/agents/` | Subagent definitions, where a skill delegates (`review-epics`, `review-issues`). |
 
 The frontmatter `description` in `SKILL.md` is what decides whether the skill fires
@@ -48,9 +62,15 @@ rather than a list of trigger phrases.
 
 # Discovery
 
-`.claude-plugin/plugin.json` declares `"skills": ["./"]`, so **every top-level folder
-holding a `SKILL.md` is picked up automatically**. Adding a skill means adding a
-folder; there is no registry to update.
+`.claude-plugin/plugin.json` declares no component paths, so Claude Code uses the
+default location: **every folder under `skills/` holding a `SKILL.md` is picked up
+automatically**. Adding a skill means adding a folder; there is no registry to update.
+Confirm with `claude plugin details lx@skills-dir`, which lists what was actually
+discovered.
+
+Discovery of `skills/` is unconditional — the manifest's `skills` field cannot narrow
+it, only add paths outside it. So the one way to keep something in the repo but out
+of the plugin is to put it elsewhere, which is what `meta/` is.
 
 `.claude-plugin/marketplace.json` wraps that plugin as the `lx-engine` marketplace,
 which is what makes the repo installable by URL. See
@@ -66,9 +86,10 @@ standalone tooling around it:
 | Pipeline | `define-scope`, `define-specs`, `define-conventions`, `split-epics`, `map-codebase`, `define-change`, `create-issues`, `implement-issue`, `implement-epic` |
 | Review companions | `review-epics`, `review-issues` |
 | Knowledge tooling | `okf-docs`, `okf-lint` |
-| Meta | `improve-skill` |
+| Meta *(in `meta/`, not shipped)* | `create-skill`, `improve-skill` |
 
-Only the pipeline skills consume `_shared/` contracts — see
+The pipeline skills consume the three output contracts in `skills/_shared/`; the meta
+skills consume the authoring one in `meta/_shared/`. See
 [Shared interfaces](/shared-interfaces.md) for who gets what and why.
 
 # Citations
