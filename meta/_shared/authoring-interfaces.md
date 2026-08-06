@@ -1,44 +1,32 @@
 # Authoring interfaces
 
-How a skill **in this repo** is shaped. The three sibling interfaces
-(`bundle-`, `ledger-`, `pipeline-`) define what skills write into a *user's*
-project; this one defines how the skills themselves are written. Its audience is the
-meta-skills — `create-skill` and `improve-skill` — and anything else that adds to or
-edits `skills/`.
+How a skill **in this repo** is shaped. The three interfaces under `skills/_shared/`
+(`bundle-`, `ledger-`, `pipeline-`) define what skills write into a *user's* project;
+this one defines how the skills themselves are written. Its audience is the two
+meta-skills, `create-skill` and `improve-skill`.
 
-This is the one and only copy: both read it at `../_shared/authoring-interfaces.md`.
+Because those two are installed on their own rather than shipped with the plugin,
+they reach this file through the repo they resolve first — `<repo>/meta/_shared/` —
+not through a path relative to their own folder.
 
-## Where a skill lives
+## Two homes
 
-```
-<repo>/skills/<name>/SKILL.md
-```
+| Home | What lives there | How it reaches a session |
+|---|---|---|
+| `<repo>/skills/<name>/` | the published skills | the `lx` plugin, namespaced `/lx:<name>` |
+| `<repo>/meta/<name>/` | the authoring tools | installed by hand, junctioned into `~/.claude/skills/<name>`, invoked `/<name>` |
 
 Every folder under `skills/` holding a `SKILL.md` is discovered automatically — there
-is no registry to update. `skills/_shared/` has no `SKILL.md`, so discovery skips it
-while staying readable by its neighbours at `../_shared/<file>`.
+is no registry to update, and a folder outside `skills/` is invisible to the plugin
+unless listed explicitly. `_shared/` folders have no `SKILL.md`, so discovery skips
+them.
 
-The repo is loaded in place as the `lx` plugin, so the file you edit is the file that
-runs. Skills are namespaced: `/lx:<name>`.
+A new skill belongs in `skills/` unless it authors this repo, in which case it joins
+`meta/`. The test is whether someone who installed the plugin could use it: a skill
+that needs a clone and a push cannot ship.
 
-## Never author against an installed copy
-
-A meta-skill runs from wherever the plugin is loaded, which is not always a clone. On
-a machine that installed the plugin from the marketplace, the same tree exists twice,
-and **neither is a place to work**:
-
-| Path | What it is |
-|---|---|
-| `~/.claude/plugins/cache/<marketplace>/<plugin>/<version>/` | the copy actually loaded. No git. Replaced wholesale on the next marketplace update |
-| `~/.claude/plugins/marketplaces/<marketplace>/` | a real git clone — but not what's loaded, and reset on update |
-
-Both hold `skills/_shared/`, so both pass a naive "does this look like the repo?"
-test. Editing the first takes effect immediately and is erased later with nothing to
-warn you; editing the second commits cleanly and changes nothing.
-
-**Refuse to write anywhere under `~/.claude/plugins/`.** If no clone can be found,
-say so and stop — an edit that a background update silently discards is worse than no
-edit at all.
+Both homes are junctioned rather than copied, so the file you edit is the file that
+runs — there is no install step and nothing to keep in sync.
 
 ## Anatomy
 
@@ -86,10 +74,14 @@ to…" is a regression even when it reads better.
 
 ## Shared contracts
 
-Anything more than one skill agrees on lives in `_shared/` — once. Point at
-`../_shared/<file>`; never restate its content inline, and never copy it into a
-skill's `references/`. Editing a shared file is live for every skill pointing at it,
-so name the blast radius when you touch one.
+Anything more than one skill agrees on lives in `_shared/` — once. Never restate its
+content inline, and never copy it into a skill's `references/`. Editing a shared file
+is live for every skill pointing at it, so name the blast radius when you touch one.
+
+How a skill points at one depends on how it travels. A published skill ships beside
+its contracts and uses `../_shared/<file>`. A skill installed on its own can't — its
+`..` is the install folder — so it resolves the repo first and reads
+`<repo>/meta/_shared/<file>`.
 
 When a rule stops fitting part of an interface's audience, **split the interface**
 rather than writing "skip this section if…". Splitting keeps every skill's context
@@ -103,6 +95,8 @@ fired when it shouldn't have, or didn't when it should.
 
 ## Ship it
 
+For a skill under `skills/`:
+
 ```
 claude plugin validate .              # manifests parse
 claude plugin details lx@skills-dir   # the skill is actually discovered
@@ -110,6 +104,13 @@ claude plugin details lx@skills-dir   # the skill is actually discovered
 
 The second command is the real test. A manifest can validate while discovering
 nothing, so read the inventory rather than trusting the green check.
+
+For a skill under `meta/`, the equivalent is its junction — created once, at
+creation time:
+
+```powershell
+New-Item -ItemType Junction -Path "$HOME\.claude\skills\<name>" -Target "<repo>\meta\<name>"
+```
 
 Then commit — history reads as a changelog of what each session taught — and tell the
 user to run `/reload-plugins`. A changed `description` affects triggering and may need

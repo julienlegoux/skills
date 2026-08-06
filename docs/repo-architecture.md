@@ -21,14 +21,17 @@ keep them agreeing on the same file formats.
 │   └── plugin.json               ← plugin "lx"
 ├── skills/                       ← the plugin's default skills directory
 │   ├── _shared/
-│   │   ├── authoring-interfaces.md ← how a skill here is written, for the meta skills
 │   │   ├── bundle-interfaces.md  ← rules for anything written under docs/
 │   │   ├── ledger-interfaces.md  ← the decision doc, for ledger-driven skills
 │   │   └── pipeline-interfaces.md ← epic/issue schemas, for epic-to-PR skills
 │   ├── define-scope/
 │   │   ├── SKILL.md
 │   │   └── references/
-│   └── ...one folder per skill (15 today)
+│   └── ...one folder per skill (13 today)
+├── meta/                         ← invisible to the plugin
+│   ├── _shared/authoring-interfaces.md
+│   ├── create-skill/SKILL.md
+│   └── improve-skill/SKILL.md
 ├── docs/                         ← this bundle
 └── README.md
 ```
@@ -36,6 +39,12 @@ keep them agreeing on the same file formats.
 `_shared/` sits *among* the skills rather than above them: it has no `SKILL.md`, so
 discovery ignores it, and being a sibling keeps every pointer to it a plain
 `../_shared/<file>`.
+
+`meta/` holds the two skills that author this repo. They need a clone, git and push
+rights, so shipping them to someone who merely installed the plugin would hand over
+buttons that can only refuse. Being outside `skills/` is what keeps them out — the
+default discovery is not restrictable, and the manifest's `skills` field only ever
+*adds* paths.
 
 # Anatomy of a skill
 
@@ -59,6 +68,10 @@ automatically**. Adding a skill means adding a folder; there is no registry to u
 Confirm with `claude plugin details lx@skills-dir`, which lists what was actually
 discovered.
 
+Discovery of `skills/` is unconditional — the manifest's `skills` field cannot narrow
+it, only add paths outside it. So the one way to keep something in the repo but out
+of the plugin is to put it elsewhere, which is what `meta/` is.
+
 `.claude-plugin/marketplace.json` wraps that plugin as the `lx-engine` marketplace,
 which is what makes the repo installable by URL. See
 [Installation](/installation.md).
@@ -73,11 +86,11 @@ standalone tooling around it:
 | Pipeline | `define-scope`, `define-specs`, `define-conventions`, `split-epics`, `map-codebase`, `define-change`, `create-issues`, `implement-issue`, `implement-epic` |
 | Review companions | `review-epics`, `review-issues` |
 | Knowledge tooling | `okf-docs`, `okf-lint` |
-| Meta | `create-skill`, `improve-skill` |
+| Meta *(in `meta/`, not shipped)* | `create-skill`, `improve-skill` |
 
-The pipeline skills consume the three output contracts in `_shared/`; the meta skills
-consume the authoring one. See [Shared interfaces](/shared-interfaces.md) for who
-gets what and why.
+The pipeline skills consume the three output contracts in `skills/_shared/`; the meta
+skills consume the authoring one in `meta/_shared/`. See
+[Shared interfaces](/shared-interfaces.md) for who gets what and why.
 
 # Citations
 

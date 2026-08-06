@@ -75,12 +75,18 @@ Both write a prioritized `docs/REPORT_N.md` instead of silently "fixing" things.
 | [`okf-docs`](skills/okf-docs/SKILL.md) | Write & structurally validate docs in Google's **Open Knowledge Format** — markdown + YAML frontmatter bundles readable by humans and agents alike |
 | [`okf-lint`](skills/okf-lint/SKILL.md) | Semantic linter for OKF bundles: contradictions, index drift, duplicate concepts, stale timestamps — everything a mechanical validator can't see |
 
-## 🔁 Meta
+## 🔁 Meta — *not shipped in the plugin*
+
+These two author the repo itself: they need a clone, git, and push rights, so installing the plugin can't make them useful. They live in `meta/` and are installed by hand — fork the repo and junction them in:
+
+```powershell
+New-Item -ItemType Junction -Path "$HOME\.claude\skills\improve-skill" -Target "<repo>\meta\improve-skill"
+```
 
 | Skill | What it does |
 |---|---|
-| [`create-skill`](skills/create-skill/SKILL.md) | Add a skill to this repo — prove the need repeats, place it against the existing ones, draft it to the authoring contract |
-| [`improve-skill`](skills/improve-skill/SKILL.md) | Fold lessons from the current session back into the skill that caused them: diagnose → propose → apply → commit |
+| [`create-skill`](meta/create-skill/SKILL.md) | Add a skill to this repo — prove the need repeats, place it against the existing ones, draft it to the authoring contract |
+| [`improve-skill`](meta/improve-skill/SKILL.md) | Fold lessons from the current session back into the skill that caused them: diagnose → propose → apply → commit |
 
 ---
 
@@ -90,20 +96,23 @@ Both write a prioritized `docs/REPORT_N.md` instead of silently "fixing" things.
 ├── .claude-plugin/
 │   ├── marketplace.json          ← marketplace "lx-engine"
 │   └── plugin.json               ← plugin "lx" (bundles every skill below)
-├── skills/
+├── skills/                       ← the plugin: published, auto-discovered
 │   ├── _shared/
-│   │   ├── authoring-interfaces.md ← how a skill here is written, for the meta skills
 │   │   ├── bundle-interfaces.md  ← rules for anything written under docs/
 │   │   ├── ledger-interfaces.md  ← the decision doc, for ledger-driven skills
 │   │   └── pipeline-interfaces.md ← epic/issue schemas, for epic-to-PR skills
 │   ├── define-scope/SKILL.md
 │   ├── define-specs/SKILL.md
 │   └── ...one folder per skill
+├── meta/                         ← outside the plugin, installed by hand
+│   ├── _shared/authoring-interfaces.md
+│   ├── create-skill/SKILL.md
+│   └── improve-skill/SKILL.md
 ├── docs/                         ← documentation bundle
 └── README.md
 ```
 
-Every folder under `skills/` holds one skill (`SKILL.md` + supporting files) and is auto-discovered by the plugin. `_shared/` has no `SKILL.md`, so discovery skips it.
+Every folder under `skills/` holds one skill (`SKILL.md` + supporting files) and is auto-discovered by the plugin. `_shared/` has no `SKILL.md`, so discovery skips it — and anything outside `skills/` is invisible to the plugin entirely, which is what keeps `meta/` local.
 
 ### Shared contracts
 
@@ -114,16 +123,18 @@ What the skills agree on lives in `skills/_shared/`, split by audience so no ski
 | [`bundle-interfaces.md`](skills/_shared/bundle-interfaces.md) | English content, bundle & link rules, reserved `index.md`/`log.md`, committing what you write | every skill that writes under `docs/` |
 | [`ledger-interfaces.md`](skills/_shared/ledger-interfaces.md) | the decision doc schema and reopening rule | the ledger-driven planning skills |
 | [`pipeline-interfaces.md`](skills/_shared/pipeline-interfaces.md) | epic & issue schemas, status lifecycle, GitHub facts on integration branches | the epic-to-PR skills |
-| [`authoring-interfaces.md`](skills/_shared/authoring-interfaces.md) | how a skill in this repo is shaped: description contract, progressive disclosure, tiered prescriptiveness | `create-skill`, `improve-skill` |
+| [`authoring-interfaces.md`](meta/_shared/authoring-interfaces.md) | how a skill in this repo is shaped: description contract, progressive disclosure, tiered prescriptiveness | `create-skill`, `improve-skill` |
 
-One file per contract, read in place by its audience as `../_shared/<file>` — no generated copies, so an edit is live everywhere at once. The trade: a skill folder is not portable on its own. The repo is the unit.
+One file per contract, no generated copies, so an edit is live everywhere at once. The three under `skills/_shared/` are read as `../_shared/<file>` and ship with the plugin; the trade is that a published skill folder is not portable on its own — the repo is the unit. The fourth is read as `<repo>/meta/_shared/<file>`, because its two consumers are installed away from the repo and resolve it first anyway.
 
 ## 🛠️ Developing
 
-There is no install step. Point your skills directory at the clone once, and the file you edit is the file Claude Code runs:
+There is no install step. Point your skills directory at the clone once — the plugin at the repo root, then each `meta/` skill on its own — and the file you edit is the file Claude Code runs:
 
 ```powershell
-New-Item -ItemType Junction -Path "$HOME\.claude\skills\lx-engine" -Target "<repo>"
+New-Item -ItemType Junction -Path "$HOME\.claude\skills\lx-engine"     -Target "<repo>"
+New-Item -ItemType Junction -Path "$HOME\.claude\skills\create-skill"  -Target "<repo>\meta\create-skill"
+New-Item -ItemType Junction -Path "$HOME\.claude\skills\improve-skill" -Target "<repo>\meta\improve-skill"
 ```
 
 Then, after editing: `/reload-plugins` in the session, and

@@ -8,8 +8,14 @@ timestamp: 2026-08-06
 
 # Skill lifecycle
 
-There is **one copy of every skill**: `<repo>/skills/<skill>/`. Claude Code loads the
-repo in place as a plugin — see [Installation and delivery
+There is **one copy of every skill**, in one of two homes:
+
+| Home | Loaded as | Reaches others how |
+|---|---|---|
+| `<repo>/skills/<skill>/` | the `lx` plugin, `/lx:<skill>` | marketplace install |
+| `<repo>/meta/<skill>/` | a plain skill, `/<skill>` | fork and junction by hand |
+
+Everything is junctioned rather than copied — see [Installation and delivery
 modes](/installation.md) — so the file you edit is the file that runs. No install
 step, no mirror, no drift to check for.
 
@@ -21,9 +27,9 @@ step, no mirror, no drift to check for.
 edit → validate → commit → /reload-plugins
 ```
 
-1. **Edit** `skills/<skill>/SKILL.md` (and its `references/`, `assets/`, `scripts/`).
-   Shared contracts change in `skills/_shared/` — one file, live for every skill that
-   points at it.
+1. **Edit** `<home>/<skill>/SKILL.md` (and its `references/`, `assets/`, `scripts/`).
+   Shared contracts change in `skills/_shared/` or `meta/_shared/` — one file, live
+   for every skill that points at it.
 2. **Validate** the plugin manifest:
    ```
    claude plugin validate .
@@ -81,5 +87,5 @@ judgment plus rationale.
 
 # Citations
 
-* `skills/improve-skill/SKILL.md`
+* `meta/improve-skill/SKILL.md`, `meta/create-skill/SKILL.md`
 * `.claude-plugin/plugin.json`

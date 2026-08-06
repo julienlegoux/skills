@@ -66,6 +66,23 @@ installed copy to drift from the source.
 Alternatively, `claude --plugin-dir <repo>` loads it for one session without touching
 `~/.claude/skills`.
 
+# The two skills that don't ship
+
+`create-skill` and `improve-skill` author this repo: they need a clone, git, and the
+right to push. Installing the plugin gives none of those, so shipping them would hand
+a consumer buttons that can only refuse. They live in `meta/`, which the plugin never
+sees — discovery of `skills/` is unconditional, and the manifest's `skills` field only
+ever *adds* paths, so location is the only lever.
+
+They get one junction each, and load as plain unnamespaced skills — `/improve-skill`,
+not `/lx:improve-skill`:
+
+```powershell
+New-Item -ItemType Junction -Path "$HOME\.claude\skills\improve-skill" -Target "<repo>\meta\improve-skill"
+```
+
+Anyone who wants them forks the repo and does the same.
+
 # Why the repo is the unit, not the folder
 
 A skill reads its shared contracts at `../_shared/<file>` — a real path to a real
