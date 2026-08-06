@@ -87,6 +87,35 @@ Every recommendation in the ledger silently assumes this framing; a premise
 misunderstanding discovered mid-triage invalidates the entire ledger, which is the
 most expensive rework this skill can produce.
 
+**Then offer the project home.** Before anything is written to disk, propose a project
+folder name derived from the confirmed premise (lowercase kebab-case, e.g.
+`recipe-inbox`) and ask whether to create it as a **private** GitHub repo. On accept:
+
+```bash
+mkdir <name> && cd <name>
+git init -b main
+git commit --allow-empty -m "chore: initial commit"
+gh repo create <name> --private --source=. --remote=origin --push
+git checkout -b develop && git push -u origin develop
+```
+
+Run the rest of this skill from inside that folder and leave the user on `develop`, so
+`docs/planning/` lands in the project rather than wherever the conversation started, on
+the branch the pipeline actually integrates on.
+
+Two defaults worth their why. **Private**: a repo is made public later with one command,
+while anything pushed to a public one is already public — never create it public unless
+the user says so. **`develop` branched off `main` up front**: `implement-epic` picks its
+integration branch by looking for `develop` and falls back to the repo default, so
+creating it now is what makes every later PR target one trunk instead of piling onto
+`main`. Leave `main` as GitHub's default branch.
+
+This is a one-line offer, not a ledger item: no decision doc, no checklist entry. Skip
+it entirely if a git remote already exists. If the user declines, drop it and never
+raise it again. If `gh` is missing or unauthenticated, do the local half (folder,
+`git init`, `develop`), say the remote was skipped, and continue — `split-epics` is what
+needs the remote, and not until later.
+
 ## Step 2: Enumerate the decision ledger
 
 Build the decision list from two sources:
