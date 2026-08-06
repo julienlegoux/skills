@@ -1,0 +1,65 @@
+---
+type: Playbook
+title: "Installation and delivery modes"
+description: "How the skills reach a Claude Code session — plugin marketplace for users, robocopy mirror for development — and why each skill ships self-contained."
+tags: [install, plugin, marketplace, delivery]
+timestamp: 2026-08-06
+---
+
+# Installation and delivery modes
+
+# For users — the plugin marketplace
+
+The repo is a [Claude Code plugin marketplace](https://code.claude.com/docs/en/plugin-marketplaces).
+Two commands install every skill:
+
+```
+/plugin marketplace add julienlegoux/skills
+/plugin install skills@lx-engine
+```
+
+| Manifest | Declares |
+|---|---|
+| `.claude-plugin/marketplace.json` | marketplace `lx-engine`, owning one plugin |
+| `.claude-plugin/plugin.json` | plugin `skills`, `"skills": ["./"]` — every top-level folder with a `SKILL.md` is bundled |
+
+Because discovery is `./`, publishing a new skill is just committing its folder. No
+manifest edit, nothing to forget.
+
+Validate the manifests before pushing:
+
+```
+claude plugin validate .
+```
+
+# For development — the local mirror
+
+Day-to-day work doesn't go through the marketplace. `reinstall.ps1` mirrors a dev
+folder straight into the installed root:
+
+```powershell
+pwsh improve-skill/scripts/reinstall.ps1 -SkillName define-scope
+```
+
+```
+D:\Project\skills\<skill>\  ──robocopy /MIR──▶  %USERPROFILE%\.claude\skills\<skill>\
+                                excluding evals\, .git, viewer.log
+```
+
+`/MIR` means the destination is made *identical*, deletions included — which is why
+the installed copy is never the place to edit. Pass `-DevRoot` / `-InstalledRoot` for
+non-default paths. The script runs `_shared/sync.ps1` first, so a mirror can never
+ship a stale contract. Full loop: [Skill lifecycle](/skill-lifecycle.md).
+
+# Why each skill is self-contained
+
+Both delivery modes copy **one folder at a time**. A skill that referenced
+`../_shared/pipeline-interfaces.md` at runtime would resolve fine in the dev repo and
+break everywhere else. Hence the sync: every consuming skill carries its own copy
+under `references/`. See [Shared interfaces](/shared-interfaces.md).
+
+# Citations
+
+* `README.md`
+* `.claude-plugin/marketplace.json`, `.claude-plugin/plugin.json`
+* `improve-skill/scripts/reinstall.ps1`
