@@ -17,8 +17,8 @@ once.
 
 ## Language rule
 
-All pipeline artifacts — epics, issues, decision docs, indexes, logs, deviation
-files — are written in **English**, regardless of the language of the conversation
+All pipeline artifacts — epics, issues, decision docs, indexes, logs, drift
+records — are written in **English**, regardless of the language of the conversation
 that produced them. Bundles outlive their conversation and are read by later
 sessions, agents, and tools; a mixed-language bundle forces every future reader to
 translate. The conversation itself stays in the user's language — only what lands

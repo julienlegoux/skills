@@ -98,10 +98,10 @@ The issue file recorded conventions as of creation time; verify against the repo
 - The epic's `## Context` links — typically `docs/planning/CONVENTIONS.md` (the
   repo's decided standards) and `docs/planning/SPECS.md` (the decided stack) — these
   are the project's authoritative standards when they exist.
-- `docs/planning/DEVIATIONS.md` if it exists — where earlier work already proved one of
+- `docs/planning/DRIFT.md` if it exists — where earlier work already proved one of
   those standards unworkable, with the verified blocker and the disposition
   (`../_shared/pipeline-interfaces.md`). Read it *with* the standards, not instead of
-  them: a decided standard plus a live deviation is what the code actually looks like,
+  them: a decided standard plus its live drift is what the code actually looks like,
   and it is the difference between following a convention and rediscovering why the
   last three issues couldn't.
 - `CLAUDE.md` / `AGENTS.md` / `CONTRIBUTING.md` — test requirements, commit style,
@@ -190,15 +190,15 @@ Two boundaries the issue already drew:
 
 One discovery that must NOT stay informal: implementation sometimes proves a decided
 standard wrong (a pinned version the ecosystem can't satisfy, a mandated library that
-breaks the build). When you deviate from SPECS/CONVENTIONS or the issue spec to make
-acceptance criteria pass, write the **evidence file** the deviation register expects —
-path, fields and role in `../_shared/pipeline-interfaces.md`. State what was decided,
-what blocked it (verified versions and error text, not vibes), the alternatives you
-tried, and the concrete trigger for revisiting; keep that folder's `index.md` listing
-it, and commit it on the issue branch so it lands with the PR.
+breaks the build). When you depart from SPECS/CONVENTIONS or the issue spec to make
+acceptance criteria pass, that is **drift**, and it gets a **drift record** — path,
+fields and role in `../_shared/pipeline-interfaces.md`. State what was decided, what
+blocked it (verified versions and error text, not vibes), the alternatives you tried,
+and the concrete trigger for revisiting; keep that folder's `index.md` listing it, and
+commit it on the issue branch so it lands with the PR.
 
-That file is the only durable trace: `close-epic` promotes it into
-`docs/planning/DEVIATIONS.md`, which every later run reads. A deviation that lives only
+That record is the only durable trace: `close-epic` promotes it into
+`docs/planning/DRIFT.md`, which every later run reads. Drift that lives only
 in a PR body or in your final report is invisible to the next issue that trips over the
 same wall — so also name it in the report (Step 9), because a supervisor that never
 hears about it cannot get it promoted.
@@ -270,7 +270,7 @@ End with a summary the user can act on:
 - **Reconciled**: which issues moved to `done` (with PR links); any closed-unmerged
   PRs or still-open PRs worth chasing.
 - **Implemented**: the issue, the branch, the PR link, final diff size vs. predicted
-  size, test results (actual numbers, not "tests pass"), and any deviation files
+  size, test results (actual numbers, not "tests pass"), and any drift records
   written.
 - **Follow-ups**: out-of-scope discoveries worth turning into new issues.
 - **Next up**: which issue becomes unblocked once this PR merges — the natural next

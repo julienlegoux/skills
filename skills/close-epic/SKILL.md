@@ -1,6 +1,6 @@
 ---
 name: close-epic
-description: Close out an epic after its implementation run stops — verify the epic's real state against GitHub and git, promote the deviations implementers recorded into docs/planning/DEVIATIONS.md, close the milestone, and clean up the run's worktrees and merged branches. Use when an epic's implementation has finished or stopped and the repo must be left in a state the next epic can start from.
+description: Close out an epic after its implementation run stops — verify the epic's real state against GitHub and git, promote the drift its implementers recorded into docs/planning/DRIFT.md, close the milestone, and clean up the run's worktrees and merged branches. Use when an epic's implementation has finished or stopped and the repo must be left in a state the next epic can start from.
 ---
 
 # Close an Epic
@@ -12,7 +12,8 @@ learned the hard way is sitting in a chat report that dies with the session. Thi
 skill is that seam: leave the repo in a state the next run can start from, and move
 this run's discoveries somewhere the next run is guaranteed to read.
 
-The issue schema, the status lifecycle, and the **deviation register** are defined in
+The issue schema, the status lifecycle, and the **drift register** (what drift is, its
+two artifacts, the register's format) are defined in
 `../_shared/pipeline-interfaces.md`; the rules for anything written under `docs/` in
 `../_shared/bundle-interfaces.md`. Read both before Step 1.
 
@@ -71,34 +72,34 @@ in the pipeline closes it, so an otherwise finished epic keeps showing as open w
 the repo's milestone list. If issues remain open, leave the milestone open and name
 them: a closed milestone with open issues is a worse lie than an open one.
 
-## Step 3: Promote the deviations
+## Step 3: Promote the drift
 
-This is the step the rest of the pipeline depends on. Implementers write one evidence
-file per deviating issue (`docs/epics/epic-<n>-<slug>/deviations/<nn>-<slug>.md`)
-during the run, concurrently, each blind to the others. Nobody downstream sweeps those
-folders, so what they learned dies there. Promotion turns them into the single register
-every later run reads — see `../_shared/pipeline-interfaces.md` for the register's
-format and its readers.
+This is the step the rest of the pipeline depends on. Implementers write one **drift
+record** per drifting issue (`docs/epics/epic-<n>-<slug>/drift/<nn>-<slug>.md`) during
+the run, concurrently, each blind to the others. Nobody downstream sweeps those folders,
+so what they learned dies there. Promotion turns them into the single register every
+later run reads — see `../_shared/pipeline-interfaces.md` for what drift is, the
+register's format, and who reads it.
 
-1. Collect every deviation file in this epic, plus anything the run's report surfaced
-   as a deviation that never got a file (an implementer that died before committing
-   one, a deviation the supervisor accepted in chat).
+1. Collect every drift record in this epic, plus any drift the run's report surfaced
+   that never got a record (an implementer that died before committing one, drift the
+   supervisor accepted in chat).
 2. Fold duplicates: three issues blocked by the same unusable pinned version are **one**
-   register entry citing three evidence files, not three entries. A register that
-   repeats itself stops being read.
+   register entry citing three drift records, not three entries. A register that repeats
+   itself stops being read.
 3. Draft each entry with a **proposed disposition** — `accepted`, `fix-now`, or
    `deferred` with a concrete revisit trigger. Procedure and the judgment calls are in
    `references/promotion.md`.
 4. **The user triages the dispositions.** Present all entries in one batch with your
-   recommendation each, and wait. A deviation's disposition changes the project's
-   standards or creates work — that is the user's call, not yours. Only after the
-   triage: write `docs/planning/DEVIATIONS.md`, update the planning bundle's root
-   `index.md`, append to its `log.md`.
+   recommendation each, and wait. A disposition either rewrites the project's standards
+   or creates work — that is the user's call, not yours. Only after the triage: write
+   `docs/planning/DRIFT.md`, update the planning bundle's root `index.md`, append to its
+   `log.md`.
 5. `fix-now` entries become real follow-up issues (or an explicit hand-off to
    `define-change` when the fix is bigger than an issue). A `fix-now` with no issue
    behind it is just a `deferred` that lies about itself.
 
-Never delete or rewrite the per-issue evidence files. They hold the verified errors and
+Never delete or rewrite the drift records. They hold the verified errors and
 versions that make the register trustworthy; the register links to them.
 
 ## Step 4: Clean the environment

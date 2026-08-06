@@ -32,7 +32,7 @@ So the division of labor is absolute:
   final reports, PR numbers and check states, and short `gh` JSON answers to
   questions you asked.
 - **When a subagent's report is long,** keep its conclusions (PR number, test
-  results, deviations, follow-ups) and let the rest go — don't re-derive its work.
+  results, drift records, follow-ups) and let the rest go — don't re-derive its work.
 
 The temptation to "just quickly fix" a one-line CI failure yourself is exactly how
 supervisors drown. A subagent fixes it just as fast, and you stay clear-headed.
@@ -44,7 +44,7 @@ permission stalls) — idle waiting is cheaper than context bloat.
 1. Locate the epic folder (`docs/epics/epic-<n>-<slug>/`). Read `issues/index.md`
    and each issue's **frontmatter only** (the fields in
    `../_shared/pipeline-interfaces.md`) — the bodies are for the implementers.
-   Then read `docs/planning/DEVIATIONS.md` if it exists — the register of standards
+   Then read `docs/planning/DRIFT.md` if it exists — the register of standards
    earlier epics proved unworkable (`../_shared/pipeline-interfaces.md`). It is cheap,
    it is the one place that carries what previous runs learned the hard way, and any
    entry touching this epic goes into the affected implementers' prompts. Without it
@@ -238,9 +238,10 @@ user-facing UI, before writing the final report: verify the deployed or preview
 build in a browser at both mobile and desktop widths (delegate to a subagent with
 browser tools if available; otherwise say plainly that no rendered-app
 verification happened). The final report then includes the preview URL and a
-short check-on-device list for the user. Every deviation found gets its own
+short check-on-device list for the user. Every rendering discrepancy found gets its own
 disposition — fix now, accept, or defer with a named trigger — not a line in an
-aggregate list.
+aggregate list. (These are UI defects, not drift: nothing contradicts a decided
+standard, so they don't belong in the drift register.)
 
 ## Stopping conditions
 
@@ -266,10 +267,10 @@ Stop the loop and report — rather than pushing through — when:
 - **Models used**: which tier ran each issue (and any escalations) — the user is
   paying for this judgment, show it.
 - **Test/CI summary**: per-issue results as reported, plus any repo-has-no-CI note.
-- **UI verification** (UI epics): preview URL, widths checked, deviations with
+- **UI verification** (UI epics): preview URL, widths checked, discrepancies with
   their dispositions.
-- **Deviations**: every deviation file implementers reported, aggregated — `close-epic`
-  promotes them, so name each one's epic/issue and evidence path, not just the gist.
+- **Drift**: every drift record implementers reported, aggregated — `close-epic`
+  promotes them, so name each one's issue and record path, not just the gist.
 - **Follow-ups**: out-of-scope discoveries collected from all reports.
 - **Left over**: anything not `done` and precisely why — including human-gates
   still waiting on the user.
@@ -278,16 +279,16 @@ Stop the loop and report — rather than pushing through — when:
 
 Your loop stopping is not the epic being closed, and the two are not the same job. The
 worktrees you spawned still hold branches checked out, the merged remote branches are
-still there, the milestone is still open, and the deviations above exist only in this
+still there, the milestone is still open, and the drift above exists only in this
 report — which dies with the session. That state is what stops the *next* epic from
 starting, and sorting it out is not tail work for a supervisor's context at its most
 depleted: it needs a fresh one.
 
 So end the run by handing over to `close-epic` — it verifies the epic's real state
-against GitHub and git, promotes the deviations into `docs/planning/DEVIATIONS.md`,
+against GitHub and git, promotes the drift into `docs/planning/DRIFT.md`,
 closes the milestone, and cleans up. Offer to run it now (or spawn a subagent to, with
 this report as its input); if the user declines, say plainly that worktrees, branches
-and the milestone are left as-is and the deviations are unpromoted.
+and the milestone are left as-is and the drift is unpromoted.
 
 This applies just as much when the run stopped early — an interrupted run is when its
 discoveries are most likely to be lost and a half-cleaned repo is what makes the resume

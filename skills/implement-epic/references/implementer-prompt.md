@@ -57,9 +57,12 @@ Constraints from the supervisor:
 - <effort steer from the model table>
 - <traps earlier issues in this epic hit the hard way — a required env var, a
   boundary the test tier can't see. Pass them forward; it saves a red CI round.>
+- <any DRIFT.md entry touching this issue: the standard, what the code does
+  instead, and its disposition. Quote it — the implementer will otherwise follow
+  SPECS/CONVENTIONS straight into the wall the register already documents.>
 
 Report back, concisely: PR number and URL, final diff size vs predicted size,
-test results (real numbers), any deviation files written, out-of-scope follow-ups
+test results (real numbers), any drift records written, out-of-scope follow-ups
 you noted, and anything that blocked you.
 ```
 

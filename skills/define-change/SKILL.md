@@ -56,7 +56,7 @@ Never re-ask a decided item. If several
 changes are in flight, ask which one (or whether this is a new change).
 
 **Prerequisites:** read `docs/planning/SPECS.md` and `docs/planning/CONVENTIONS.md` —
-plus `docs/planning/DEVIATIONS.md` when it exists: the register of standards earlier
+plus `docs/planning/DRIFT.md` when it exists: the register of standards earlier
 implementation proved unworkable (`../_shared/pipeline-interfaces.md`). It is the
 cheapest correction available to the audit below, because it names where the two
 documents above already disagree with the code.
