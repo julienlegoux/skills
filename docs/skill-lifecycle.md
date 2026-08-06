@@ -1,60 +1,47 @@
 ---
 type: Playbook
 title: "Skill lifecycle"
-description: "How a skill is created, edited, validated, committed and reinstalled — including the improve-skill loop that folds session lessons back into the source."
+description: "How a skill is created, edited, validated and committed — one copy loaded in place, plus the improve-skill loop that folds session lessons back into the source."
 tags: [playbook, development, improve-skill, workflow]
 timestamp: 2026-08-06
 ---
 
 # Skill lifecycle
 
-Skills are **developed in the dev repo and installed from it**. Two roots, and only
-one of them is ever edited:
+There is **one copy of every skill**: `<repo>/skills/<skill>/`. Claude Code loads the
+repo in place as a plugin — see [Installation and delivery
+modes](/installation.md) — so the file you edit is the file that runs. No install
+step, no mirror, no drift to check for.
 
-| Root | Path | Role |
-|---|---|---|
-| Dev | `<dev-root>\<skill>\` | Source of truth. All edits go here. |
-| Installed | `%USERPROFILE%\.claude\skills\<skill>\` | What Claude Code actually loads. Overwritten on every reinstall. |
-
-`<dev-root>` is wherever the repo is cloned — no script hardcodes it. `sync.ps1`
-derives it from its own location; `reinstall.ps1` takes `-DevRoot`, then
-`$env:SKILLS_DEV_ROOT`, then its own grandparent if that folder holds
-`_shared/sync.ps1`, and errors out rather than guessing.
-
-Editing the installed copy is the one mistake that loses work silently: the next
-reinstall mirrors over it. `improve-skill` checks for that drift before touching
-anything.
+`<repo>` is wherever the clone lives; nothing hardcodes a path.
 
 # The loop
 
 ```
-edit dev copy → sync _shared → validate → commit → reinstall
+edit → validate → commit → /reload-plugins
 ```
 
-1. **Edit** `<skill>/SKILL.md` (and its `references/`, `assets/`, `scripts/`).
-2. **Sync** if a shared contract changed:
-   ```powershell
-   pwsh _shared/sync.ps1
-   ```
-3. **Validate** the plugin manifest:
+1. **Edit** `skills/<skill>/SKILL.md` (and its `references/`, `assets/`, `scripts/`).
+   Shared contracts change in `skills/_shared/` — one file, live for every skill that
+   points at it.
+2. **Validate** the plugin manifest:
    ```
    claude plugin validate .
    ```
-4. **Commit** — history reads as a changelog of what each session taught.
-5. **Reinstall**:
-   ```powershell
-   pwsh improve-skill/scripts/reinstall.ps1 -SkillName <skill>
+   Then confirm the skill is still discovered — the inventory catches a folder that
+   moved or a manifest that stopped matching:
    ```
-   It runs `_shared/sync.ps1` first, then mirrors dev → installed with
-   `robocopy /MIR`, excluding dev-only artifacts (`evals/`, `.git`, `viewer.log`).
+   claude plugin details lx@skills-dir
+   ```
+3. **Commit** — history reads as a changelog of what each session taught.
+4. **`/reload-plugins`** to pick the change up in the running session.
 
-If the edit touched a shared interface, **reinstall every skill in that file's
-audience**, not just the one being improved — each installed copy embeds its own
-snapshot. Read the audience map in [Shared interfaces](/shared-interfaces.md).
+A changed frontmatter **`description`** affects triggering and may need a fresh
+session to be picked up.
 
-New instructions take effect the next time the skill is invoked. A changed
-frontmatter **`description`** affects triggering and may need a fresh session to be
-picked up.
+Editing a `_shared/` contract changes behaviour for every skill pointing at it, all
+at once. That is the point of the design, and the reason to say out loud which skills
+an interface edit reaches.
 
 # improve-skill: the whole loop in one pass
 
@@ -66,7 +53,7 @@ end of it. Its steps:
 | 1. Identify | Which skill caused the behavior — from the user, or by scanning the session |
 | 2. Diagnose | Reread where the skill was in play; locate the instruction (or missing instruction) that produced it. Goal: "the skill says X, which led to Y, but the session needed Z" |
 | 3. Propose | Diagnosis + the edit as before/after + rationale. **Wait for explicit approval** — nothing is written first |
-| 4. Apply | Edit dev copy → commit → reinstall. All three, or the change is a silent no-op |
+| 4. Apply | Edit → commit → tell the user to `/reload-plugins` |
 
 # Editing principles
 
@@ -94,6 +81,5 @@ judgment plus rationale.
 
 # Citations
 
-* `improve-skill/SKILL.md`
-* `improve-skill/scripts/reinstall.ps1`
-* `_shared/sync.ps1`
+* `skills/improve-skill/SKILL.md`
+* `.claude-plugin/plugin.json`

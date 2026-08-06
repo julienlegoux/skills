@@ -1,11 +1,8 @@
 {
-  "name": "skills",
+  "name": "lx",
   "description": "Idea-to-PR workflow skills for greenfield (define-scope/specs/conventions, split-epics) and brownfield (map-codebase, define-change), plus create-issues, implement-issue/epic, review-epics/issues, OKF docs tooling and improve-skill.",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "author": {
     "name": "Julien Legoux"
-  },
-  "skills": [
-    "./"
-  ]
+  }
 }

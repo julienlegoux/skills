@@ -15,31 +15,35 @@ keep them agreeing on the same file formats.
 # Layout
 
 ```
-skills/
+<repo>/
 ├── .claude-plugin/
 │   ├── marketplace.json          ← marketplace "lx-engine"
-│   └── plugin.json               ← plugin "skills"
-├── _shared/
-│   ├── bundle-interfaces.md      ← rules for anything written under docs/
-│   ├── ledger-interfaces.md      ← the decision doc, for ledger-driven skills
-│   ├── pipeline-interfaces.md    ← epic/issue schemas, for epic-to-PR skills
-│   └── sync.ps1                  ← copies each into its audience's references/
-├── define-scope/
-│   ├── SKILL.md
-│   └── references/
-├── ...one folder per skill (14 today)
+│   └── plugin.json               ← plugin "lx"
+├── skills/                       ← the plugin's default skills directory
+│   ├── _shared/
+│   │   ├── bundle-interfaces.md  ← rules for anything written under docs/
+│   │   ├── ledger-interfaces.md  ← the decision doc, for ledger-driven skills
+│   │   └── pipeline-interfaces.md ← epic/issue schemas, for epic-to-PR skills
+│   ├── define-scope/
+│   │   ├── SKILL.md
+│   │   └── references/
+│   └── ...one folder per skill (14 today)
 ├── docs/                         ← this bundle
 └── README.md
 ```
+
+`_shared/` sits *among* the skills rather than above them: it has no `SKILL.md`, so
+discovery ignores it, and being a sibling keeps every pointer to it a plain
+`../_shared/<file>`.
 
 # Anatomy of a skill
 
 | Path | Role |
 |---|---|
 | `<skill>/SKILL.md` | Always loaded when the skill fires. Holds the decision flow and the invariants — not bulk. |
-| `<skill>/references/` | Progressive disclosure: templates, schemas, edge cases the skill reads only when it needs them. Also where synced copies of `_shared/*.md` land. |
+| `<skill>/references/` | Progressive disclosure: templates, schemas, edge cases the skill reads only when it needs them — the ones specific to *this* skill. Shared contracts are read from `../_shared/`, never copied in. |
 | `<skill>/assets/` | Files the skill copies or instantiates (e.g. `define-conventions/assets/baseline.md`). |
-| `<skill>/scripts/` | Executables the skill runs (e.g. `improve-skill/scripts/reinstall.ps1`, `okf-docs/scripts/validate_okf.py`). |
+| `<skill>/scripts/` | Executables the skill runs (e.g. `okf-docs/scripts/validate_okf.py`). |
 | `<skill>/agents/` | Subagent definitions, where a skill delegates (`review-epics`, `review-issues`). |
 
 The frontmatter `description` in `SKILL.md` is what decides whether the skill fires
@@ -48,9 +52,11 @@ rather than a list of trigger phrases.
 
 # Discovery
 
-`.claude-plugin/plugin.json` declares `"skills": ["./"]`, so **every top-level folder
-holding a `SKILL.md` is picked up automatically**. Adding a skill means adding a
-folder; there is no registry to update.
+`.claude-plugin/plugin.json` declares no component paths, so Claude Code uses the
+default location: **every folder under `skills/` holding a `SKILL.md` is picked up
+automatically**. Adding a skill means adding a folder; there is no registry to update.
+Confirm with `claude plugin details lx@skills-dir`, which lists what was actually
+discovered.
 
 `.claude-plugin/marketplace.json` wraps that plugin as the `lx-engine` marketplace,
 which is what makes the repo installable by URL. See
