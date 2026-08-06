@@ -44,6 +44,11 @@ permission stalls) — idle waiting is cheaper than context bloat.
 1. Locate the epic folder (`docs/epics/epic-<n>-<slug>/`). Read `issues/index.md`
    and each issue's **frontmatter only** (the fields in
    `../_shared/pipeline-interfaces.md`) — the bodies are for the implementers.
+   Then read `docs/planning/DEVIATIONS.md` if it exists — the register of standards
+   earlier epics proved unworkable (`../_shared/pipeline-interfaces.md`). It is cheap,
+   it is the one place that carries what previous runs learned the hard way, and any
+   entry touching this epic goes into the affected implementers' prompts. Without it
+   each implementer rediscovers the same wall on its own CI round.
 2. Determine the **integration branch**: the one the user named; else `develop` if
    it exists; else the repo's default branch. All PRs in this run target it, and
    every implementer must be told about it explicitly — `implement-issue` defaults
@@ -263,9 +268,27 @@ Stop the loop and report — rather than pushing through — when:
 - **Test/CI summary**: per-issue results as reported, plus any repo-has-no-CI note.
 - **UI verification** (UI epics): preview URL, widths checked, deviations with
   their dispositions.
-- **Deviations**: every deviation file implementers reported, aggregated.
+- **Deviations**: every deviation file implementers reported, aggregated — `close-epic`
+  promotes them, so name each one's epic/issue and evidence path, not just the gist.
 - **Follow-ups**: out-of-scope discoveries collected from all reports.
 - **Left over**: anything not `done` and precisely why — including human-gates
   still waiting on the user.
-- **Cleanup offer**: leftover worktrees and merged remote branches (recipe in
-  `references/ci-and-merging.md`) — offer, don't silently delete.
+
+## Hand off to close-epic
+
+Your loop stopping is not the epic being closed, and the two are not the same job. The
+worktrees you spawned still hold branches checked out, the merged remote branches are
+still there, the milestone is still open, and the deviations above exist only in this
+report — which dies with the session. That state is what stops the *next* epic from
+starting, and sorting it out is not tail work for a supervisor's context at its most
+depleted: it needs a fresh one.
+
+So end the run by handing over to `close-epic` — it verifies the epic's real state
+against GitHub and git, promotes the deviations into `docs/planning/DEVIATIONS.md`,
+closes the milestone, and cleans up. Offer to run it now (or spawn a subagent to, with
+this report as its input); if the user declines, say plainly that worktrees, branches
+and the milestone are left as-is and the deviations are unpromoted.
+
+This applies just as much when the run stopped early — an interrupted run is when its
+discoveries are most likely to be lost and a half-cleaned repo is what makes the resume
+fail.

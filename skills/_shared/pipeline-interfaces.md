@@ -1,9 +1,10 @@
 # Pipeline interfaces
 
-Single source of truth for the epic and issue schemas, their status lifecycle, and
-the GitHub facts the skills that carry an epic to merged PRs depend on
-(`split-epics`, `define-change`, `create-issues`, `implement-issue`,
-`implement-epic`). SKILL.md files point here instead of re-describing these formats.
+Single source of truth for the epic and issue schemas, their status lifecycle, the
+deviation register, and the GitHub facts the skills that carry an epic to merged PRs
+depend on (`split-epics`, `define-change`, `create-issues`, `implement-issue`,
+`implement-epic`, `close-epic`). SKILL.md files point here instead of re-describing
+these formats.
 
 The rules that apply to *anything* written under `docs/` — language, bundle and link
 rules, reserved files, committing what you write — live in `bundle-interfaces.md`,
@@ -132,6 +133,68 @@ Reconcile commits — the writes that flip merged work to `done` — belong on t
 branch the epic's statuses live on: the **integration branch** when one is in play,
 otherwise the default branch. They describe work that already merged there;
 putting them on a feature branch holds finished facts hostage to an unmerged PR.
+
+## Deviation register
+
+Implementation is the only stage that can prove a *decided* standard wrong — a pinned
+version the ecosystem can't satisfy, a mandated library that breaks the build. That
+discovery is worthless if it stays where it was made, so it travels through two
+artifacts with two different jobs:
+
+| Artifact | Written by | When | Job |
+|---|---|---|---|
+| `docs/epics/epic-<n>-<slug>/deviations/<nn>-<slug>.md` | `implement-issue` | during the run, committed on the issue branch | **evidence** — what was decided, the verified blocker, alternatives, revisit trigger |
+| `docs/planning/DEVIATIONS.md` | `close-epic` | once, at epic close | the **register** every later run reads |
+
+The evidence files can't be the reader surface. They're written concurrently by agents
+blind to each other, scattered one folder per epic, and nothing tells a later reader
+which epics to sweep. The register is single-writer, one path, and lives in
+`docs/planning/` beside the SPECS.md and CONVENTIONS.md it contradicts — on the path
+its readers already walk.
+
+**Every skill that plans or implements against the planning docs reads
+`docs/planning/DEVIATIONS.md` in the same breath as SPECS.md and CONVENTIONS.md** —
+`create-issues`, `implement-issue`, `implement-epic`, `define-change`. A decided
+standard plus a live deviation against it is what the code *actually* looks like;
+reading only the first is how the next issue walks into the same wall, and how a plan
+gets written against a stack that no longer exists.
+
+(Distinct from the "deviations" in `define-conventions`: those are deliberate
+divergences from the *personal baseline*, decided up front and folded into
+CONVENTIONS.md — they *are* the project's standard. These are the code diverging from
+that standard after the fact.)
+
+Register format — part of the `docs/planning/` bundle, so its rules are
+`bundle-interfaces.md`'s:
+
+```markdown
+---
+type: Deviations
+title: "<project> — Deviations"
+description: "Standards this codebase deviates from, and why"
+tags: [planning, deviations]
+timestamp: <ISO 8601 — set on every promotion>
+---
+
+# Deviations
+
+## Epic <n>: <epic title>
+
+### <nn> — <what was deviated from, in one line>
+
+- **Decided**: <the SPECS/CONVENTIONS line, linked>
+- **Actual**: <what the code does instead>
+- **Because**: <verified blocker — versions, error text, the command that failed>
+- **Disposition**: accepted | fix-now (#<issue>) | deferred | resolved (<date>) — <how>
+- **Revisit when**: <concrete trigger — a version, an event; never "later">
+- **Evidence**: <link(s) to the per-issue deviation file(s)>, PR #<pr>
+```
+
+Append-only, newest epic first. An entry that stops being true becomes
+`resolved (<date>)` rather than disappearing — a register with no history gets
+re-derived instead of trusted. Dispositions are the **user's** call, batched and
+triaged at close; an `accepted` one also means SPECS/CONVENTIONS should be edited to
+stop contradicting the code.
 
 ## GitHub facts on non-default integration branches
 

@@ -55,7 +55,11 @@ run where `gh` was skipped or failed) → Step 6.3 to finish only the GitHub obj
 Never re-ask a decided item. If several
 changes are in flight, ask which one (or whether this is a new change).
 
-**Prerequisites:** read `docs/planning/SPECS.md` and `docs/planning/CONVENTIONS.md`.
+**Prerequisites:** read `docs/planning/SPECS.md` and `docs/planning/CONVENTIONS.md` —
+plus `docs/planning/DEVIATIONS.md` when it exists: the register of standards earlier
+implementation proved unworkable (`../_shared/pipeline-interfaces.md`). It is the
+cheapest correction available to the audit below, because it names where the two
+documents above already disagree with the code.
 
 - **Missing (either):** stop and say so. Offer to run the `map-codebase` skill first
   — it reverse-engineers the codebase into exactly these two files. Do *not* inline a
