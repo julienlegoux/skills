@@ -9,6 +9,12 @@ A skill exists because something **repeats**. Everything below serves that one t
 
 The shape of a skill in this repo — anatomy, the description contract, progressive disclosure, tiered prescriptiveness — is defined once in `../_shared/authoring-interfaces.md`. Read it before drafting anything.
 
+## Before anything: find the clone
+
+New skills are written into a clone of this repo, committed, and pushed. Resolve it the same way `improve-skill` does: a root the user names, the current working repo, or the target of the `~/.claude/skills/*` junction — whichever holds `skills/_shared/`, and never a path under `~/.claude/plugins/`.
+
+If none turns up, this machine installed the plugin rather than cloning it. Say so and stop: a skill written into an installed copy runs until the next marketplace update erases it, leaving nothing in git and nothing upstream.
+
 ## Step 1: Prove the need repeats
 
 Ask the user for **two or more concrete past occurrences**. Not hypotheticals — times it actually happened. Then classify what you hear:

@@ -16,7 +16,9 @@ One copy, not two. The repo is loaded **in place** as a plugin, so the file you 
 <repo>/skills/_shared/*.md          ← the shared contracts, read as ../_shared/<file>
 ```
 
-Resolve `<repo>` at the start of the run rather than assuming a path — it is cloned wherever its owner puts it. Take the first that holds `skills/_shared/`: a root the user or test harness names, the current working repo, or the target the `~/.claude/skills/*` junction points at. If none does, ask the user where their clone lives instead of guessing.
+Resolve `<repo>` at the start of the run rather than assuming a path — it is cloned wherever its owner puts it. Take the first that holds `skills/_shared/`: a root the user or test harness names, the current working repo, or the target the `~/.claude/skills/*` junction points at.
+
+Anything under `~/.claude/plugins/` is disqualified however much it looks like the repo — see the installed-copy rule in `../_shared/authoring-interfaces.md`. If no clone turns up, this machine consumes the plugin rather than authoring it: say so and stop.
 
 ## Step 1: Identify the target skill
 

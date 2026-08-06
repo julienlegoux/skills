@@ -21,6 +21,25 @@ while staying readable by its neighbours at `../_shared/<file>`.
 The repo is loaded in place as the `lx` plugin, so the file you edit is the file that
 runs. Skills are namespaced: `/lx:<name>`.
 
+## Never author against an installed copy
+
+A meta-skill runs from wherever the plugin is loaded, which is not always a clone. On
+a machine that installed the plugin from the marketplace, the same tree exists twice,
+and **neither is a place to work**:
+
+| Path | What it is |
+|---|---|
+| `~/.claude/plugins/cache/<marketplace>/<plugin>/<version>/` | the copy actually loaded. No git. Replaced wholesale on the next marketplace update |
+| `~/.claude/plugins/marketplaces/<marketplace>/` | a real git clone — but not what's loaded, and reset on update |
+
+Both hold `skills/_shared/`, so both pass a naive "does this look like the repo?"
+test. Editing the first takes effect immediately and is erased later with nothing to
+warn you; editing the second commits cleanly and changes nothing.
+
+**Refuse to write anywhere under `~/.claude/plugins/`.** If no clone can be found,
+say so and stop — an edit that a background update silently discards is worse than no
+edit at all.
+
 ## Anatomy
 
 | Path | Role |
