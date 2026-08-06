@@ -18,9 +18,10 @@ milestone/sub-issue linkage if the user explicitly wants standalone issues.
 
 `docs/epics/` is an OKF v0.1 bundle — `split-epics` (or `define-change`)
 established it, and every issue file this skill adds must fit the same rules. The
-issue file schema, index and link conventions, status lifecycle, and the
-English-content rule are defined once in `references/pipeline-interfaces.md` —
-read it before drafting anything.
+issue file schema and status lifecycle are defined once in
+`references/pipeline-interfaces.md`, and the rules for anything written under
+`docs/` — English content, link and index forms, reserved files, committing what you
+write — in `references/bundle-interfaces.md`. Read both before drafting anything.
 
 ## Step 1: Resolve the target epic
 
@@ -172,13 +173,9 @@ issue via its `resource` field).
 If `docs/epics/log.md` exists, append an entry per issue created (see `split-epics`'
 Step 7 for the log format). Don't create it if it doesn't already exist.
 
-Then commit and push — don't leave the bundle dirty or ask whether to: the GitHub
-issues already exist at this point, so an uncommitted bundle is drift the next
-session would have to reconcile. Stage only what this run touched (the epic's
-`issues/` folder, plus `log.md` if appended), commit following the repo's commit
-conventions (e.g. `docs: add Epic <n> issues`), and push to the branch the repo's
-conventions say doc/issue work lands on (the integration trunk — e.g. `develop`
-under git-flow — otherwise the current branch).
+Then commit and push per the commit rule in `references/bundle-interfaces.md`,
+staging only what this run touched (the epic's `issues/` folder, plus `log.md` if
+appended) — e.g. `docs: add Epic <n> issues`.
 
 Report a summary: issues created (with links), their sizes, the commit pushed, and
 a reminder that the epic's GitHub issue now shows them as sub-issues/progress.

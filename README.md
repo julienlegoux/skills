@@ -89,8 +89,10 @@ skills/
 │   ├── marketplace.json          ← marketplace "lx-engine"
 │   └── plugin.json               ← plugin "skills" (bundles every skill below)
 ├── _shared/
-│   ├── pipeline-interfaces.md    ← single source of truth for pipeline formats
-│   └── sync.ps1                  ← copies it into each pipeline skill's references/
+│   ├── bundle-interfaces.md      ← rules for anything written under docs/
+│   ├── ledger-interfaces.md      ← the decision doc, for ledger-driven skills
+│   ├── pipeline-interfaces.md    ← epic/issue schemas, for epic-to-PR skills
+│   └── sync.ps1                  ← copies each into its audience's references/
 ├── define-scope/SKILL.md
 ├── define-specs/SKILL.md
 ├── ...one folder per skill
@@ -98,9 +100,17 @@ skills/
 
 Every top-level folder holds one skill (`SKILL.md` + supporting files) and is auto-discovered by the plugin.
 
-### Shared pipeline contract
+### Shared contracts
 
-The file formats, status lifecycles, link rules, and GitHub facts shared by the pipeline skills live once in [`_shared/pipeline-interfaces.md`](_shared/pipeline-interfaces.md). Each pipeline skill (`split-epics`, `define-change`, `create-issues`, `implement-issue`, `implement-epic`) ships a synced copy under its `references/` so it stays self-contained. **Never edit a synced copy** — edit the shared file and re-run `_shared/sync.ps1`.
+What the skills agree on lives in `_shared/`, split by audience so no skill carries rules that don't apply to it:
+
+| Interface | Defines | Audience |
+|---|---|---|
+| [`bundle-interfaces.md`](_shared/bundle-interfaces.md) | English content, bundle & link rules, reserved `index.md`/`log.md`, committing what you write | every skill that writes under `docs/` |
+| [`ledger-interfaces.md`](_shared/ledger-interfaces.md) | the decision doc schema and reopening rule | the ledger-driven planning skills |
+| [`pipeline-interfaces.md`](_shared/pipeline-interfaces.md) | epic & issue schemas, status lifecycle, GitHub facts on integration branches | the epic-to-PR skills |
+
+Each consuming skill ships a synced copy under its `references/` so it stays self-contained. **Never edit a synced copy** — edit the file in `_shared/` and re-run `_shared/sync.ps1`, whose audience map is the source of truth for who gets what.
 
 ## 🛠️ Developing
 

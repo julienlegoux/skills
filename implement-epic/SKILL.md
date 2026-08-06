@@ -11,7 +11,9 @@ that loop for every remaining issue in an epic — delegate, watch CI, merge, re
 until the epic's board shows all `done`.
 
 Shared formats, the issue status lifecycle, and the GitHub facts this flow leans on
-live in `references/pipeline-interfaces.md` — read it before Step 1. The two facts
+live in `references/pipeline-interfaces.md` — read it before Step 1, with
+`references/bundle-interfaces.md` for the bundle-wide rules (English content, link
+forms, committing what you write). The two facts
 that bite hardest: on a non-default integration branch **`Closes #N` never
 auto-closes** the issue, and **a CONFLICTING PR gets zero CI runs**.
 

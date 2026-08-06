@@ -1,49 +1,17 @@
 # Pipeline interfaces
 
-Single source of truth for the file formats, status lifecycles, link rules, and
-GitHub facts shared by the planning-to-PR pipeline skills (`split-epics`,
-`define-change`, `create-issues`, `implement-issue`, `implement-epic`). SKILL.md
-files point here instead of re-describing these formats.
+Single source of truth for the epic and issue schemas, their status lifecycle, and
+the GitHub facts the skills that carry an epic to merged PRs depend on
+(`split-epics`, `define-change`, `create-issues`, `implement-issue`,
+`implement-epic`). SKILL.md files point here instead of re-describing these formats.
 
-The authoritative copy lives at `_shared/pipeline-interfaces.md` in the dev repo;
-the copy in each skill's `references/` is synced at install time. Never edit a
-synced copy — change the shared file and re-run the sync.
+The rules that apply to *anything* written under `docs/` — language, bundle and link
+rules, reserved files, committing what you write — live in `bundle-interfaces.md`,
+and the decision doc `define-change` writes lives in `ledger-interfaces.md`. Read
+`bundle-interfaces.md` alongside this file; the schemas below assume its link rules.
 
-## Language rule
-
-All pipeline artifacts — epics, issues, decision docs, indexes, logs, deviation
-files — are written in **English**, regardless of the language of the conversation
-that produced them. Bundles outlive their conversation and are read by later
-sessions, agents, and tools; a mixed-language bundle forces every future reader to
-translate. The conversation itself stays in the user's language — only what lands
-on disk is English.
-
-## The two bundles and their link rules
-
-`docs/planning/` and `docs/epics/` are two **separate** OKF v0.1 bundles. That
-split drives the link rules:
-
-| Link | Form | Example |
-|---|---|---|
-| Within a bundle | bundle-relative absolute path (leading `/`, relative to the bundle root) | `[Epic 1](/epic-1-core-crud/EPIC_1.md)` |
-| Across bundles (e.g. epic → planning doc) | plain relative path | `[Specs](../../planning/SPECS.md)` |
-
-Reserved files, as the pipeline uses them:
-
-- The **bundle root** `index.md` carries `okf_version: "0.1"` as its only
-  frontmatter. **Non-root** `index.md` files (e.g. an epic's `issues/index.md`, a
-  ledger's `index.md`) carry no frontmatter at all.
-- `log.md` uses `## YYYY-MM-DD` headings, newest first. Append to a `log.md` that
-  exists; never create one that doesn't — with one exception: the skill that
-  *establishes* a bundle creates `log.md` alongside the root `index.md`. Both
-  establishers of `docs/epics/` (`split-epics`, `define-change`) do, so a later
-  skill's "append if it exists" reliably appends instead of silently dropping the
-  bundle's history.
-- Index bullets are **mechanical**: `* [Title](file.md) - <status or one-line
-  description>`, tracking the target file's frontmatter — no recommendation prose,
-  no commentary. When statuses change, update the bullet; when repeated edits have
-  left a section disordered, rewrite the section wholesale instead of patching
-  line by line.
+Never edit a synced copy — change `_shared/pipeline-interfaces.md` and re-run the
+sync.
 
 ## Epic file
 
@@ -183,34 +151,5 @@ default, two behaviors differ from what most GitHub experience predicts:
 
 ## Decision doc (planning ledger)
 
-Used by every ledger-driven skill (`define-scope`, `define-specs`,
-`define-conventions`, `define-change`, `map-codebase`): one file per decision under
-the phase's folder (`docs/planning/<phase-dir>/<nn>-<slug>.md`), numbered in
-dependency order.
-
-```markdown
----
-type: Decision
-title: "<short name>"
-description: "<the question, one line>"
-tags: [decision, <phase>]
-timestamp: <ISO 8601 — now>
-phase: <scope|specs|conventions|change|mapping>
-decision: <nn>
-slug: <slug>
-status: open        # open | decided | na
-verdict: null       # the chosen option, once decided
-decided_via: null   # triage | discussion | na
-depends_on: []      # slugs of decisions this one depends on
----
-
-# Question
-# Options
-# Recommendation
-# Verdict
-```
-
-`define-change` adds extension fields `change: <N>` and `change_slug: <slug>`.
-Every `open` decision carries a real recommendation before triage — "it depends"
-is not a recommendation. The phase's `index.md` (non-root — no frontmatter) lists
-each decision mechanically: `* [Title](<nn>-<slug>.md) - <status>`.
+Moved: the decision doc schema lives in `ledger-interfaces.md`, synced to every
+ledger-driven skill. `define-change` is the only skill here that writes one.

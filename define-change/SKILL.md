@@ -22,9 +22,11 @@ One change = one epic. That's the contract; the size guard in Step 2 protects it
 
 Both directories this skill touches — `docs/planning/` (where it adds
 `changes/change-<N>-<slug>/`) and `docs/epics/` (which it establishes if absent,
-including `log.md`) — are separate OKF v0.1 bundles. The bundle and link rules,
-epic file schema, decision doc template, and English-content rule are defined
-once in `references/pipeline-interfaces.md` — read it before writing anything.
+including `log.md`) — are separate OKF v0.1 bundles. Three shared references define
+what this skill writes, and it reads all three before writing anything:
+`references/bundle-interfaces.md` (English content, bundle and link rules, reserved
+files, committing what you write), `references/ledger-interfaces.md` (the decision
+doc), and `references/pipeline-interfaces.md` (the epic file schema).
 
 Layout this skill owns:
 
@@ -131,8 +133,8 @@ move for a category you considered and ruled out):
 
 Add project-specific decisions the audit raises that no list anticipates. Number in
 dependency order, record `depends_on`. One file per decision,
-`docs/planning/changes/change-<N>-<slug>/<nn>-<slug>.md`, using the shared Decision
-doc template from `references/pipeline-interfaces.md` (`tags: [decision, change]`,
+`docs/planning/changes/change-<N>-<slug>/<nn>-<slug>.md`, using the decision doc
+template from `references/ledger-interfaces.md` (`tags: [decision, change]`,
 `phase: change`, plus the `change`/`change_slug` extension fields). Ground every
 Question in audit facts (name the files, the contracts, the row counts) and every
 Recommendation in SPECS.md/CONVENTIONS.md — "it depends" is not a recommendation.
@@ -211,7 +213,9 @@ Step 0's resume path lands back here, and `create-issues` refuses politely until
 its `description` + `status`); append a `docs/epics/log.md` entry; update
 `docs/planning/` root `index.md` to list the change ledger and append a
 `docs/planning/log.md` entry. If the okf-docs validator is available, run it against
-both bundles.
+both bundles. Then commit and push both per the commit rule in
+`references/bundle-interfaces.md` — the epic issue you just created links back to
+`EPIC_<N>.md`, and that link 404s for everyone until the push lands.
 
 **Idempotency:** if the EPIC file already exists with `gh_issue` set, don't recreate
 either it or its GitHub state — report and stop. If the ledger changed since the

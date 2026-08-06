@@ -15,7 +15,9 @@ bar) know where things stand.
 The issue file format, the full status lifecycle (`draft → open → in-progress →
 pr-open → done`, who writes each transition, what every status write must also
 update), and the GitHub facts about non-default integration branches are defined in
-`references/pipeline-interfaces.md` — read it first. This skill owns the
+`references/pipeline-interfaces.md` — read it first, alongside
+`references/bundle-interfaces.md` for the rules covering anything written under
+`docs/` (English content, link forms, committing what you write). This skill owns the
 `open → in-progress → pr-open` transitions and the `pr-open → done` reconcile of
 *earlier* runs' issues (merging happens outside this skill).
 
