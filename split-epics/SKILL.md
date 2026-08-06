@@ -18,9 +18,11 @@ the breakdown before anything is created there.
 
 Every file this skill writes under `docs/epics/` must be a conformant OKF v0.1
 bundle, so any OKF-aware tool or agent — not just this skill and `create-issues` —
-can read `docs/epics/` as structured knowledge. The epic file schema, bundle and
-link rules, index conventions, and the English-content rule are defined once in
-`references/pipeline-interfaces.md` — read it before writing anything.
+can read `docs/epics/` as structured knowledge. The epic file schema is defined once
+in `references/pipeline-interfaces.md`, and the rules for anything written under
+`docs/` — English content, link forms, reserved `index.md`/`log.md` files, and
+committing what you write — in `references/bundle-interfaces.md`. Read both before
+writing anything.
 
 ## Step 1: Find the plan doc
 
@@ -234,5 +236,11 @@ skill in the pipeline only ever *appends* to a log that already exists, so a bun
 founded without one never gets a history at all — and the epics that started it would
 be the one event nobody recorded.
 
-Report a final summary to the user: epics created, issue numbers/links, and a reminder
-that `create-issues` can now be run per epic to break each one into PR-sized issues.
+Then commit and push the bundle per the commit rule in
+`references/bundle-interfaces.md`. It matters more here than anywhere: each epic
+issue you just created links back to its `EPIC_<n>.md`, and those links 404 for
+everyone until the push lands.
+
+Report a final summary to the user: epics created, issue numbers/links, the commit
+pushed, and a reminder that `create-issues` can now be run per epic to break each one
+into PR-sized issues.

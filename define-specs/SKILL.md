@@ -49,6 +49,10 @@ If the bundle doesn't exist yet (specs running first — allowed by the soft cha
 establish it as define-scope would: root `index.md` with `okf_version: "0.1"` only,
 root `log.md`.
 
+The bundle-wide rules — English content, link forms, reserved files, committing what
+you write — are defined once in `references/bundle-interfaces.md`, and the decision
+doc schema in `references/ledger-interfaces.md`. Read both before writing anything.
+
 ## Step 1: Intake
 
 Read `references/checklist.md`. Between SCOPE.md, the repo, and the user's input, most
@@ -64,30 +68,9 @@ Instantiate every applicable checklist area; give non-applicable areas an explic
 doesn't anticipate. Number in dependency order (language/runtime almost always first —
 most other recommendations hang off it) and record `depends_on`.
 
-One file per decision, `docs/planning/specs/<nn>-<slug>.md`, same template as
-define-scope (only `tags` and `phase` differ):
-
-```markdown
----
-type: Decision
-title: "<short name>"
-description: "<the question, one line>"
-tags: [decision, specs]
-timestamp: <ISO 8601 — now>
-phase: specs
-decision: <nn>
-slug: <slug>
-status: open        # open | decided | na
-verdict: null
-decided_via: null   # triage | discussion | na
-depends_on: []
----
-
-# Question
-# Options
-# Recommendation
-# Verdict
-```
+One file per decision at `docs/planning/specs/<nn>-<slug>.md`, using the decision doc
+template in `references/ledger-interfaces.md` with `tags: [decision, specs]` and
+`phase: specs`.
 
 Recommendations here deserve real research: check what the repo already uses, and look
 up current library/framework facts rather than recommending from memory — a stale
@@ -145,7 +128,7 @@ Shape the sections to the decisions actually made — don't force empty headings
 each decision as settled fact and link its decision doc OKF-style
 (e.g. `([decision](/specs/02-storage.md))`) instead of restating the rationale.
 Update root `index.md`, append to `log.md`, validate if the okf-docs checker is
-available.
+available, then commit and push per `references/bundle-interfaces.md`.
 
 ## Handoff
 

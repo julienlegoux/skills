@@ -24,22 +24,14 @@ by walking a decision ledger that the *user* controls.
 4. **Nothing is finalized until the user confirms.** The deliverable is only written
    from the decided set after explicit confirmation.
 
-One shared rule with the rest of the pipeline: everything written to disk (decision
-docs, indexes, logs, SCOPE.md) is in **English**, regardless of the conversation
-language — bundles outlive the conversation and are read by other sessions, agents,
-and tools. The conversation itself stays in the user's language.
-
 ## Output format: OKF
 
 `docs/planning/` is an [Open Knowledge Format](https://github.com/GoogleCloudPlatform/knowledge-catalog/blob/main/okf/SPEC.md)
-(OKF v0.1) bundle. This skill establishes it if absent:
-
-- Bundle root `docs/planning/index.md` (only file allowed `okf_version: "0.1"`
-  frontmatter, nothing else; non-root index files get no frontmatter at all).
-- Bundle root `docs/planning/log.md` (`## YYYY-MM-DD` headings, newest first).
-- Every other `.md` is a concept file: YAML frontmatter with a non-empty `type`.
-- Cross-links inside the bundle are bundle-relative with a leading `/`
-  (e.g. `[target users](/scope/01-target-users.md)`).
+(OKF v0.1) bundle, and this skill is usually the one that establishes it. The rules
+every pipeline skill obeys when writing to it — English content, bundle-relative
+links, the reserved `index.md`/`log.md` files, and committing what you write — are
+defined once in `references/bundle-interfaces.md`; the decision doc schema is in
+`references/ledger-interfaces.md`. Read both before writing anything.
 
 Layout this skill owns:
 
@@ -128,37 +120,9 @@ Build the decision list from two sources:
    generic checklist anticipates. Add them as first-class decisions.
 
 Number decisions in dependency order (a decision that constrains another comes first)
-and record dependencies in `depends_on`. Write one file per decision,
-`docs/planning/scope/<nn>-<slug>.md`:
-
-```markdown
----
-type: Decision
-title: "<short name>"
-description: "<the question, one line>"
-tags: [decision, scope]
-timestamp: <ISO 8601 — now>
-phase: scope
-decision: <nn>
-slug: <slug>
-status: open        # open | decided | na
-verdict: null       # the chosen option, once decided
-decided_via: null   # triage | discussion | na
-depends_on: []      # slugs of decisions this one depends on
----
-
-# Question
-<what is being decided, and why it matters for this project>
-
-# Options
-<2–4 realistic options, one-line trade-off each>
-
-# Recommendation
-<your recommended option and a short why — written now, before triage>
-
-# Verdict
-<empty until decided: chosen option, rationale, anything the user added>
-```
+and record dependencies in `depends_on`. Write one file per decision at
+`docs/planning/scope/<nn>-<slug>.md`, using the decision doc template in
+`references/ledger-interfaces.md` with `tags: [decision, scope]` and `phase: scope`.
 
 Every `open` decision must have a real recommendation before Step 3 — "it depends" is
 not a recommendation. Create `scope/index.md` (no frontmatter) listing every decision
@@ -256,7 +220,9 @@ rationale stays one click away without being copied in.
 
 Then update the bundle: root `index.md` lists `SCOPE.md` and the `scope/` listing;
 append a `log.md` entry (`* **Creation**: ...` or `* **Update**: ...`). If the
-okf-docs skill's validator is available, run it against `docs/planning/`.
+okf-docs skill's validator is available, run it against `docs/planning/`. Finally
+commit and push the bundle per the commit rule in `references/bundle-interfaces.md` —
+this is the run's deliverable, and every skill downstream reads it from git.
 
 ## Handoff
 

@@ -48,8 +48,11 @@ docs/planning/
     01-<slug>.md      # one Decision doc per genuine ambiguity
 ```
 
-Cross-links inside the bundle are bundle-relative with a leading `/`
-(e.g. `([decision](/mapping/01-canonical-error-style.md))`).
+The bundle-wide rules — English content, link forms (bundle-relative with a leading
+`/`, e.g. `([decision](/mapping/01-canonical-error-style.md))`), reserved files, and
+committing what you write — are defined once in `references/bundle-interfaces.md`,
+and the decision doc schema in `references/ledger-interfaces.md`. Read both before
+writing anything.
 
 ## Step 0: Resume and refresh checks
 
@@ -149,10 +152,9 @@ only when the repo *cannot answer for itself*:
 **If the ledger is empty — the common case — skip Steps 3–4 entirely and go
 straight to Step 5.** Do not manufacture decisions to look thorough.
 
-Otherwise write one doc per item, `docs/planning/mapping/<nn>-<slug>.md`, same
-template as the other planning skills (`tags: [decision, mapping]`,
-`phase: mapping`, same status fields, `# Question / # Options / # Recommendation /
-# Verdict` sections), each with a concrete recommendation grounded in evidence
+Otherwise write one doc per item at `docs/planning/mapping/<nn>-<slug>.md`, using the
+template in `references/ledger-interfaces.md` (`tags: [decision, mapping]`,
+`phase: mapping`), each with a concrete recommendation grounded in evidence
 (e.g. "38 of 51 handlers use pattern X, and all files touched in the last six
 months do — recommend X as canonical"). Create `mapping/index.md` (no frontmatter)
 listing each with status and one-line recommendation.
@@ -213,8 +215,9 @@ Rules for both:
 - Shape sections to what the repo actually has; don't force empty headings.
 
 Update root `index.md`, append a `log.md` entry (`* **Creation**: mapped <repo> at
-<short-sha>` or `* **Update**: refreshed map ...`), and run the okf-docs validator
-against `docs/planning/` if available.
+<short-sha>` or `* **Update**: refreshed map ...`), run the okf-docs validator
+against `docs/planning/` if available, then commit and push per
+`references/bundle-interfaces.md`.
 
 ## Handoff
 

@@ -49,6 +49,10 @@ docs/planning/
 Establish the bundle root (index.md + log.md) only if running before the other
 planning skills ever did.
 
+The bundle-wide rules — English content, link forms, reserved files, committing what
+you write — are defined once in `references/bundle-interfaces.md`, and the decision
+doc schema in `references/ledger-interfaces.md`. Read both before writing anything.
+
 ## Step 1: Instantiate the baseline
 
 Read `assets/baseline.md`. Filter it by the stack in SPECS.md: keep the general
@@ -83,9 +87,9 @@ Two boundaries on what may enter the ledger at all:
   contradiction in the bundle at worst; if the tension is real, say so in the
   Question section and let the user arbitrate knowingly.
 
-Decision docs use the shared template, `docs/planning/conventions/<nn>-<slug>.md`
-(`tags: [decision, conventions]`, `phase: conventions`, same status fields as the
-other planning skills), each with a concrete recommendation. Dependency order rarely
+Decision docs use the template in `references/ledger-interfaces.md`, written to
+`docs/planning/conventions/<nn>-<slug>.md` with `tags: [decision, conventions]` and
+`phase: conventions`, each with a concrete recommendation. Dependency order rarely
 matters here; number by baseline section order. Create `conventions/index.md`.
 
 ## Step 3: Triage — the batch pass
@@ -139,7 +143,8 @@ baseline_version: <the baseline.md timestamp or a short hash of it>
 ```
 
 Body sections follow the baseline's own structure. Update root `index.md`, append to
-`log.md`, validate if the okf-docs checker is available.
+`log.md`, validate if the okf-docs checker is available, then commit and push per
+`references/bundle-interfaces.md`.
 
 ## Handoff
 
