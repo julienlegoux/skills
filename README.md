@@ -91,7 +91,6 @@ skills/
 ├── _shared/
 │   ├── pipeline-interfaces.md    ← single source of truth for pipeline formats
 │   └── sync.ps1                  ← copies it into each pipeline skill's references/
-├── docs/                         ← this repo's own OKF bundle (backlog, retros, plans)
 ├── define-scope/SKILL.md
 ├── define-specs/SKILL.md
 ├── ...one folder per skill
