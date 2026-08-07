@@ -23,12 +23,11 @@ This skill verifies **state**: statuses, merges, closed issues, the milestone,
 branches, worktrees. It does **not** review the implemented code — not its quality,
 not its design, not whether the acceptance criteria were honestly met.
 
-No skill owns post-implementation code review yet. `review-epics` and `review-issues`
-audit *planning* artifacts (epics against the plan, issues against the epic) and both
-run before implementation. So when a user asks for the code to be reviewed, say that
-review is unbuilt rather than doing a shallow version here under cover of "closing" —
-a closing skill that half-reviews code is how an epic gets a clean bill of health it
-never earned.
+`review-implementation` owns that, and runs after this skill — it needs the register
+this one promotes, so that accepted drift isn't re-reported as a finding. When a user
+asks for the code to be reviewed, hand off to it rather than doing a shallow version
+here under cover of "closing": a closing skill that half-reviews code is how an epic
+gets a clean bill of health it never earned.
 
 Within state, this skill writes only bookkeeping and the register. It never touches
 product code: a gap it finds becomes a reported fact or a follow-up issue, never a
@@ -136,6 +135,9 @@ Two shapes, depending on how the run ended.
 - What was cleaned: worktrees removed, branches deleted.
 - Anything left deliberately (an open PR awaiting human review, a human-gate).
 - The next epic in `docs/epics/`, and that it is now unblocked.
+- That `review-implementation` can now audit what this epic shipped — the register is
+  written, so it is the first moment that review can run without re-litigating drift the
+  user just triaged. Offer it; don't run it unasked.
 
 **The epic is incomplete** — a stopped or blocked run. Same content, plus the part
 that matters more: a **resume snapshot**. What each unfinished issue's real state is,
