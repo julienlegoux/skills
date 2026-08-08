@@ -23,11 +23,12 @@ keep them agreeing on the same file formats.
 │   ├── _shared/
 │   │   ├── bundle-interfaces.md  ← rules for anything written under docs/
 │   │   ├── ledger-interfaces.md  ← the decision doc, for ledger-driven skills
-│   │   └── pipeline-interfaces.md ← epic/issue schemas, for epic-to-PR skills
+│   │   ├── pipeline-interfaces.md ← epic/issue schemas, for epic-to-PR skills
+│   │   └── review-interfaces.md  ← grading and the report, for the planning reviewers
 │   ├── define-scope/
 │   │   ├── SKILL.md
 │   │   └── references/
-│   └── ...one folder per skill (13 today)
+│   └── ...one folder per skill (16 today)
 ├── meta/                         ← invisible to the plugin
 │   ├── _shared/authoring-interfaces.md
 │   ├── create-skill/SKILL.md
@@ -94,7 +95,7 @@ standalone tooling around it:
 anything in. It files an issue on this repo instead — public repo, issues enabled, so
 any GitHub account can, with no token bundled and none needed.
 
-The pipeline skills consume the three output contracts in `skills/_shared/`; the meta
+The pipeline skills consume the output contracts in `skills/_shared/`; the meta
 skills consume the authoring one in `meta/_shared/`. See
 [Shared interfaces](/shared-interfaces.md) for who gets what and why.
 

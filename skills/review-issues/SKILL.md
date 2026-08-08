@@ -5,135 +5,68 @@ description: Review create-issues output against its epic (and the plan when use
 
 # Review Issues
 
-Review the issues produced for an epic. Treat this as a code-review style audit:
-find correctness and workflow risks first, then write a durable report in
-`docs/REPORT_<n>.md`.
+Audit the issues `create-issues` produced for one epic. The question to answer: could
+a developer work these issues in order, one PR each, and finish the epic without
+being blocked or building something the epic never asked for?
 
-This skill is read-only for epic and issue artifacts. Do not repair local issue files,
-GitHub issues, sub-issue links, or indexes unless the user explicitly asks for fixes
-after seeing the report. The only file this skill should create or update during review
-is the new report file.
+How a review is graded, verified, delegated to another model, and written down is
+defined once in `../_shared/review-interfaces.md` — read it before starting. The
+artifacts under review are governed by `../_shared/pipeline-interfaces.md` (issue
+schema, status lifecycle, GitHub facts) and `../_shared/bundle-interfaces.md` (link
+forms, reserved files, language). Judge against those two files directly; an issue is
+only malformed relative to what they define.
 
-## Step 1: Locate Inputs
+## Step 1: Resolve what is under review
 
-Resolve the target epic:
+The epic comes first, because the issues are graded against it:
 
-- Use the path, epic number, or epic title the user provided.
-- Otherwise list `docs/epics/epic-*/EPIC_*.md` and ask which epic to review.
+- The path, epic number, or title the user gave.
+- Otherwise list `docs/epics/epic-*/EPIC_*.md` and ask which epic to review — there
+  is no safe default when several epics have issues.
 
-Read the target `EPIC_<n>.md` in full, including frontmatter and body. Then read:
+Read that `EPIC_<n>.md` in full, frontmatter and body, then:
 
-- Every markdown issue file under that epic's `issues/` folder.
-- The epic's `issues/index.md`, if present.
-- `docs/epics/index.md`, if useful for cross-epic dependencies.
-- The docs linked from the epic's `## Context` section — typically
-  `docs/planning/SPECS.md` and `docs/planning/CONVENTIONS.md` — since issue sizing,
-  file paths, and conventions should be judged against the stack and standards
-  decided there.
-- The original plan when the epic frontmatter `source` points to it (typically
-  `docs/planning/SCOPE.md`, or a legacy `plan.md` / `docs/PLAN.md`), or when the
-  user explicitly asks to compare all the way back to it.
+- Every issue file under the epic's `issues/`, and its `issues/index.md` if present.
+- `docs/epics/index.md`, when cross-epic dependencies matter.
+- The docs the epic's `## Context` links — typically `docs/planning/SPECS.md` and
+  `docs/planning/CONVENTIONS.md`. Sizing, file paths and required tests are only
+  judgeable against the stack and standards decided there.
+- The original plan when the epic's `source` points at it, or when the user asks to
+  compare all the way back. Otherwise the epic is the contract: an issue is not wrong
+  for omitting something the epic itself dropped — that is `review-epics`' finding,
+  not this one's.
 
-Also read relevant workflow context if present: `CLAUDE.md`, `AGENTS.md`,
-`CONTRIBUTING.md`, `.github/ISSUE_TEMPLATE/`, `.github/PULL_REQUEST_TEMPLATE.md`, and
-repo docs that define labels, tests, branch conventions, or review expectations.
+Read for context when present: `CLAUDE.md`, `AGENTS.md`, `CONTRIBUTING.md`,
+`.github/ISSUE_TEMPLATE/`, `.github/PULL_REQUEST_TEMPLATE.md`, and any repo doc
+defining labels, tests, or branch conventions.
 
-## Step 2: Verify GitHub State When Available
+## Step 2: What to look for
 
-If issue files contain `gh_issue`, `resource`, `milestone`, or dependency metadata,
-verify them with `gh` when the CLI is available and authenticated:
+- **Epic coverage** — every goal, scope item, acceptance criterion and dependency in
+  the epic appears in at least one issue. Acceptance criteria are the ones that go
+  missing: they are easy to summarise away and impossible to verify afterwards.
+- **No invented scope** — no endpoint, test, UI or implementation promise the epic
+  does not support, unless flagged as an assumption. It will get built.
+- **Right-sized PRs** — one issue, one focused, reviewable PR. Split anything heading
+  toward ~1000 changed lines; merge anything too small to ship on its own. Sizing is
+  the finding developers feel first.
+- **Implementation order** — issue numbers and `depends_on` let someone work top to
+  bottom without hitting a prerequisite that comes later.
+- **Issue body quality** — action-oriented title, and Summary, Scope, Out of scope,
+  Acceptance criteria, Relevant files, Dependencies and PR size concrete enough to
+  act on. "Implement the backend" is a finding, not an issue.
+- **Project conventions** — required tests, linting, labels and templates discovered
+  from the repo and from `CONVENTIONS.md` / `SPECS.md` are reflected in the bodies,
+  so the implementer is not left to guess them.
+- **Schema and GitHub linkage** — issue frontmatter fields, `issues/index.md`, and
+  the agreement between `status`, `gh_issue`, `resource`, milestone, labels and
+  sub-issue relationships are specified in `pipeline-interfaces.md`. Sub-issue
+  linkage in particular is what makes the epic issue's progress bar honest, so a
+  break there is `P2` even when every file looks fine.
 
-- Confirm every referenced issue exists and has the expected title, state, milestone,
-  labels, and URL.
-- Confirm issue bodies preserve the local issue's scope and definition of done.
-- Confirm each issue is attached to the epic's milestone.
-- Confirm native sub-issue linkage to the epic issue when the API or CLI available in
-  the environment can expose it. If not, mark sub-issue verification as not verified.
+## Step 3: Write the report
 
-If GitHub cannot be checked, do not block the review. Mark GitHub verification as
-`not verified` in the report and review local metadata for internal consistency.
-
-## Step 3: Review Criteria
-
-Prioritize findings by user impact:
-
-- `P0` - The generated issues cannot be trusted or used: wrong epic, missing most of
-  the epic scope, duplicate live issue creation, or broken artifact layout.
-- `P1` - A material epic requirement, acceptance criterion, dependency, or constraint
-  is missing, contradicted, assigned to the wrong issue, or impossible to implement in
-  the given order.
-- `P2` - Issue size, boundaries, ordering, GitHub metadata, OKF fields, links, or index
-  entries are wrong enough to confuse implementation work.
-- `P3` - Minor naming, wording, formatting, or traceability problems.
-
-Check at least these areas:
-
-- **Epic coverage** - Every material goal, scope item, acceptance criterion, dependency,
-  and relevant note from the epic appears in one or more issues.
-- **No invented scope** - Issues do not add features, tests, endpoints, UI, or
-  implementation promises that the epic does not support unless clearly marked as an
-  assumption.
-- **Right-sized PRs** - Each issue should map to one focused PR. Split issues that look
-  likely to approach 1000 changed lines. Merge issues that are too tiny to review or
-  ship independently.
-- **Implementation order** - Issue numbers and `depends_on` metadata allow a developer
-  to work in order without being blocked by later work.
-- **Issue body quality** - Titles are action-oriented; Summary, Scope, Out of scope,
-  Acceptance criteria / Definition of done, Relevant files / areas, Dependencies, and
-  PR size note are concrete and project-aware.
-- **Project conventions** - Required tests, linting, issue templates, labels, and repo
-  standards discovered from project docs — including `docs/planning/CONVENTIONS.md`
-  and the stack decided in `docs/planning/SPECS.md` when the epic links them — are
-  reflected in the issue bodies.
-- **OKF structure** - Issue frontmatter includes required OKF and extension fields,
-  cross-links are valid, `resource` appears only when a GitHub issue exists, and
-  `issues/index.md` has no frontmatter.
-- **GitHub linkage** - `status`, `gh_issue`, `resource`, milestone, labels, and
-  sub-issue relationships agree with local files and GitHub when verified.
-
-For each finding, cite exact files and line numbers whenever possible. Include the
-epic line or section and the generated issue line or section that demonstrates the
-problem.
-
-## Step 4: Write `docs/REPORT_<n>.md`
-
-Always write a new numbered report under `docs/` in the reviewed repository.
-
-Find the next report number by scanning existing files named `docs/REPORT_<number>.md`
-and choosing the next integer. If no reports exist, write `docs/REPORT_1.md`. Never
-overwrite an existing report.
-
-Use this structure:
-
-```markdown
-# Issue Review Report <n>
-
-## Scope
-- Epic reviewed: <path>
-- Issue artifacts reviewed: <paths or glob>
-- Plan reviewed: <path or "not reviewed">
-- GitHub verification: verified | not verified (<reason>)
-
-## Findings
-
-### P1 - <short finding title>
-- Location: <file:line>
-- Epic source: <file:line or heading>
-- Problem: <what is wrong>
-- Impact: <why it matters>
-- Recommendation: <specific fix>
-
-## Coverage Notes
-- <brief notes on epic areas that are well covered or intentionally out of scope>
-
-## Open Questions
-- <questions only when the epic or generated issues are genuinely ambiguous>
-```
-
-If there are no findings, write `No findings.` under `## Findings`, then still include
-scope, coverage notes, and any residual verification gaps.
-
-## Step 5: Report Back
-
-In the final response, link the created report path and summarize the highest-severity
-findings. If GitHub verification was skipped or failed, say so plainly.
+Follow the report contract in `../_shared/review-interfaces.md`. The subject line is
+`# Issue Review Report <n>`; Scope names the issue artifacts reviewed, the epic (and
+plan, when read) they were reviewed against, GitHub verification status, and the
+external model if one ran the analysis pass.

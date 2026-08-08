@@ -80,6 +80,12 @@ All three write a prioritized `docs/REPORT_N.md` and none repairs its subject �
 reviewer that silently edits what it reviews destroys the evidence. `review-implementation`
 routes what it finds into follow-up issues or drift entries instead of touching the code.
 
+The two planning reviewers will hand their analysis pass to a model outside the Claude
+family when one is reachable — `opencode` on `PATH`, run read-only against the repo —
+because a reviewer that did not write the thing catches what a self-review is blind to.
+It is capability-detected: absent the tool, the review runs natively and says nothing
+about it. What comes back is treated as leads to verify, never as findings to publish.
+
 Why the third one exists: every PR in an epic was reviewed alone and passed alone. The
 duplication between issue 3 and issue 7, the abstraction four implementers each
 re-invented because none could see the others, the convention that eroded a little per
