@@ -3,7 +3,7 @@ type: Reference
 title: "Repo architecture"
 description: "How the skills repo is laid out — one folder per skill, shared contracts in _shared/, and a plugin manifest that auto-discovers everything."
 tags: [architecture, repo, plugin]
-timestamp: 2026-08-06
+timestamp: 2026-08-08
 ---
 
 # Repo architecture
@@ -76,17 +76,23 @@ of the plugin is to put it elsewhere, which is what `meta/` is.
 which is what makes the repo installable by URL. See
 [Installation](/installation.md).
 
-# Two families of skills
+# Families of skills
 
 Everything in the repo is either part of the [idea-to-PR pipeline](/pipeline.md) or
 standalone tooling around it:
 
 | Family | Skills |
 |---|---|
-| Pipeline | `define-scope`, `define-specs`, `define-conventions`, `split-epics`, `map-codebase`, `define-change`, `create-issues`, `implement-issue`, `implement-epic` |
-| Review companions | `review-epics`, `review-issues` |
+| Pipeline | `define-scope`, `define-specs`, `define-conventions`, `split-epics`, `map-codebase`, `define-change`, `create-issues`, `implement-issue`, `implement-epic`, `close-epic` |
+| Review companions | `review-epics`, `review-issues`, `review-implementation` |
 | Knowledge tooling | `okf-docs`, `okf-lint` |
+| Feedback | `send-feedback` |
 | Meta *(in `meta/`, not shipped)* | `create-skill`, `improve-skill` |
+
+`send-feedback` is the odd one out, and deliberately shipped rather than kept in
+`meta/`: it exists for people who installed the plugin and have no clone to fix
+anything in. It files an issue on this repo instead — public repo, issues enabled, so
+any GitHub account can, with no token bundled and none needed.
 
 The pipeline skills consume the three output contracts in `skills/_shared/`; the meta
 skills consume the authoring one in `meta/_shared/`. See

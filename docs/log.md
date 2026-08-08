@@ -1,5 +1,14 @@
 # Log
 
+## 2026-08-08
+
+* **Creation**: `close-epic` — the seam after `implement-epic`'s loop stops. A stopped run is not a closed epic: worktrees still on disk, merged branches still on the remote, the milestone still open, and what the implementers learned still in a chat report that dies with the session. It verifies the epic's real state against GitHub and git, promotes the drift records into the register, closes the milestone, and cleans up.
+* **Creation**: `review-implementation` — reviews the code an epic actually shipped, against the acceptance criteria, `CONVENTIONS.md` and the accepted drift. Every PR in an epic was reviewed alone and passed alone, which is the problem: duplication across issues, an abstraction several implementers each re-invented, a convention eroding a little per PR — none of it visible from inside a single PR, all of it merged by the time anyone could look.
+* **Creation**: `send-feedback` — the return path for people who installed the plugin and have no clone to fix anything in. Files an issue on this repo with the user's words quoted verbatim (paraphrase is what destroys the subtle feedback), context offered rather than assumed, private paths redacted, nothing posted without explicit approval. Works for anyone: the repo is public with issues open, so `gh` handles it when authenticated and a prefilled issue-form URL when not — no token bundled, no proxy. Labels degrade gracefully, since a non-collaborator cannot apply them.
+* **Update**: The deviation register became the **drift register**, one vocabulary end to end. "Deviation" was already taken: in `define-conventions` it is a decided divergence from the personal baseline — it *is* the project's standard. Drift runs the opposite direction, discovered after the fact against that standard. Two artifacts, two jobs: per-epic drift records written by `implement-issue` as evidence, promoted once by `close-epic` into `docs/planning/DRIFT.md`, the single-writer surface every later run reads beside `SPECS.md` and `CONVENTIONS.md`.
+* **Update**: [The idea-to-PR pipeline](pipeline.md), [Repo architecture](repo-architecture.md), [Shared interfaces](shared-interfaces.md) — documented the three new skills and the drift register, the one contract in the pipeline that flows backwards. Found by linting this bundle against the repo: the docs described a pipeline that ended at a merged PR.
+* **Update**: `.github/ISSUE_TEMPLATE/feedback.yml` + `config.yml` — the receiving end of `send-feedback`. Blank issues stay enabled on purpose: the skill's long-body fallback needs the plain `?title=&body=` URL to resolve. Plugin `0.2.0` → `0.3.0`.
+
 ## 2026-08-06
 
 * **Creation**: Established this bundle as the repo's documentation, replacing the local working notes previously kept here (moved to the git-ignored `_working/`, excluded via `.okfignore`).
