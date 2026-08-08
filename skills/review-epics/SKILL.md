@@ -5,132 +5,68 @@ description: Review split-epics output against the source plan — coverage, bou
 
 # Review Epics
 
-Review the epics produced from a plan. Treat this as a code-review style audit:
-find correctness problems first, then write a durable report in `docs/REPORT_<n>.md`.
+Audit the epic set that `split-epics` (or `define-change`) produced against the plan
+it came from. The question to answer: could someone run `create-issues` across these
+epics and end up building what the plan actually asked for?
 
-This skill is read-only for the epic artifacts. Do not repair epics, milestones, issues,
-or indexes unless the user explicitly asks for fixes after seeing the report. The only
-file this skill should create or update during review is the new report file.
+How a review is graded, verified, delegated to another model, and written down is
+defined once in `../_shared/review-interfaces.md` — read it before starting. The
+artifacts under review are governed by `../_shared/pipeline-interfaces.md` (epic
+schema, status lifecycle, GitHub facts) and `../_shared/bundle-interfaces.md` (link
+forms, reserved files, language). Judge against those two files directly; an epic is
+only malformed relative to what they define.
 
-## Step 1: Locate Inputs
+## Step 1: Resolve what is under review
 
-Resolve the source plan first:
+The plan comes first, because everything else is graded against it:
 
-- Use the path the user provided.
-- Otherwise prefer `docs/planning/SCOPE.md` — the define-scope skill's deliverable and
-  split-epics' primary input. Never treat its siblings `SPECS.md`/`CONVENTIONS.md` or
-  the decision docs under `docs/planning/*/` as the plan — they are context, not the
-  document that was split.
-- Then fall back to `docs/PLAN.md`, `docs/plan.md`, `plan.md`, then the only plausible
-  planning markdown file under `docs/` outside `docs/planning/` and `docs/epics/`.
-- If multiple plausible plans exist, ask which one to use.
+- The path the user gave.
+- Otherwise `docs/planning/SCOPE.md` — `define-scope`'s deliverable and
+  `split-epics`' primary input. Its siblings `SPECS.md` and `CONVENTIONS.md` are
+  context, never the document that was split; grading epics against them produces
+  findings the epics were never meant to satisfy.
+- Then `docs/PLAN.md`, `docs/plan.md`, `plan.md`, then the only plausible planning
+  markdown under `docs/` outside `docs/planning/` and `docs/epics/`.
+- Several plausible candidates → ask which one before reading further. Reviewing
+  against the wrong source is a `P0` finding about your own report.
 
-Resolve the generated epics:
+Then the epics: `docs/epics/index.md` if present, and every
+`docs/epics/epic-*/EPIC_*.md` in full, frontmatter included. When an epic's `source`
+names a heading or file, compare against that section specifically — it is a claim
+the epic makes about its own provenance, and a false one is worth catching.
 
-- Read `docs/epics/index.md` if present.
-- Read every `docs/epics/epic-*/EPIC_*.md` in full, including frontmatter.
-- If an epic frontmatter `source` points to a heading or file, compare it to the
-  matching plan section when possible.
+Read for context when present: the docs each epic's `## Context` links (typically
+`docs/planning/SPECS.md` and `docs/planning/CONVENTIONS.md`), plus `CLAUDE.md`,
+`AGENTS.md`, `CONTRIBUTING.md`, and `.github/ISSUE_TEMPLATE/`.
 
-Also read relevant workflow context if present: `docs/planning/SPECS.md` and
-`docs/planning/CONVENTIONS.md` (the planning-bundle context split-epics links into
-each epic's `## Context` section), `CLAUDE.md`, `AGENTS.md`, `CONTRIBUTING.md`,
-`.github/ISSUE_TEMPLATE/`, and any repo docs that define planning or issue
-conventions.
+## Step 2: What to look for
 
-## Step 2: Verify GitHub State When Available
+- **Plan coverage** — every material goal, constraint, acceptance criterion and
+  dependency in the plan lands in exactly one epic where it belongs. Constraints are
+  the ones most often dropped: they belong to no single feature, so they fall between
+  epics rather than into one.
+- **No invented scope** — epics add no feature, promise, or constraint the plan does
+  not support, unless flagged as an assumption. Invented scope is worse than missing
+  scope: it gets built.
+- **Epic boundaries** — each epic is independently shippable and actually epic-sized.
+  Fragments too small to ship alone should be merged; an epic spanning several phases
+  should be split, since `create-issues` will otherwise inherit the sprawl.
+- **Ordering and dependencies** — epic numbers preserve plan order unless the plan
+  numbers them itself, `depends_on` points at epics that really are prerequisites,
+  and no cycle makes the set unstartable.
+- **Faithful carry-over** — goal, scope, out-of-scope, acceptance criteria, risks and
+  plan-wide constraints survive without over-compression. A summarised acceptance
+  criterion stops being testable.
+- **Context links** — epics *reference* the planning docs and never copy them, so the
+  planning bundle stays the single source of truth. These links cross a bundle
+  boundary, which changes their form — `bundle-interfaces.md` specifies which.
+- **Schema and GitHub linkage** — frontmatter fields, and the agreement between
+  `status`, `gh_issue`, `milestone` and `resource`, are specified in
+  `pipeline-interfaces.md`. A deviation is `P2` unless it breaks downstream work.
 
-If epic files contain `gh_issue`, `milestone`, or `resource`, verify them with `gh`
-when the CLI is available and authenticated:
+## Step 3: Write the report
 
-- Confirm each referenced issue exists, has the expected title, and is open unless the
-  local status says otherwise.
-- Confirm each milestone exists and matches the epic title convention used by
-  `split-epics`.
-- Confirm each epic issue links back to the local `EPIC_<n>.md` file.
-
-If GitHub cannot be checked, do not block the review. Mark GitHub verification as
-`not verified` in the report and review the local metadata for internal consistency.
-
-## Step 3: Review Criteria
-
-Prioritize findings by user impact:
-
-- `P0` - The generated epic set cannot be trusted or used: wrong plan, missing most
-  planned work, overwritten existing tracked state, or broken artifact layout.
-- `P1` - A material plan requirement, acceptance criterion, dependency, or constraint
-  is missing, assigned to the wrong epic, or contradicted by an epic.
-- `P2` - Epic boundaries, ordering, GitHub metadata, OKF fields, links, or index
-  entries are wrong enough to confuse downstream `create-issues` work.
-- `P3` - Minor naming, wording, formatting, or traceability problems.
-
-Check at least these areas:
-
-- **Plan coverage** - Every material goal, constraint, acceptance criterion, and
-  dependency in the plan is represented in exactly the right epic context.
-- **No invented scope** - Epics do not add features, promises, or constraints that are
-  not in the plan unless clearly marked as an assumption or note.
-- **Epic boundaries** - Each epic is independently shippable and large enough to be an
-  epic. Tiny fragments should be merged; sprawling multi-phase epics should be split.
-- **Ordering and dependencies** - Epic numbers preserve the plan order unless the plan
-  explicitly numbers them. Dependencies point to the right epics and do not create
-  impossible cycles.
-- **Faithful carry-over** - Goal, scope, out-of-scope, acceptance criteria, risks,
-  notes, and plan-wide constraints are preserved without over-compression.
-- **OKF structure** - `docs/epics/index.md` is the bundle root index, each `EPIC_<n>.md`
-  has required frontmatter, cross-links are bundle-relative absolute paths, and
-  `resource` is present only when a backing GitHub issue exists.
-- **Context links** - When `docs/planning/SPECS.md` / `docs/planning/CONVENTIONS.md`
-  exist, each epic's `## Context` section links each one that exists via a plain
-  relative path (e.g. `../../planning/SPECS.md` — these cross bundle boundaries, so
-  bundle-relative leading-`/` links are wrong here), and the section is omitted
-  entirely when neither exists. Epics reference these docs, never copy their content
-  — the planning docs stay the single source of truth.
-- **GitHub linkage** - `status`, `gh_issue`, `milestone`, and `resource` agree with
-  each other and with GitHub when verified.
-
-For each finding, cite exact files and line numbers whenever possible. Include the
-plan line or section and the generated epic line or section that demonstrates the
-problem.
-
-## Step 4: Write `docs/REPORT_<n>.md`
-
-Always write a new numbered report under `docs/` in the reviewed repository.
-
-Find the next report number by scanning existing files named `docs/REPORT_<number>.md`
-and choosing the next integer. If no reports exist, write `docs/REPORT_1.md`. Never
-overwrite an existing report.
-
-Use this structure:
-
-```markdown
-# Epic Review Report <n>
-
-## Scope
-- Plan reviewed: <path>
-- Epic artifacts reviewed: <paths or glob>
-- GitHub verification: verified | not verified (<reason>)
-
-## Findings
-
-### P1 - <short finding title>
-- Location: <file:line>
-- Plan source: <file:line or heading>
-- Problem: <what is wrong>
-- Impact: <why it matters>
-- Recommendation: <specific fix>
-
-## Coverage Notes
-- <brief notes on plan areas that are well covered or intentionally out of scope>
-
-## Open Questions
-- <questions only when the plan or generated epics are genuinely ambiguous>
-```
-
-If there are no findings, write `No findings.` under `## Findings`, then still include
-scope, coverage notes, and any residual verification gaps.
-
-## Step 5: Report Back
-
-In the final response, link the created report path and summarize the highest-severity
-findings. If GitHub verification was skipped or failed, say so plainly.
+Follow the report contract in `../_shared/review-interfaces.md`. The subject line is
+`# Epic Review Report <n>`; Scope names the epic artifacts reviewed, the plan they
+were reviewed against, GitHub verification status, and the external model if one ran
+the analysis pass.

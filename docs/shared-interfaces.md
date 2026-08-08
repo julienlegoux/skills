@@ -1,9 +1,9 @@
 ---
 type: Contract
 title: "Shared interfaces"
-description: "The three _shared/ contracts, split by audience, read in place by the skills that obey them."
+description: "The four _shared/ contracts, split by audience, read in place by the skills that obey them."
 tags: [contracts, shared, architecture]
-timestamp: 2026-08-06
+timestamp: 2026-08-08
 ---
 
 # Shared interfaces
@@ -22,11 +22,12 @@ don't apply to it. A skill that never writes an epic shouldn't ship the epic sch
 |---|---|---|
 | [`bundle-interfaces.md`](../skills/_shared/bundle-interfaces.md) | English-only content, the two bundles (`docs/planning/`, `docs/epics/`) and their link forms, reserved `index.md`/`log.md`, committing what you write | every skill that writes under `docs/` |
 | [`ledger-interfaces.md`](../skills/_shared/ledger-interfaces.md) | the decision doc schema and the reopening rule | the ledger-driven planning skills |
-| [`pipeline-interfaces.md`](../skills/_shared/pipeline-interfaces.md) | epic & issue schemas, the issue status lifecycle, GitHub facts about non-default integration branches | the epic-to-PR skills |
+| [`pipeline-interfaces.md`](../skills/_shared/pipeline-interfaces.md) | epic & issue schemas, the issue status lifecycle, the drift register (`docs/planning/DRIFT.md` and the per-epic records behind it), GitHub facts about non-default integration branches | the epic-to-PR skills |
+| [`review-interfaces.md`](../skills/_shared/review-interfaces.md) | severity scale, what makes a finding, GitHub verification policy, delegating the analysis pass to an external model, the `docs/REPORT_<n>.md` contract | the planning review skills — `review-epics`, `review-issues` |
 | [`authoring-interfaces.md`](../meta/_shared/authoring-interfaces.md) | how a skill in this repo is shaped: anatomy, the description contract, progressive disclosure, tiered prescriptiveness, identity | the meta skills — `create-skill`, `improve-skill` |
 
-The first three live in `skills/_shared/` and govern what skills write into a *user's*
-project. The fourth lives in `meta/_shared/`, alongside its only two consumers, and
+The first four live in `skills/_shared/` and govern what skills write into a *user's*
+project. The last lives in `meta/_shared/`, alongside its only two consumers, and
 governs how the skills themselves are written; it exists because `create-skill` and
 `improve-skill` need the same answer to "what does a good skill here look like", and
 a rule stated twice is a rule that drifts.
@@ -78,6 +79,6 @@ files at it. That is the whole operation — see [Skill lifecycle](/skill-lifecy
 
 # Citations
 
-* `skills/_shared/bundle-interfaces.md`, `skills/_shared/ledger-interfaces.md`, `skills/_shared/pipeline-interfaces.md`
+* `skills/_shared/bundle-interfaces.md`, `skills/_shared/ledger-interfaces.md`, `skills/_shared/pipeline-interfaces.md`, `skills/_shared/review-interfaces.md`
 * `meta/_shared/authoring-interfaces.md`
 * `improve-skill/SKILL.md` — "How to write skill edits — the structural rules"
