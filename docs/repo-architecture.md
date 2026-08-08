@@ -28,7 +28,7 @@ keep them agreeing on the same file formats.
 │   ├── define-scope/
 │   │   ├── SKILL.md
 │   │   └── references/
-│   └── ...one folder per skill (16 today)
+│   └── ...one folder per skill (17 today)
 ├── meta/                         ← invisible to the plugin
 │   ├── _shared/authoring-interfaces.md
 │   ├── create-skill/SKILL.md
@@ -84,7 +84,7 @@ standalone tooling around it:
 
 | Family | Skills |
 |---|---|
-| Pipeline | `define-scope`, `define-specs`, `define-conventions`, `split-epics`, `map-codebase`, `define-change`, `create-issues`, `implement-issue`, `implement-epic`, `close-epic` |
+| Pipeline | `define-concept`, `define-scope`, `define-specs`, `define-conventions`, `split-epics`, `map-codebase`, `define-change`, `create-issues`, `implement-issue`, `implement-epic`, `close-epic` |
 | Review companions | `review-epics`, `review-issues`, `review-implementation` |
 | Knowledge tooling | `okf-docs`, `okf-lint` |
 | Feedback | `send-feedback` |

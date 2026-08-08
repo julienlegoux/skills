@@ -14,7 +14,9 @@ same epic → issue → PR machinery.
 
 ```mermaid
 flowchart LR
-    A[idea] --> B[define-scope]
+    A[idea] -.-> A1[define-concept]
+    A1 -.-> B
+    A --> B[define-scope]
     B --> C[define-specs]
     C --> D[define-conventions]
     D --> E[split-epics]
@@ -37,10 +39,21 @@ flowchart LR
 
 | # | Skill | Produces |
 |---|---|---|
+| 0 | `define-concept` *(optional)* | `docs/planning/CONCEPT.md` — what the product *is*, and `DOMAIN.md` on request |
 | 1 | `define-scope` | `docs/planning/SCOPE.md` — what v1 is |
 | 2 | `define-specs` | `docs/planning/SPECS.md` — the one-way doors: stack, architecture, data, auth, deployment |
 | 3 | `define-conventions` | `docs/planning/CONVENTIONS.md` — a personal baseline filtered by the stack; only *deviations* get decided |
 | 4 | `split-epics` | `docs/epics/epic-<n>-<slug>/EPIC_<n>.md` + a GitHub milestone and tracking issue per epic |
+
+Stage 0 is the odd one out and deliberately so. An idea still forming isn't a set of
+decisions waiting to be triaged — it's a conversation — so `define-concept` has no
+ledger, no checklist and no numbered steps; it records only what the user validates, and
+`log.md` carries the rationale a ledger would have held. It is skipped whenever the idea
+is already clear, which is why `define-scope` still works from a raw idea on its own.
+
+The line it draws with `define-scope`: **CONCEPT answers "is this the right thing to
+build?", SCOPE answers "what is its first version?"**. So `CONCEPT.md` never carries an
+MVP cut or milestones — those belong to a document with the authority to decide them.
 
 # Brownfield — change an existing app
 
@@ -98,7 +111,8 @@ The four planning skills (`define-scope`, `define-specs`, `define-conventions`,
 `define-change`, plus `map-codebase`) share one mechanic: instead of asking open
 questions in chat, they write **one file per decision** — question, 2–4 options, a
 real recommendation — and let the user triage them in batch. The schema lives in
-[Shared interfaces](/shared-interfaces.md).
+[Shared interfaces](/shared-interfaces.md). `define-concept` sits upstream of all of them
+and shares none of it, for the reason given above.
 
 # What the hand-offs rely on
 

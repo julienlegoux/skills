@@ -17,7 +17,9 @@ The core of this repo is a chain of skills that carries work all the way to revi
 
 ```mermaid
 flowchart LR
-    A[💡 idea] --> B[define-scope]
+    A[💡 idea] -.-> A1[define-concept]
+    A1 -.-> B
+    A --> B[define-scope]
     B --> C[define-specs]
     C --> D[define-conventions]
     D --> E[split-epics]
@@ -37,6 +39,7 @@ flowchart LR
 
 | Stage | Skill | What it does |
 |---|---|---|
+| 0️⃣ | [`define-concept`](skills/define-concept/SKILL.md) | *Optional.* Talk a still-forming idea into shape and record what *you* validate into `CONCEPT.md` — no ledger, no checklist |
 | 1️⃣ | [`define-scope`](skills/define-scope/SKILL.md) | Turn a raw idea into a decided `docs/planning/SCOPE.md` via a decision ledger *you* triage |
 | 2️⃣ | [`define-specs`](skills/define-specs/SKILL.md) | Decide the one-way technical doors — stack, architecture, data, auth — into `SPECS.md` |
 | 3️⃣ | [`define-conventions`](skills/define-conventions/SKILL.md) | Instantiate your personal conventions baseline; only *deviations* get decided |

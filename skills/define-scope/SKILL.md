@@ -1,6 +1,6 @@
 ---
 name: define-scope
-description: First of the three planning skills (define-scope → define-specs → define-conventions) — turn a raw project idea into a decided docs/planning/SCOPE.md through a decision ledger the user triages. Use when starting to plan a new project, figuring out what v1 is, or resuming a scoping run with open decisions under docs/planning/scope/.
+description: First of the three planning skills (define-scope → define-specs → define-conventions) — decide what v1 ships into docs/planning/SCOPE.md through a decision ledger the user triages, taking CONCEPT.md as intake where define-concept produced one. Use when planning a new project, figuring out what v1 is, or resuming a scoping run with open decisions under docs/planning/scope/; if the idea itself is still forming, define-concept comes first.
 ---
 
 # Define Scope
@@ -27,7 +27,7 @@ by walking a decision ledger that the *user* controls.
 ## Output format: OKF
 
 `docs/planning/` is an [Open Knowledge Format](https://github.com/GoogleCloudPlatform/knowledge-catalog/blob/main/okf/SPEC.md)
-(OKF v0.1) bundle, and this skill is usually the one that establishes it. The rules
+(OKF v0.1) bundle, which this skill establishes unless `define-concept` already did. The rules
 every pipeline skill obeys when writing to it — English content, bundle-relative
 links, the reserved `index.md`/`log.md` files, and committing what you write — are
 defined once in `../_shared/bundle-interfaces.md`; the decision doc schema is in
@@ -63,6 +63,11 @@ Before asking anything:
 
 - Read the repo for context (README, existing code, existing `docs/`) — the project
   may already answer questions the user would otherwise be asked.
+- Read `docs/planning/CONCEPT.md` and `DOMAIN.md` if they exist. `define-concept` wrote
+  them, and everything in them is already validated: the problem, what the product is,
+  its positioning, the domain vocabulary. Treat them as settled input, not as a draft to
+  re-decide — a scope ledger that re-opens the concept spends the user's attention twice
+  on the same question and can end up contradicting the document downstream skills read.
 - Read `references/checklist.md` (the decision areas this skill guarantees coverage of).
 
 Then, **only for checklist areas the input leaves genuinely blank**, ask orienting
@@ -103,7 +108,9 @@ creating it now is what makes every later PR target one trunk instead of piling 
 `main`. Leave `main` as GitHub's default branch.
 
 This is a one-line offer, not a ledger item: no decision doc, no checklist entry. Skip
-it entirely if a git remote already exists. If the user declines, drop it and never
+it entirely if a git remote already exists — and also if `docs/planning/CONCEPT.md` sits
+in a folder with no repo, which means `define-concept` already made this offer and the
+user turned it down. If the user declines, drop it and never
 raise it again. If `gh` is missing or unauthenticated, do the local half (folder,
 `git init`, `develop`), say the remote was skipped, and continue — `split-epics` is what
 needs the remote, and not until later.
