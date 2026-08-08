@@ -1,0 +1,54 @@
+name: Skill feedback
+description: A skill misbehaved, is missing something, or sparked an idea
+labels: ["feedback"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for sending this back upstream.
+
+        You can file this by hand, or let the skills do it for you: run
+        `/lx:send-feedback` in the session where it happened and it will fill this in,
+        redact anything private, and show you the exact text before anything is posted.
+
+        This tracker is public — please don't paste absolute paths, client or project
+        names, internal URLs, or anything key-shaped.
+
+  - type: input
+    id: skill
+    attributes:
+      label: Which skill
+      description: The skill this is about — or `lx` if it's about the plugin as a whole.
+      placeholder: implement-issue
+    validations:
+      required: true
+
+  - type: textarea
+    id: verbatim
+    attributes:
+      label: Your feedback, in your own words
+      description: >
+        Say it however you'd say it. Rough is fine — the phrasing carries nuance that a
+        tidy summary loses, and that nuance is usually the useful part.
+    validations:
+      required: true
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Context
+      description: >
+        Optional. What you expected versus what happened, the shortest way to reproduce
+        it, where in the run it went wrong. Skip it entirely if this is an idea rather
+        than a bug.
+    validations:
+      required: false
+
+  - type: input
+    id: version
+    attributes:
+      label: Version and environment
+      description: "Output of `claude plugin list` for the `lx@…` entry, plus OS."
+      placeholder: lx@lx-engine 0.3.0 — Windows 11, Claude Code 2.x
+    validations:
+      required: false

@@ -1,0 +1,8 @@
+# Blank issues stay enabled on purpose: the send-feedback skill falls back to a plain
+# `issues/new?title=…&body=…` URL when a prefilled form URL would be too long, and that
+# fallback only resolves if blank issues exist.
+blank_issues_enabled: true
+contact_links:
+  - name: What these skills are
+    url: https://github.com/julienlegoux/skills#readme
+    about: The pipeline, what each skill does, and how to install the plugin.

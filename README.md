@@ -75,6 +75,17 @@ Both write a prioritized `docs/REPORT_N.md` instead of silently "fixing" things.
 | [`okf-docs`](skills/okf-docs/SKILL.md) | Write & structurally validate docs in Google's **Open Knowledge Format** — markdown + YAML frontmatter bundles readable by humans and agents alike |
 | [`okf-lint`](skills/okf-lint/SKILL.md) | Semantic linter for OKF bundles: contradictions, index drift, duplicate concepts, stale timestamps — everything a mechanical validator can't see |
 
+## 🗣️ Feedback
+
+| Skill | What it does |
+|---|---|
+| [`send-feedback`](skills/send-feedback/SKILL.md) | File what just went wrong as an issue on this repo — your words quoted verbatim, context offered rather than assumed, private paths redacted, nothing posted without your OK |
+
+Ships **in** the plugin on purpose: it exists for people who don't have a clone to fix
+things in. The repo is public with issues enabled, so any GitHub account can file one —
+via `gh` if it's authenticated, otherwise a prefilled browser URL. No token is ever
+bundled and none is needed.
+
 ## 🔁 Meta — *not shipped in the plugin*
 
 These two author the repo itself: they need a clone, git, and push rights, so installing the plugin can't make them useful. They live in `meta/` and are installed by hand — fork the repo and junction them in:
@@ -144,7 +155,7 @@ claude plugin validate .
 claude plugin details lx@skills-dir    # confirms what was actually discovered
 ```
 
-Or let [`improve-skill`](skills/improve-skill/SKILL.md) run the loop — it diagnoses, edits and commits in one pass.
+Or let [`improve-skill`](meta/improve-skill/SKILL.md) run the loop — it diagnoses, edits and commits in one pass.
 
 ## 📄 License
 

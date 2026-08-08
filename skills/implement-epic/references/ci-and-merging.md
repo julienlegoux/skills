@@ -81,15 +81,9 @@ gh run view <run-id> --log-failed   # only if the check line isn't enough
 Skim for the failing job name and the error line — don't study logs at length;
 the implementer holding the implementation context does the actual diagnosis.
 
-## End-of-run cleanup (optional)
+## End-of-run cleanup
 
-Offer it in the final report rather than doing it silently:
-
-```bash
-git worktree list          # then: git worktree remove <path> for each agent worktree
-git push origin --delete <merged-feature-branch>   # only branches whose PRs merged
-```
-
-Worktrees first, then merged remote branches — removing a worktree that still has
-a live branch checked out is what makes branch deletion fail, not the other way
-around.
+Not this skill's job, and not this file's recipes: worktrees, branches and the
+milestone are `close-epic`'s Step 4 (`skills/close-epic/references/state-and-cleanup.md`).
+Hand off to it rather than improvising a cleanup here — the ordering rules and the
+never-delete-unpushed-work checks live there, in one copy.

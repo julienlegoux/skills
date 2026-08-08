@@ -41,6 +41,11 @@ the repo rather than reading as generic filler:
 - The epic's `## Context` links — typically `docs/planning/SPECS.md` (the decided
   stack, so issue sizing and file paths match reality) and
   `docs/planning/CONVENTIONS.md` (repo standards) — read whichever exist in full.
+- `docs/planning/DRIFT.md` if it exists — the register of standards earlier epics
+  proved wrong in practice (see `../_shared/pipeline-interfaces.md`). An issue written
+  against a decided standard the code already abandoned sends its implementer into a
+  wall someone else already hit; where live drift touches this epic, write the issue
+  against reality and cite the entry.
 - `CLAUDE.md`, `AGENTS.md`, `CONTRIBUTING.md`, `docs/CONVENTIONS.md` (or similar) —
   coding standards, required testing, commit/branch naming, review expectations.
 - `.github/PULL_REQUEST_TEMPLATE.md` and `.github/ISSUE_TEMPLATE/` — if a template

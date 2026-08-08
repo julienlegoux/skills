@@ -1,6 +1,6 @@
 ---
 name: improve-skill
-description: Fold lessons from the current session back into the skill that caused them — diagnose from the conversation, propose a concrete edit, and after approval apply it to the skills repo and commit. Use whenever the user runs /improve-skill, says a skill misbehaved, or wants a skill updated with what this session taught.
+description: Fold lessons from the current session back into the skill that caused them — diagnose from the conversation, propose a concrete edit, and after approval apply it to the skills repo and commit. Use whenever the user runs /improve-skill, says a skill misbehaved, or wants a skill updated with what this session taught, working in a clone of the skills repo. Without a clone or push rights, the lesson goes upstream through send-feedback instead.
 ---
 
 # Improve Skill
