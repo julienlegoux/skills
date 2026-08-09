@@ -3,7 +3,7 @@ type: Reference
 title: "The idea-to-PR pipeline"
 description: "The chain of skills that carries work from a raw idea (or an existing codebase) to merged pull requests, and what each hand-off passes along."
 tags: [pipeline, workflow, planning, implementation]
-timestamp: 2026-08-08
+timestamp: 2026-08-09
 ---
 
 # The idea-to-PR pipeline
@@ -33,6 +33,14 @@ flowchart LR
 
     H --> J[close-epic]
     J --> K[review-implementation]
+
+    E -.-> R1[review-epics]
+    F -.-> R2[review-issues]
+    R1 -.-> T[triage-reports]
+    R2 -.-> T
+    K -.-> T
+    T -.-> E0[epic 0]
+    E0 -.-> F
 ```
 
 # Greenfield — plan a new project
@@ -81,17 +89,18 @@ seam is `close-epic`'s whole job.
 
 # Review companions
 
-Three audit skills read a different stage's output each:
+Three audit skills read a different stage's output each, and a fourth turns what they
+find into work:
 
 | Skill | Reviews |
 |---|---|
 | `review-epics` | plan → epic conversion: epics, milestones, tracking issues against the source plan |
 | `review-issues` | epic → issue conversion: sizing, coverage, sub-issue wiring |
 | `review-implementation` | the code the epic actually shipped — its merged diff against the acceptance criteria, `CONVENTIONS.md`, and the accepted drift |
+| `triage-reports` | the `REPORT_N` series itself → one remediation epic |
 
-All three write a prioritized `docs/REPORT_N.md` and none repairs its subject — a
-reviewer that silently edits what it reviews destroys the evidence. `review-implementation`
-routes what it finds into follow-up issues or drift entries instead of touching the code.
+All three reviewers write a prioritized `docs/REPORT_N.md` and none repairs its subject —
+a reviewer that silently edits what it reviews destroys the evidence.
 
 The two planning reviewers will hand their analysis pass to a model outside the Claude
 family when one is reachable — `opencode` on `PATH`, run read-only against the repo —
@@ -104,6 +113,29 @@ duplication between issue 3 and issue 7, the abstraction four implementers each
 re-invented because none could see the others, the convention that eroded a little per
 PR — none of that is visible from inside a single PR, and all of it is merged by the
 time anyone could look.
+
+# Epic 0 — the remediation lane
+
+Not repairing is what keeps a report trustworthy, and it leaves a gap: findings pile up
+in `docs/REPORT_<n>.md` with nothing that turns them into work. Nine reports carrying a
+hundred findings is not something anyone acts on by hand.
+
+`triage-reports` closes it. It reads the **whole series**, groups findings by the repair
+that resolves them — one wrong link form in nine index files is one repair, not nine —
+lets the user triage the groups in a single batch, and emits **epic 0**.
+
+The number carries meaning the others don't. Every other epic number is a position in
+the planned build order; zero means *before continuing*. That reads the same from either
+direction the findings come from: plan repairs land before the epics they repair get
+implemented, code fixes before the next epic builds on them. Which of the two a report
+produces is read from its `## Scope`, never asked.
+
+The lane is temporary and single-owner. `triage-reports` creates epic 0, extends it while
+it is in flight rather than opening a second one, and retires it — folder deleted — once
+every issue is `done` and the milestone closed. What survives is the notice in
+`docs/epics/log.md`: which reports were consumed and what they produced. That notice is
+also how the next run knows not to re-triage findings it already fixed, which is why the
+folder can go and the memory cannot.
 
 # The decision ledger
 

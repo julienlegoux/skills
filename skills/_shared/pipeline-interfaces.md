@@ -18,16 +18,16 @@ once.
 ## Epic file
 
 Path: `docs/epics/epic-<n>-<slug>/EPIC_<n>.md`. Slug: lowercase kebab-case, ASCII,
-~40 chars. Written by `split-epics` (greenfield) or `define-change` (brownfield) —
-format-identical from either producer, so downstream skills can't tell which one
-made it.
+~40 chars. Written by `split-epics` (greenfield), `define-change` (brownfield), or
+`triage-reports` (remediation) — format-identical from any producer, so downstream
+skills can't tell which one made it.
 
 ```markdown
 ---
 type: Epic
 title: "<title>"
 description: "<one-sentence summary of the epic's goal>"
-tags: [epic]                 # define-change adds: change
+tags: [epic]                 # define-change adds: change; triage-reports adds: remediation
 timestamp: <ISO 8601 — set on every meaningful write>
 epic: <n>
 slug: <slug>
@@ -60,6 +60,13 @@ Field notes:
   brownfield the change ledger) with plain relative paths — they cross bundles.
   Omit the section entirely when none exist. Reference, never copy — the planning
   docs stay the single source of truth.
+- **`epic: 0` is reserved.** Every other number is a position in the planned build
+  order; zero means *before continuing* — the remediation lane `triage-reports`
+  owns, holding the repairs a review turned up that the project can't proceed past.
+  It is temporary by design: `triage-reports` creates it, extends it while it is in
+  flight, and retires it once every issue is `done` and its milestone closed,
+  leaving the record in `docs/epics/log.md`. No other skill deletes it, and nothing
+  else claims the number.
 
 ## Issue file
 

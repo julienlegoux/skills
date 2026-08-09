@@ -1,6 +1,6 @@
 ---
 name: review-implementation
-description: Audit the code an epic actually shipped — review its merged diff against the epic's acceptance criteria, docs/planning/CONVENTIONS.md and the accepted drift, then triage findings into follow-up issues or drift entries. Use once an epic's PRs are merged and the question is the quality of the implemented code rather than the plan that produced it.
+description: Audit the code an epic actually shipped — review its merged diff against the epic's acceptance criteria, docs/planning/CONVENTIONS.md and the accepted drift, then record a disposition per finding in docs/REPORT_N.md for triage-reports to convert into work. Use once an epic's PRs are merged and the question is the quality of the implemented code rather than the plan that produced it.
 ---
 
 # Review an Epic's Implementation
@@ -98,8 +98,11 @@ findings.
 Present all findings in one batch with a recommended disposition each, and wait. Three
 outcomes, and the middle one is the one people forget:
 
-- **fix-now** → a real follow-up issue on the repo (or a hand-off to `define-change` when
-  the fix is larger than an issue). A `fix-now` with no issue behind it is a wish.
+- **fix-now** → recorded as this finding's disposition in the report, and converted into
+  work by `triage-reports`, which reads the whole report series and groups repairs across
+  it. Don't create the issues here: one finding fixed alone, while its four siblings from
+  the same root cause sit in three other reports, is the duplication this skill exists to
+  catch. Hand off to `define-change` instead when a fix is larger than an epic.
 - **accept** → the code is right and the *standard* is wrong. That is drift discovered by
   review rather than by implementation, so it becomes a `docs/planning/DRIFT.md` entry in
   the format `../_shared/pipeline-interfaces.md` defines, with this report as its
@@ -133,7 +136,7 @@ reviews already use. Never overwrite one.
 - Violates: <criterion, convention line, or "correctness">
 - Problem: <what is wrong>
 - Evidence: <the surviving mutant, the failing case, the duplicated pair>
-- Disposition: fix-now (#<issue>) | accepted (drift) | won't-fix - <reason>
+- Disposition: fix-now | accepted (drift) | won't-fix - <reason>
 
 ## What holds up
 - <what the epic got right — a report of only defects misrepresents the work>
@@ -144,5 +147,6 @@ reviews already use. Never overwrite one.
 State the probe budget explicitly. Silence about what wasn't probed reads as coverage,
 and this skill's whole value is refusing to imply verification it didn't do.
 
-Commit per `../_shared/bundle-interfaces.md`, then report the P0/P1 findings, the
-follow-up issues created, and any drift entries written.
+Commit per `../_shared/bundle-interfaces.md`, then report the P0/P1 findings, the drift
+entries written, and that `triage-reports` converts the `fix-now` dispositions — this
+report's and every earlier one's — into the remediation epic.

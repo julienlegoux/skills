@@ -23,7 +23,7 @@ don't apply to it. A skill that never writes an epic shouldn't ship the epic sch
 | [`bundle-interfaces.md`](../skills/_shared/bundle-interfaces.md) | English-only content, the two bundles (`docs/planning/`, `docs/epics/`) and their link forms, reserved `index.md`/`log.md`, committing what you write | every skill that writes under `docs/` |
 | [`ledger-interfaces.md`](../skills/_shared/ledger-interfaces.md) | the decision doc schema and the reopening rule | the ledger-driven planning skills |
 | [`pipeline-interfaces.md`](../skills/_shared/pipeline-interfaces.md) | epic & issue schemas, the issue status lifecycle, the drift register (`docs/planning/DRIFT.md` and the per-epic records behind it), GitHub facts about non-default integration branches | the epic-to-PR skills |
-| [`review-interfaces.md`](../skills/_shared/review-interfaces.md) | severity scale, what makes a finding, GitHub verification policy, delegating the analysis pass to an external model, the `docs/REPORT_<n>.md` contract | the planning review skills — `review-epics`, `review-issues` |
+| [`review-interfaces.md`](../skills/_shared/review-interfaces.md) | severity scale, what makes a finding, GitHub verification policy, delegating the analysis pass to an external model, the `docs/REPORT_<n>.md` contract | the planning review skills — `review-epics`, `review-issues` — plus `triage-reports`, which obeys the report contract from the reading end |
 | [`authoring-interfaces.md`](../meta/_shared/authoring-interfaces.md) | how a skill in this repo is shaped: anatomy, the description contract, progressive disclosure, tiered prescriptiveness, identity | the meta skills — `create-skill`, `improve-skill` |
 
 The first four live in `skills/_shared/` and govern what skills write into a *user's*
