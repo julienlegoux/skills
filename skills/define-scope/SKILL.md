@@ -70,7 +70,13 @@ Before asking anything:
   its positioning, the domain vocabulary. Treat them as settled input, not as a draft to
   re-decide — a scope ledger that re-opens the concept spends the user's attention twice
   on the same question and can end up contradicting the document downstream skills read.
-- Read `references/checklist.md` (the decision areas this skill guarantees coverage of).
+- Read `references/checklist.md` (the decision areas this skill guarantees coverage of)
+  — or `references/checklist-brownfield.md` in its place when the user states the
+  project is an existing, shipped system, which reframes the areas such a project has
+  already answered. That statement is the only route to the sibling: nothing here
+  detects a brownfield program, because *which* checklist a run uses belongs to the
+  guide skill that knows where a project stands and says what runs next, and answering
+  it with detection logic in this skill is how that skill stays unbuilt.
 
 Then, **only for checklist areas the input leaves genuinely blank**, ask orienting
 questions — one at a time, waiting for each answer. These are quick fact-gathering
