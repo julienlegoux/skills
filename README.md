@@ -15,6 +15,17 @@ Skills are then namespaced: `/lx:define-scope`, `/lx:okf-docs`.
 
 The core of this repo is a chain of skills that carries work all the way to reviewable pull requests. Each skill's output is the next skill's input. There are two entry points — a new project, or an existing codebase — and they converge on the same epic → issue → PR machinery, which then *loops*: an epic closes, its review reports become the next epic.
 
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="assets/pipeline-dark.png">
+  <source media="(prefers-color-scheme: light)" srcset="assets/pipeline-light.png">
+  <img alt="The pipeline: two entry points (raw idea, existing code) feed the Plan stage; Plan feeds Build (create-issues → implement-epic → implement-issue → merged PR → close-epic); close-epic loops back for the next epic, and the opt-in review skills write docs/REPORT_N.md, which triage-reports turns into epic 0 and feeds back into create-issues." src="assets/pipeline-light.png">
+</picture>
+
+Solid arrows are the path work takes; dotted ones are optional entries and hand-offs (`implement-issue` runs standalone too, and every review skill is opt-in).
+
+<details>
+<summary>Diagram source (Mermaid)</summary>
+
 ```mermaid
 flowchart TB
     idea(["💡 raw idea"]):::edge
@@ -82,7 +93,7 @@ flowchart TB
     classDef edge fill:#fff3cf,stroke:#d4a017,color:#3a2c05
 ```
 
-Solid arrows are the path work takes; dotted ones are optional entries and hand-offs (`implement-issue` runs standalone too, and every review skill is opt-in).
+</details>
 
 ### 🌱 Greenfield — plan a new project
 
