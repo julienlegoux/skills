@@ -1,6 +1,6 @@
 ---
 name: review-implementation
-description: Audit the code an epic actually shipped — review its merged diff against the epic's acceptance criteria, docs/planning/CONVENTIONS.md and the accepted drift, then record a disposition per finding in docs/REPORT_N.md for triage-reports to convert into work. Use once an epic's PRs are merged and the question is the quality of the implemented code rather than the plan that produced it.
+description: Audit the code an epic actually shipped — review its merged diff against the epic's acceptance criteria, docs/planning/CONVENTIONS.md and the accepted drift, then record a disposition per finding in docs/reviews/<date>-implementation-<subject>.md for triage-reports to convert into work. Use once an epic's PRs are merged and the question is the quality of the implemented code rather than the plan that produced it.
 ---
 
 # Review an Epic's Implementation
@@ -101,8 +101,8 @@ Present all findings in one batch with a recommended disposition each, and wait.
 outcomes, and the middle one is the one people forget:
 
 - **fix-now** → recorded as this finding's disposition in the report, and converted into
-  work by `triage-reports`, which reads the whole report series and groups repairs across
-  it. Don't create the issues here: one finding fixed alone, while its four siblings from
+  work by `triage-reports`, which reads every report in `docs/reviews/` and groups repairs
+  across them. Don't create the issues here: one finding fixed alone, while its four siblings from
   the same root cause sit in three other reports, is the duplication this skill exists to
   catch. Hand off to `define-change` instead when a fix is larger than an epic.
 - **accept** → the code is right and the *standard* is wrong. That is drift discovered by
@@ -118,11 +118,13 @@ standard.
 
 ## Step 5: Write the report and hand off
 
-Write `docs/REPORT_<n>.md`, taking the next free integer in the series the sibling
-reviews already use. Never overwrite one.
+Write `docs/reviews/<YYYY-MM-DD>-implementation-<epic-slug>.md`, in the directory and
+under the naming scheme the sibling reviews use — `../_shared/review-interfaces.md`,
+"The report", which also owns the same-day `-2` suffix. The name carries the date, the
+kind and the epic, so it cannot collide with a report that already exists.
 
 ```markdown
-# Implementation Review Report <n>
+# Implementation Review Report
 
 ## Scope
 - Epic reviewed: <path>
