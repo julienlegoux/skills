@@ -13,27 +13,15 @@ Skills are then namespaced: `/lx:define-scope`, `/lx:okf-docs`.
 
 ## 🗺️ The planning-to-PR pipeline
 
-The core of this repo is a chain of skills that carries work all the way to reviewable pull requests. Each skill's output is the next skill's input. There are two entry points — a new project, or an existing codebase — and they converge on the same epic → issue → PR machinery:
+The core of this repo is a chain of skills that carries work all the way to reviewable pull requests. Each skill's output is the next skill's input. There are two entry points — a new project, or an existing codebase — and they converge on the same epic → issue → PR machinery, which then *loops*: an epic closes, its review reports become the next epic.
 
-```mermaid
-flowchart LR
-    A[💡 idea] -.-> A1[define-concept]
-    A1 -.-> B
-    A --> B[define-scope]
-    B --> C[define-specs]
-    C --> D[define-conventions]
-    D --> E[split-epics]
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="assets/pipeline-dark.png">
+  <source media="(prefers-color-scheme: light)" srcset="assets/pipeline-light.png">
+  <img alt="The pipeline: two entry points (raw idea, existing code) feed the Plan stage; Plan feeds Build (create-issues → implement-epic → implement-issue → merged PR → close-epic); close-epic loops back for the next epic, and the opt-in review skills write their reports into docs/reviews/, which triage-reports turns into epic 0 and feeds back into create-issues." src="assets/pipeline-light.png">
+</picture>
 
-    A2[📦 existing code] --> M[map-codebase]
-    M --> N[define-change]
-
-    E --> F[create-issues]
-    N --> F
-    F --> G[implement-issue]
-    G --> H[🚀 PR]
-    F -.-> I[implement-epic]
-    I -.-> G
-```
+Solid arrows are the path work takes; dotted ones are optional entries and hand-offs (`implement-issue` runs standalone too, and every review skill is opt-in).
 
 ### 🌱 Greenfield — plan a new project
 
@@ -59,6 +47,7 @@ flowchart LR
 | [`create-issues`](skills/create-issues/SKILL.md) | Turn one epic into right-sized GitHub sub-issues (~one 500-line PR each) |
 | [`implement-issue`](skills/implement-issue/SKILL.md) | Take one issue from `open` to a focused, test-first PR — bookkeeping included |
 | [`implement-epic`](skills/implement-epic/SKILL.md) | Supervise a whole epic: delegate each issue to `implement-issue`, watch CI, merge green PRs, repeat |
+| [`close-epic`](skills/close-epic/SKILL.md) | Land the epic: verify its real state against GitHub and git, promote drift into `DRIFT.md`, close the milestone, clean up worktrees and branches |
 
 ### 🔍 Review companions
 
@@ -68,8 +57,13 @@ Audit skills that check the pipeline's output without modifying it:
 |---|---|
 | [`review-epics`](skills/review-epics/SKILL.md) | Plan → epic conversion: epics, milestones, tracking issues vs. the source plan |
 | [`review-issues`](skills/review-issues/SKILL.md) | Epic → issue conversion: sizing, coverage, sub-issue wiring |
+| [`review-implementation`](skills/review-implementation/SKILL.md) | The code an epic actually shipped: its merged diff vs. the acceptance criteria, `CONVENTIONS.md` and the accepted drift |
 
-Both write a prioritized report into `docs/reviews/`, named `<YYYY-MM-DD>-<kind>-<subject>.md` — `2026-08-11-issues-epic-4.md` — instead of silently "fixing" things.
+All three write a prioritized report into `docs/reviews/`, named `<YYYY-MM-DD>-<kind>-<subject>.md` — `2026-08-11-issues-epic-4.md` — instead of silently "fixing" things. And that report is itself an input:
+
+| Skill | What it does |
+|---|---|
+| [`triage-reports`](skills/triage-reports/SKILL.md) | Fold the accumulated reports into one triaged remediation epic (`epic-0`) that `create-issues` consumes unchanged — which is what closes the loop |
 
 ## 📚 Knowledge tooling (OKF)
 
