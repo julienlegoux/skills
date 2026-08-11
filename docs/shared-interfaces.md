@@ -3,7 +3,7 @@ type: Contract
 title: "Shared interfaces"
 description: "The four _shared/ contracts, split by audience, read in place by the skills that obey them."
 tags: [contracts, shared, architecture]
-timestamp: 2026-08-08
+timestamp: 2026-08-11
 ---
 
 # Shared interfaces
@@ -21,7 +21,7 @@ don't apply to it. A skill that never writes an epic shouldn't ship the epic sch
 | Interface | Defines | Audience |
 |---|---|---|
 | [`bundle-interfaces.md`](../skills/_shared/bundle-interfaces.md) | English-only content, the two bundles (`docs/planning/`, `docs/epics/`) and their link forms, reserved `index.md`/`log.md`, committing what you write | every skill that writes under `docs/` |
-| [`ledger-interfaces.md`](../skills/_shared/ledger-interfaces.md) | the decision doc schema and the reopening rule | the ledger-driven planning skills |
+| [`ledger-interfaces.md`](../skills/_shared/ledger-interfaces.md) | the decision doc schema, the two passes run over a ledger — batch triage, then deep-dive — and the reopening rule | the ledger-driven planning skills |
 | [`pipeline-interfaces.md`](../skills/_shared/pipeline-interfaces.md) | epic & issue schemas, their status lifecycles, the drift register (`docs/planning/DRIFT.md` and the per-epic records behind it), GitHub facts about non-default integration branches | the epic-to-PR skills |
 | [`review-interfaces.md`](../skills/_shared/review-interfaces.md) | severity scale, what makes a finding, GitHub verification policy, delegating the analysis pass to an external model, the `docs/REPORT_<n>.md` contract | the planning review skills — `review-epics`, `review-issues` — plus `triage-reports`, which obeys the report contract from the reading end |
 | [`authoring-interfaces.md`](../meta/_shared/authoring-interfaces.md) | how a skill in this repo is shaped: anatomy, the description contract, progressive disclosure, tiered prescriptiveness, identity | the meta skills — `create-skill`, `improve-skill` |

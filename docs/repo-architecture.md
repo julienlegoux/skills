@@ -3,7 +3,7 @@ type: Reference
 title: "Repo architecture"
 description: "How the skills repo is laid out — one folder per skill, shared contracts in _shared/, and a plugin manifest that auto-discovers everything."
 tags: [architecture, repo, plugin]
-timestamp: 2026-08-09
+timestamp: 2026-08-11
 ---
 
 # Repo architecture
@@ -22,7 +22,7 @@ keep them agreeing on the same file formats.
 ├── skills/                       ← the plugin's default skills directory
 │   ├── _shared/
 │   │   ├── bundle-interfaces.md  ← rules for anything written under docs/
-│   │   ├── ledger-interfaces.md  ← the decision doc, for ledger-driven skills
+│   │   ├── ledger-interfaces.md  ← the decision ledger, for ledger-driven skills
 │   │   ├── pipeline-interfaces.md ← epic/issue schemas, for epic-to-PR skills
 │   │   └── review-interfaces.md  ← grading and the report, for the planning reviewers
 │   ├── define-scope/
