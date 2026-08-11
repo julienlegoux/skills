@@ -80,21 +80,15 @@ every decision with status and one-line recommendation/verdict.
 
 ## Step 3: Triage — the batch pass
 
-One numbered list, dependency-ordered: each open decision with its one-line
-recommendation, then the N/A items with reasons. The user marks each **accept** or
-**discuss** — batch replies expected ("accept all except 4 and 9"). Record accepts
-immediately: `status: decided`, `verdict` = recommendation, `decided_via: triage`,
-Verdict section filled, index updated.
+The batch pass exactly as `../_shared/ledger-interfaces.md` defines it, over the
+ledger Step 2 built, with `specs/index.md` as the index it keeps current.
 
 ## Step 4: Deep-dive the flagged items
 
-Strictly in dependency order, one at a time, waiting for each answer: question,
-options with trade-offs, recommendation, user decides (`decided_via: discussion`).
-
-**After every verdict, refresh the still-open decisions** — dependents first, then
-anything the verdict plausibly affects. If a recommendation changes (choosing a
-different runtime routinely flips hosting, testing, and job-queue recommendations),
-update the doc and tell the user what changed and why before continuing.
+The deep-dive pass exactly as `../_shared/ledger-interfaces.md` defines it. Its
+refresh rule earns its keep in this phase above all others: a verdict that picks a
+different runtime routinely flips the hosting, testing and job-queue recommendations
+hanging off it — which is also why Step 2 numbers the runtime first.
 
 ## Step 5: Confirm, then write the deliverable
 

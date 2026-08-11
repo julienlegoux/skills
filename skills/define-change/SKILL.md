@@ -148,22 +148,15 @@ mechanically: `* [Title](<nn>-<slug>.md) - <status>`.
 
 ## Step 4: Triage — the batch pass
 
-Same as define-scope's Step 3: present the full ledger as one numbered,
-dependency-ordered list — each open decision with its one-line recommendation, then
-any N/A items with reasons. The user marks each **accept** or **discuss**; batch
-replies are the expected use ("accept all except 2"). Record accepts immediately
-(`status: decided`, `verdict` = the recommendation, `decided_via: triage`, Verdict
-section filled, timestamp refreshed, index updated).
+The batch pass exactly as `../_shared/ledger-interfaces.md` defines it, over the
+ledger Step 3 built, with `change-<N>-<slug>/index.md` as the index it keeps current.
 
 ## Step 5: Deep-dive the flagged items
 
-Strictly in dependency order, one at a time, waiting for each answer: restate the
-question with its audit facts, options with trade-offs, your recommendation, the
-user decides (`decided_via: discussion`). **After every verdict, refresh the
-still-open decisions** — dependents first, then anything the verdict plausibly
-affects (choosing "rewrite" over "extend" routinely flips the migration and rollout
-recommendations). If a recommendation changes, update the doc and tell the user what
-changed and why before continuing.
+The deep-dive pass exactly as `../_shared/ledger-interfaces.md` defines it, restating
+each question with the audit facts that motivated it. The refresh rule bites hardest
+on the approach decision: "rewrite" instead of "extend" routinely flips the migration
+and rollout recommendations that hang off it.
 
 ## Step 6: Confirm, then write the epic
 

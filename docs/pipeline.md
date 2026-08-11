@@ -3,7 +3,7 @@ type: Reference
 title: "The idea-to-PR pipeline"
 description: "The chain of skills that carries work from a raw idea (or an existing codebase) to merged pull requests, and what each hand-off passes along."
 tags: [pipeline, workflow, planning, implementation]
-timestamp: 2026-08-09
+timestamp: 2026-08-11
 ---
 
 # The idea-to-PR pipeline
@@ -148,9 +148,10 @@ stays, because zero is a slot the next triage cycle needs back.
 The four planning skills (`define-scope`, `define-specs`, `define-conventions`,
 `define-change`, plus `map-codebase`) share one mechanic: instead of asking open
 questions in chat, they write **one file per decision** — question, 2–4 options, a
-real recommendation — and let the user triage them in batch. The schema lives in
-[Shared interfaces](/shared-interfaces.md). `define-concept` sits upstream of all of them
-and shares none of it, for the reason given above.
+real recommendation — and let the user triage them in batch, deep-diving one at a time
+only on the items the user flags. Both the schema and those two passes are single-sourced
+— see [Shared interfaces](/shared-interfaces.md). `define-concept` sits upstream of all of
+them and shares none of it, for the reason given above.
 
 # What the hand-offs rely on
 
@@ -159,7 +160,7 @@ Every arrow in the diagram is a file contract, not a conversation:
 * Epic and issue **schemas + status lifecycle** — `../_shared/pipeline-interfaces.md`
 * The **drift register** — `../_shared/pipeline-interfaces.md`
 * Where docs land, how they link, what gets committed — `../_shared/bundle-interfaces.md`
-* The decision doc — `../_shared/ledger-interfaces.md`
+* The decision doc, and the triage/deep-dive passes over a ledger — `../_shared/ledger-interfaces.md`
 
 Which is why those three files are single-sourced rather than restated in each
 `SKILL.md`. See [Shared interfaces](/shared-interfaces.md).
