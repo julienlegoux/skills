@@ -130,12 +130,18 @@ direction the findings come from: plan repairs land before the epics they repair
 implemented, code fixes before the next epic builds on them. Which of the two a report
 produces is read from its `## Scope`, never asked.
 
-The lane is temporary and single-owner. `triage-reports` creates epic 0, extends it while
-it is in flight rather than opening a second one, and retires it — folder deleted — once
-every issue is `done` and the milestone closed. What survives is the notice in
-`docs/epics/log.md`: which reports were consumed and what they produced. That notice is
-also how the next run knows not to re-triage findings it already fixed, which is why the
-folder can go and the memory cannot.
+The lane is temporary. `triage-reports` creates epic 0 and extends it while it is in
+flight rather than opening a second one; **`close-epic` retires it** — folder deleted —
+once every issue is `done` and the milestone closed. Retirement sits with `close-epic`
+because that is the skill running at the moment it becomes due: `triage-reports` is
+invoked when reports pile up, not when an epic finishes implementing, so a lane waiting
+on it lingers for a whole cycle.
+
+What survives is the notice in `docs/epics/log.md`: which reports were consumed and what
+they produced. That notice is also how the next run knows not to re-triage findings it
+already fixed, which is why the folder can go and the memory cannot. Epic 0 is the only
+epic that is *retired* rather than *closed* — every other one reaches `status: done` and
+stays, because zero is a slot the next triage cycle needs back.
 
 # The decision ledger
 

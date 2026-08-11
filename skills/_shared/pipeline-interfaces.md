@@ -69,10 +69,17 @@ Field notes:
 - **`epic: 0` is reserved.** Every other number is a position in the planned build
   order; zero means *before continuing* — the remediation lane `triage-reports`
   owns, holding the repairs a review turned up that the project can't proceed past.
-  It is temporary by design: `triage-reports` creates it, extends it while it is in
-  flight, and retires it once every issue is `done` and its milestone closed,
-  leaving the record in `docs/epics/log.md`. No other skill deletes it, and nothing
+  It is temporary by design: `triage-reports` creates it and extends it while it is
+  in flight; **`close-epic` retires it** once every issue is `done` and its milestone
+  closed, removing the folder and leaving the notice in `docs/epics/log.md`. Nothing
   else claims the number.
+- **Retiring is not closing.** Every other epic reaches `status: done` and stays on
+  disk. Epic 0 is a *slot*, not an identity: the next triage cycle produces its own
+  repairs and needs the number back, and a lane that accumulated the previous
+  cycles' folders would offer every later run a pile of finished remediation to read
+  past. So epic 0 never takes `status: done` — it stops existing, and the retirement
+  notice in `docs/epics/log.md` is what survives, carrying which reports it consumed
+  so the next run doesn't re-triage them.
 
 ## Issue file
 
