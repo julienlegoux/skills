@@ -30,8 +30,9 @@ epics they repair get implemented; fixes to shipped code land before the next ep
 on it. Same lane, same meaning.
 
 It is also **temporary**. Epic 0 is scaffolding that puts the project back on its rails,
-not a permanent fixture of the epic bundle — so this skill both creates it and retires it
-(Step 1), and no other skill deletes it.
+not a permanent fixture of the epic bundle — so it is created here and **retired by
+`close-epic`**, which is the skill actually running at the moment retirement becomes due.
+This one converts findings into work; it does not own the lane's disposal.
 
 ## The mode is read, not asked
 
@@ -69,21 +70,19 @@ do not create a second one. New findings join the existing epic 0: extend its `#
 and `## Acceptance criteria`, and let `create-issues` add the new issues to it. Two open
 remediation lanes compete for the same "do this first" slot and neither wins.
 
-**An epic 0 with every issue `done` and its milestone closed** — retire it. Show what it
-contains, confirm once, then remove the folder with `git rm -r` and append the retirement
-notice to `docs/epics/log.md`:
+**An epic 0 with every issue `done` and its milestone closed** — it should not still be
+here. `close-epic` retires the lane, folder and all, in the run that closes it. Finding
+one means `close-epic` never ran on this epic, so say that and hand off to it rather than
+removing the folder yourself.
 
-```markdown
-## 2026-08-09
-* **Retirement**: Epic 0 (Plan remediation) retired - 11 issues, milestone 24 closed.
-  Consumed reports 1-9. Fixed: `issues/index.md` link forms across nine epics, PR size
-  notes reconciled with `size`, orphaned scope adopted into epics 2, 3 and 6.
-```
+Two things make the hand-off worth the interruption instead of a quick `git rm -r` here.
+`close-epic` writes the retirement notice to `docs/epics/log.md` that Step 2 reads to skip
+already-converted reports — delete the folder without it and the next run re-triages
+findings that were fixed months ago. And any drift promoted out of that epic still points
+its `Evidence` into the folder's `drift/` records until `close-epic` repoints it at the
+PRs; removing the folder first leaves the register asserting things it can no longer show.
 
-The folder goes; the memory does not. That notice is the record of which reports have
-already been converted and what they produced, and Step 4 reads it. Deleting a folder
-whose history is committed loses nothing — deleting it without the notice loses the only
-thing the next run needs.
+Once the hand-off is done the lane is free, so continue to Step 2.
 
 ## Step 2: Collect the series
 
