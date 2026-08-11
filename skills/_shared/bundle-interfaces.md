@@ -66,3 +66,14 @@ and push to the branch doc work lands on — the integration trunk (`develop`) w
 is in play, otherwise the current branch. If the tree isn't a git repo, or has no
 remote because the user declined one at scoping, do the half that applies, say so once
 in the final report, and never block the deliverable on it.
+
+**Any message longer than one line goes through a file** — write it out, then
+`git commit -F <file>`. Never assemble a multi-line message inside the command line.
+Heredocs and here-strings are shell-dialect specific, and a dialect that reaches the
+wrong shell corrupts the message *without erroring*: a PowerShell here-string
+(`git commit -m @'…'@`) executed by bash is read as three adjacent tokens and
+concatenated, planting the `@` delimiters as the message's first and last lines. Git
+accepts it, the commit pushes, and history is append-only — by the time anyone reads
+the log it is upstream. `-F` has no quoting surface at all and behaves identically
+under bash, PowerShell and cmd, which is what makes it the mechanism rather than one
+option among several.
