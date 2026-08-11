@@ -71,6 +71,14 @@ in the pipeline closes it, so an otherwise finished epic keeps showing as open w
 the repo's milestone list. If issues remain open, leave the milestone open and name
 them: a closed milestone with open issues is a worse lie than an open one.
 
+**Close the epic itself in the same step**, under the same condition: set
+`status: done` on `EPIC_<n>.md` with a refreshed `timestamp`, and update the epic's
+bullet in the **epics bundle root** `index.md`. Nothing else in the pipeline writes
+either, so an epic whose milestone is closed and whose every issue is `done` otherwise
+keeps reading `open` in the one index a later reader scans to see where the project
+stands — a mismatch that surfaces only when someone adds the next epic by hand and
+notices the neighbouring bullets are wrong.
+
 ## Step 3: Promote the drift
 
 This is the step the rest of the pipeline depends on. Implementers write one **drift
@@ -127,7 +135,8 @@ not the merge count, is what "the next epic can start" means.
 
 Two shapes, depending on how the run ended.
 
-**The epic is closed** — every issue `done`, milestone closed, environment clean:
+**The epic is closed** — every issue `done`, the epic and its milestone closed,
+environment clean:
 
 - Merged issues with PR links, in merge order.
 - Register entries written, with their triaged dispositions and any follow-up issues
