@@ -18,20 +18,20 @@ once.
 ## Epic file
 
 Path: `docs/epics/epic-<n>-<slug>/EPIC_<n>.md`. Slug: lowercase kebab-case, ASCII,
-~40 chars. Written by `split-epics` (greenfield) or `define-change` (brownfield) —
-format-identical from either producer, so downstream skills can't tell which one
-made it.
+~40 chars. Written by `split-epics` (greenfield), `define-change` (brownfield), or
+`triage-reports` (remediation) — format-identical from any producer, so downstream
+skills can't tell which one made it.
 
 ```markdown
 ---
 type: Epic
 title: "<title>"
 description: "<one-sentence summary of the epic's goal>"
-tags: [epic]                 # define-change adds: change
+tags: [epic]                 # define-change adds: change; triage-reports adds: remediation
 timestamp: <ISO 8601 — set on every meaningful write>
 epic: <n>
 slug: <slug>
-status: draft                # draft | open
+status: draft                # draft | open | done
 gh_issue: null               # tracking issue number, once created
 milestone: null              # milestone number, once created
 source: <plan path#heading, or the change ledger's index.md path>
@@ -54,12 +54,32 @@ Field notes:
   issue exist, at which point `gh_issue`, `milestone`, and
   `resource: https://github.com/<owner>/<repo>/issues/<number>` are filled and
   `timestamp` refreshed. `resource` never appears before the GitHub issue exists.
+  `status: done` = the epic is closed: every issue is `done` and the milestone is
+  closed. Written by `close-epic`, which refreshes `timestamp` and updates the epic's
+  bullet in the **epics bundle root** `index.md` in the same step that closes the
+  milestone. Without this terminal value an epic has no way to stop reading `open`,
+  and the root index — the one surface a later reader scans for where the project
+  stands — reports finished epics as live.
 - `## Dependencies` links other epics bundle-relative
   (`[Epic 1](/epic-1-core-crud/EPIC_1.md)`), or reads "None".
 - `## Context` links `docs/planning/` docs (SPECS.md, CONVENTIONS.md, and for
   brownfield the change ledger) with plain relative paths — they cross bundles.
   Omit the section entirely when none exist. Reference, never copy — the planning
   docs stay the single source of truth.
+- **`epic: 0` is reserved.** Every other number is a position in the planned build
+  order; zero means *before continuing* — the remediation lane `triage-reports`
+  owns, holding the repairs a review turned up that the project can't proceed past.
+  It is temporary by design: `triage-reports` creates it and extends it while it is
+  in flight; **`close-epic` retires it** once every issue is `done` and its milestone
+  closed, removing the folder and leaving the notice in `docs/epics/log.md`. Nothing
+  else claims the number.
+- **Retiring is not closing.** Every other epic reaches `status: done` and stays on
+  disk. Epic 0 is a *slot*, not an identity: the next triage cycle produces its own
+  repairs and needs the number back, and a lane that accumulated the previous
+  cycles' folders would offer every later run a pile of finished remediation to read
+  past. So epic 0 never takes `status: done` — it stops existing, and the retirement
+  notice in `docs/epics/log.md` is what survives, carrying which reports it consumed
+  so the next run doesn't re-triage them.
 
 ## Issue file
 

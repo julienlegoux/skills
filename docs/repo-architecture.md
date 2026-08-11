@@ -3,7 +3,7 @@ type: Reference
 title: "Repo architecture"
 description: "How the skills repo is laid out — one folder per skill, shared contracts in _shared/, and a plugin manifest that auto-discovers everything."
 tags: [architecture, repo, plugin]
-timestamp: 2026-08-08
+timestamp: 2026-08-09
 ---
 
 # Repo architecture
@@ -28,7 +28,7 @@ keep them agreeing on the same file formats.
 │   ├── define-scope/
 │   │   ├── SKILL.md
 │   │   └── references/
-│   └── ...one folder per skill (17 today)
+│   └── ...one folder per skill (18 today)
 ├── meta/                         ← invisible to the plugin
 │   ├── _shared/authoring-interfaces.md
 │   ├── create-skill/SKILL.md
@@ -85,7 +85,7 @@ standalone tooling around it:
 | Family | Skills |
 |---|---|
 | Pipeline | `define-concept`, `define-scope`, `define-specs`, `define-conventions`, `split-epics`, `map-codebase`, `define-change`, `create-issues`, `implement-issue`, `implement-epic`, `close-epic` |
-| Review companions | `review-epics`, `review-issues`, `review-implementation` |
+| Review companions | `review-epics`, `review-issues`, `review-implementation`, `triage-reports` |
 | Knowledge tooling | `okf-docs`, `okf-lint` |
 | Feedback | `send-feedback` |
 | Meta *(in `meta/`, not shipped)* | `create-skill`, `improve-skill` |

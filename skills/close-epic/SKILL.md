@@ -71,6 +71,17 @@ in the pipeline closes it, so an otherwise finished epic keeps showing as open w
 the repo's milestone list. If issues remain open, leave the milestone open and name
 them: a closed milestone with open issues is a worse lie than an open one.
 
+**Close the epic itself in the same step**, under the same condition: set
+`status: done` on `EPIC_<n>.md` with a refreshed `timestamp`, and update the epic's
+bullet in the **epics bundle root** `index.md`. Nothing else in the pipeline writes
+either, so an epic whose milestone is closed and whose every issue is `done` otherwise
+keeps reading `open` in the one index a later reader scans to see where the project
+stands — a mismatch that surfaces only when someone adds the next epic by hand and
+notices the neighbouring bullets are wrong.
+
+**Epic 0 is the exception**: it is *retired* rather than closed (Step 4), so it never
+takes `status: done`. Leave its frontmatter alone here.
+
 ## Step 3: Promote the drift
 
 This is the step the rest of the pipeline depends on. Implementers write one **drift
@@ -120,6 +131,44 @@ Three hard rules, because deleting a remote branch is not reversible from here:
   path, every branch, local and remote — and get a single explicit go-ahead before
   removing anything. Not a per-item interrogation, and not silent deletion either.
 
+### Retiring epic 0
+
+If this epic is `epic: 0`, cleanup includes the lane itself. Epic 0 is the remediation
+lane `triage-reports` opens, and it is a slot rather than an identity — the next triage
+cycle produces its own repairs and needs the number back
+(`../_shared/pipeline-interfaces.md`). Retirement lands here rather than with the skill
+that created it for one reason: `triage-reports` runs when reports pile up, not when an
+epic finishes implementing, so it is not loaded at the moment retirement becomes due.
+This skill is, and it has already established the exact precondition — every issue
+`done`, milestone closed.
+
+Retire it **after** Step 3, which reads the drift records the folder holds, and fold it
+into the same grouped confirmation as the worktrees and branches:
+
+1. **Repoint what links into the folder, before removing it.** Both logs are
+   append-only, so a link that dies there stays dead. The usual holders are
+   `docs/epics/log.md`, `docs/planning/log.md`, and the `Evidence` field of any drift
+   entry Step 3 just promoted — that one points straight into `epic-0-<slug>/drift/`.
+   Repoint each at what survives on GitHub: the milestone, the tracking issue, the
+   issue, or the PR. A promoted drift entry cites `PR #<pr>` instead, which costs
+   nothing — its `Because` field already carries the verified blocker inline.
+2. **Show what is about to go** — issue count, milestone number, the reports it
+   consumed — in the grouped confirmation, and get the go-ahead with the rest.
+3. `git rm -r docs/epics/epic-0-<slug>/`, and drop its bullet from
+   `docs/epics/index.md`.
+4. **Append the retirement notice to `docs/epics/log.md`:**
+
+   ```markdown
+   * **Retirement**: Epic 0 (<title>) retired - <n> issues, milestone <m> closed.
+     Consumed reports <list>. Fixed: <one line on what it produced>.
+   ```
+
+   The folder goes; the memory does not. `triage-reports` reads this notice to know
+   which reports have already been converted, so retiring without it is what makes the
+   next run ask the user to decide the same hundred findings twice.
+
+Every other epic stays on disk with `status: done`. Only zero is retired.
+
 Finish by confirming the integration branch is checked out, clean, and pushed. That,
 not the merge count, is what "the next epic can start" means.
 
@@ -127,7 +176,8 @@ not the merge count, is what "the next epic can start" means.
 
 Two shapes, depending on how the run ended.
 
-**The epic is closed** — every issue `done`, milestone closed, environment clean:
+**The epic is closed** — every issue `done`, the epic and its milestone closed,
+environment clean:
 
 - Merged issues with PR links, in merge order.
 - Register entries written, with their triaged dispositions and any follow-up issues

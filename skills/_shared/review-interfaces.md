@@ -140,3 +140,8 @@ worth reading.
 Finish by linking the report and summarising the highest-severity findings in the
 response itself. Say plainly when GitHub verification was skipped or the external pass
 did not run — a gap the user does not know about is a gap they cannot close.
+
+Then name what turns the findings into work: `triage-reports` reads the whole
+`docs/REPORT_<n>.md` series, groups the findings by the repair that resolves them, and
+converts what the user accepts into the remediation epic. Offer it; don't run it
+unasked, and don't repair anything here — the section above is why.

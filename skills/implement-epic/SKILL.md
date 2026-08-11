@@ -115,6 +115,29 @@ back-to-back than concurrently — the second one's rework costs more than the
 overlap saves. Dependency-unrelated ≠ file-disjoint; use the scope lines in
 `index.md` to spot this.
 
+## Rendering the board
+
+Step 1 builds the board and the loop keeps it current, but the only user-visible
+artifact this skill otherwise prescribes is the **final report** — which arrives
+when the run is already over. On a long epic (many issues, CI waits, hours of
+wall-clock) that leaves the user with no prescribed view of where things stand
+until there is nothing left to decide.
+
+So render it: once when a frontier is spawned, and again after each merge. One row
+per issue, carrying the columns the supervisor already holds:
+
+| Issue | Title | Model | Status |
+|---|---|---|---|
+| #12 | Extract the token store | sonnet | merged — <PR link> |
+| #13 | Rotate refresh tokens | opus | in flight |
+| #14 | Wire the CLI flag | haiku | blocked on #13 |
+| #15 | Point the staging DNS record | — | user-gate |
+
+This costs nothing to produce: those are exactly the fields Step 1 says the board
+carries, so there is no extra reading and no context growth. It also turns the
+final report's **Models used** line into a running total rather than a
+recollection at the end of a depleted context.
+
 ## Choosing model and effort per issue
 
 This is the supervisor's real judgment call, and it's why the issue frontmatter
