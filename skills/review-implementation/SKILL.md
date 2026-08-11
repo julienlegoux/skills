@@ -16,7 +16,9 @@ Those yardsticks are what separates this from a generic code review: the epic's
 acceptance criteria, `docs/planning/CONVENTIONS.md`, and `docs/planning/DRIFT.md`. The
 issue schema, `gh_pr`, and the drift register's format live in
 `../_shared/pipeline-interfaces.md`; the rules for anything written under `docs/` in
-`../_shared/bundle-interfaces.md`. Read both before Step 1.
+`../_shared/bundle-interfaces.md`. Read both before Step 1. A third governs nothing
+under review: `../_shared/feedback-interfaces.md`, the closing reflex for what this run
+teaches about *this skill*, read at Step 5.
 
 ## Scope boundary
 
@@ -150,3 +152,7 @@ and this skill's whole value is refusing to imply verification it didn't do.
 Commit per `../_shared/bundle-interfaces.md`, then report the P0/P1 findings, the drift
 entries written, and that `triage-reports` converts the `fix-now` dispositions — this
 report's and every earlier one's — into the remediation epic.
+
+Then close the run per `../_shared/feedback-interfaces.md` — silently, unless this run
+turned up something about this skill that clears both its filters. A finding about the
+code under review is not that; it is already a disposition.

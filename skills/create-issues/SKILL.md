@@ -21,7 +21,9 @@ established it, and every issue file this skill adds must fit the same rules. Th
 issue file schema and status lifecycle are defined once in
 `../_shared/pipeline-interfaces.md`, and the rules for anything written under
 `docs/` — English content, link and index forms, reserved files, committing what you
-write — in `../_shared/bundle-interfaces.md`. Read both before drafting anything.
+write — in `../_shared/bundle-interfaces.md`. Read both before drafting anything. A
+third, `../_shared/feedback-interfaces.md`, governs nothing this skill writes: it is
+the closing reflex for what this run teaches about *this skill*, read at Step 7.
 
 ## Step 1: Resolve the target epic
 
@@ -184,3 +186,6 @@ appended) — e.g. `docs: add Epic <n> issues`.
 
 Report a summary: issues created (with links), their sizes, the commit pushed, and
 a reminder that the epic's GitHub issue now shows them as sub-issues/progress.
+
+Then close the run per `../_shared/feedback-interfaces.md` — silently, unless this run
+turned up something about this skill that clears both its filters.

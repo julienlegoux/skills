@@ -22,7 +22,9 @@ can read `docs/epics/` as structured knowledge. The epic file schema is defined 
 in `../_shared/pipeline-interfaces.md`, and the rules for anything written under
 `docs/` — English content, link forms, reserved `index.md`/`log.md` files, and
 committing what you write — in `../_shared/bundle-interfaces.md`. Read both before
-writing anything.
+writing anything. A third governs nothing this skill writes:
+`../_shared/feedback-interfaces.md`, the closing reflex for what this run teaches about
+*this skill*, read at Step 7.
 
 ## Step 1: Find the plan doc
 
@@ -244,3 +246,6 @@ everyone until the push lands.
 Report a final summary to the user: epics created, issue numbers/links, the commit
 pushed, and a reminder that `create-issues` can now be run per epic to break each one
 into PR-sized issues.
+
+Then close the run per `../_shared/feedback-interfaces.md` — silently, unless this run
+turned up something about this skill that clears both its filters.

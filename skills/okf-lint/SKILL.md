@@ -82,6 +82,10 @@ root there is no "next to" — put the report in the root and make sure
 (this is the one write to the bundle tree the skill is allowed). `<N>` is
 one more than the highest existing report number, so history is kept.
 
+**5. Close the run** per `../_shared/feedback-interfaces.md` — the reflex for what
+this run taught about *this skill*, as opposed to about the bundle. Read it; it is
+silent unless something clears both its filters, which most runs is nothing.
+
 ## Report structure
 
 Use this template:

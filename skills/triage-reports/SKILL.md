@@ -17,7 +17,8 @@ The epic schema, the status lifecycle and the drift register are defined in
 `../_shared/bundle-interfaces.md`; the report's own shape and severity scale in
 `../_shared/review-interfaces.md`. Read all three before Step 1 — this skill writes an
 epic against schemas it does not own, and reads reports written to a contract it does
-not own either.
+not own either. A fourth owns none of that: `../_shared/feedback-interfaces.md`, the
+closing reflex for what this run teaches about *this skill*, read at Step 7.
 
 ## What epic 0 means
 
@@ -188,3 +189,7 @@ Report: findings read, dropped, and accepted; the epic and its issue link; the d
 entries written; and that `create-issues` can now cut epic 0 into PR-sized issues. Say
 plainly what was left undecided — a group the user deferred is still a finding nobody
 owns.
+
+Then close the run per `../_shared/feedback-interfaces.md` — silently, unless this run
+turned up something about this skill that clears both its filters. A finding from the
+reports is not that; it was triaged above.
