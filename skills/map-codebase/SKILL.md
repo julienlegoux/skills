@@ -161,11 +161,11 @@ listing each with status and one-line recommendation.
 
 ## Step 4: Triage, then deep-dive
 
-Present the ledger as one numbered list with one-line recommendations; the user
-marks each **accept** or **discuss** — batch replies expected. Record accepts
-immediately (`decided_via: triage`). Then walk the discuss items one at a time,
-waiting for each answer (`decided_via: discussion`), refreshing any still-open item
-a verdict affects.
+Both passes from `../_shared/ledger-interfaces.md`, run as a single step rather than
+two: what is triaged here is a handful of *ambiguities*, not a checklist of areas, so
+the batch list and the walk-through of whatever the user flags fit in one exchange —
+and there is rarely an excluded list to confirm, because a finding the code answers
+never became a decision at all.
 
 ## Step 5: Confirm, then write the deliverables
 

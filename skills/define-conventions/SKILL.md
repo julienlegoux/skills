@@ -94,28 +94,16 @@ matters here; number by baseline section order. Create `conventions/index.md`.
 
 ## Step 3: Triage — the batch pass
 
-Show the user:
-
-- A one-line note that the baseline applies by default, with the list of section
-  titles that made it through the stack filter (so what's *not* being asked about is
-  visible, same spirit as N/A marks elsewhere).
-- The numbered deviations ledger, each with a one-line recommendation.
-
-The user marks each **accept** or **discuss**; batch replies expected. They can also
-pull any baseline item into the ledger at this point. Record accepts immediately
-(`decided_via: triage`).
+The batch pass exactly as `../_shared/ledger-interfaces.md` defines it, over the
+deviations ledger. What this phase puts ahead of the list: a one-line note that the
+baseline applies by default, with the section titles that made it through the stack
+filter — that is the contract's self-excluded list here, the standards this skill
+settled without ever opening a decision doc, so what is *not* being asked about stays
+visible. The user can pull any of those items into the ledger right there.
 
 ## Step 4: Deep-dive the flagged items
 
-One at a time, waiting for each answer: question, options, trade-offs,
-recommendation, user's verdict (`decided_via: discussion`). Refresh any still-open
-items a verdict affects.
-
-Label the options **A / B / C** and record a verdict only on an explicit letter or
-an unambiguous restatement of one option. Conversational assent ("yeah that's it",
-voice-input fragments) is not a verdict — you can't tell *which* option it blesses;
-re-ask with the letters rather than guessing, and say why you're re-asking so it
-doesn't read as a loop.
+The deep-dive pass exactly as `../_shared/ledger-interfaces.md` defines it.
 
 **Promotion check:** when a deviation's rationale is not project-specific ("actually I
 always want it this way"), say so and suggest promoting it into `assets/baseline.md`
