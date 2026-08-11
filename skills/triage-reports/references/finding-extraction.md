@@ -4,11 +4,31 @@ Mechanics for Steps 2–4. The judgment stays in `SKILL.md`; what follows is how
 a hundred findings out of a report series and down to a set of repairs without losing
 any or inventing some.
 
+## Where the reports are
+
+Two layouts, both live at once:
+
+```
+docs/reviews/2026-08-11-issues-epic-4.md    # current: date, kind, subject
+docs/REPORT_2.md                            # legacy: the flat integer series
+```
+
+The legacy files were never migrated, because the epics that link into them
+(`source: docs/REPORT_1.md#findings`) stay valid exactly as long as nothing moves. So
+read both, and treat them as one set: a repo whose reviews straddle the change has some
+of its findings in each, and a pass that globs only one drops the rest without saying
+so.
+
+`<kind>` in the current names is the reviewer — `epics`, `issues`, `implementation`,
+`lint`. The `lint` ones are `okf-lint`'s and are **not** part of this set: they carry no
+`## Scope`, grade High/Medium/Low, and report on a knowledge bundle rather than on the
+plan or the code. Skip them, and say in the final report that you did.
+
 ## Telling the reports apart
 
 Every report opens with `## Scope`, and its `Reviewed:` line names what was read. That
-is the only thing that decides which flavour it is — never the report's number or its
-position in the series.
+is the only thing that decides which flavour it is — never the report's date, its
+number, or its position in the directory.
 
 | `Reviewed:` points at | Written by | A fix edits |
 |---|---|---|
@@ -23,11 +43,17 @@ criterion — the report says which side it thinks is wrong, and the triage conf
 
 ## The two finding layouts
 
-Both use `### P<n> <title>` headings, so the whole series extracts with one pass:
+Both use `### P<n> <title>` headings, so both layouts extract with one pass — the
+missing glob in a repo that only ever had one of them is what `2>/dev/null` is for:
 
 ```bash
-grep -nE '^### P[0-3]' docs/REPORT_*.md
+grep -nE '^### P[0-3]' docs/reviews/*.md docs/REPORT_*.md 2>/dev/null
 ```
+
+Lint reports match nothing here, since their headings are `### High` / `### Medium` /
+`### Low` — but check the file list the grep covered rather than trusting that, because
+a lint report with zero matches and a review report you forgot to read look identical
+from the output.
 
 The separator after the severity is an em dash in some reports and a hyphen in others;
 match on `P[0-3]` and treat the rest of the line as the title.

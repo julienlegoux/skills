@@ -4,6 +4,10 @@ The floor for `define-scope`'s enumeration: every area below either becomes a de
 doc (`status: open` with a recommendation) or an explicit `status: na` with a reason.
 Project-specific decisions are added on top — this list is a floor, not a ceiling.
 
+This is the **greenfield** floor. Its sibling `checklist-brownfield.md` covers a run on
+a system that already shipped, where the first four areas below are answered by what
+exists and asking them anyway yields N/A docs instead of decisions.
+
 Areas are listed in typical dependency order; renumber per project as dependencies
 actually fall.
 

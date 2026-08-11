@@ -3,7 +3,7 @@ type: Reference
 title: "The idea-to-PR pipeline"
 description: "The chain of skills that carries work from a raw idea (or an existing codebase) to merged pull requests, and what each hand-off passes along."
 tags: [pipeline, workflow, planning, implementation]
-timestamp: 2026-08-09
+timestamp: 2026-08-11
 ---
 
 # The idea-to-PR pipeline
@@ -97,10 +97,15 @@ find into work:
 | `review-epics` | plan → epic conversion: epics, milestones, tracking issues against the source plan |
 | `review-issues` | epic → issue conversion: sizing, coverage, sub-issue wiring |
 | `review-implementation` | the code the epic actually shipped — its merged diff against the acceptance criteria, `CONVENTIONS.md`, and the accepted drift |
-| `triage-reports` | the `REPORT_N` series itself → one remediation epic |
+| `triage-reports` | the reports themselves → one remediation epic |
 
-All three reviewers write a prioritized `docs/REPORT_N.md` and none repairs its subject —
-a reviewer that silently edits what it reviews destroys the evidence.
+All three reviewers write a prioritized report into `docs/reviews/`, named
+`<YYYY-MM-DD>-<kind>-<subject>.md`, and none repairs its subject — a reviewer that
+silently edits what it reviews destroys the evidence. The name is what replaced the flat
+`docs/REPORT_<n>.md` series: the date sorts the directory, the kind and subject say what
+was read, and no two reports can claim the same name, so nothing has to scan for the next
+free integer. Reports written before the change stay at the root of `docs/` — that is
+what keeps the epics linking into them valid — and `triage-reports` reads both layouts.
 
 The two planning reviewers will hand their analysis pass to a model outside the Claude
 family when one is reachable — `opencode` on `PATH`, run read-only against the repo —
@@ -117,7 +122,7 @@ time anyone could look.
 # Epic 0 — the remediation lane
 
 Not repairing is what keeps a report trustworthy, and it leaves a gap: findings pile up
-in `docs/REPORT_<n>.md` with nothing that turns them into work. Nine reports carrying a
+in `docs/reviews/` with nothing that turns them into work. Nine reports carrying a
 hundred findings is not something anyone acts on by hand.
 
 `triage-reports` closes it. It reads the **whole series**, groups findings by the repair
@@ -148,9 +153,10 @@ stays, because zero is a slot the next triage cycle needs back.
 The four planning skills (`define-scope`, `define-specs`, `define-conventions`,
 `define-change`, plus `map-codebase`) share one mechanic: instead of asking open
 questions in chat, they write **one file per decision** — question, 2–4 options, a
-real recommendation — and let the user triage them in batch. The schema lives in
-[Shared interfaces](/shared-interfaces.md). `define-concept` sits upstream of all of them
-and shares none of it, for the reason given above.
+real recommendation — and let the user triage them in batch, deep-diving one at a time
+only on the items the user flags. Both the schema and those two passes are single-sourced
+— see [Shared interfaces](/shared-interfaces.md). `define-concept` sits upstream of all of
+them and shares none of it, for the reason given above.
 
 # What the hand-offs rely on
 
@@ -159,7 +165,7 @@ Every arrow in the diagram is a file contract, not a conversation:
 * Epic and issue **schemas + status lifecycle** — `../_shared/pipeline-interfaces.md`
 * The **drift register** — `../_shared/pipeline-interfaces.md`
 * Where docs land, how they link, what gets committed — `../_shared/bundle-interfaces.md`
-* The decision doc — `../_shared/ledger-interfaces.md`
+* The decision doc, and the triage/deep-dive passes over a ledger — `../_shared/ledger-interfaces.md`
 
 Which is why those three files are single-sourced rather than restated in each
 `SKILL.md`. See [Shared interfaces](/shared-interfaces.md).

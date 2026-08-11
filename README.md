@@ -18,7 +18,7 @@ The core of this repo is a chain of skills that carries work all the way to revi
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="assets/pipeline-dark.png">
   <source media="(prefers-color-scheme: light)" srcset="assets/pipeline-light.png">
-  <img alt="The pipeline: two entry points (raw idea, existing code) feed the Plan stage; Plan feeds Build (create-issues → implement-epic → implement-issue → merged PR → close-epic); close-epic loops back for the next epic, and the opt-in review skills write docs/REPORT_N.md, which triage-reports turns into epic 0 and feeds back into create-issues." src="assets/pipeline-light.png">
+  <img alt="The pipeline: two entry points (raw idea, existing code) feed the Plan stage; Plan feeds Build (create-issues → implement-epic → implement-issue → merged PR → close-epic); close-epic loops back for the next epic, and the opt-in review skills write their reports into docs/reviews/, which triage-reports turns into epic 0 and feeds back into create-issues." src="assets/pipeline-light.png">
 </picture>
 
 Solid arrows are the path work takes; dotted ones are optional entries and hand-offs (`implement-issue` runs standalone too, and every review skill is opt-in).
@@ -59,11 +59,11 @@ Audit skills that check the pipeline's output without modifying it:
 | [`review-issues`](skills/review-issues/SKILL.md) | Epic → issue conversion: sizing, coverage, sub-issue wiring |
 | [`review-implementation`](skills/review-implementation/SKILL.md) | The code an epic actually shipped: its merged diff vs. the acceptance criteria, `CONVENTIONS.md` and the accepted drift |
 
-All three write a prioritized `docs/REPORT_N.md` instead of silently "fixing" things — and that report is itself an input:
+All three write a prioritized report into `docs/reviews/`, named `<YYYY-MM-DD>-<kind>-<subject>.md` — `2026-08-11-issues-epic-4.md` — instead of silently "fixing" things. And that report is itself an input:
 
 | Skill | What it does |
 |---|---|
-| [`triage-reports`](skills/triage-reports/SKILL.md) | Fold the accumulated `docs/REPORT_*.md` into one triaged remediation epic (`epic-0`) that `create-issues` consumes unchanged — which is what closes the loop |
+| [`triage-reports`](skills/triage-reports/SKILL.md) | Fold the accumulated reports into one triaged remediation epic (`epic-0`) that `create-issues` consumes unchanged — which is what closes the loop |
 
 ## 📚 Knowledge tooling (OKF)
 
@@ -108,7 +108,9 @@ New-Item -ItemType Junction -Path "$HOME\.claude\skills\improve-skill" -Target "
 │   ├── _shared/
 │   │   ├── bundle-interfaces.md  ← rules for anything written under docs/
 │   │   ├── ledger-interfaces.md  ← the decision doc, for ledger-driven skills
-│   │   └── pipeline-interfaces.md ← epic/issue schemas, for epic-to-PR skills
+│   │   ├── pipeline-interfaces.md ← epic/issue schemas, for epic-to-PR skills
+│   │   ├── review-interfaces.md  ← grading and the report, for the reviewers
+│   │   └── feedback-interfaces.md ← the closing reflex, for every published skill
 │   ├── define-scope/SKILL.md
 │   ├── define-specs/SKILL.md
 │   └── ...one folder per skill
@@ -129,11 +131,13 @@ What the skills agree on lives in `skills/_shared/`, split by audience so no ski
 | Interface | Defines | Audience |
 |---|---|---|
 | [`bundle-interfaces.md`](skills/_shared/bundle-interfaces.md) | English content, bundle & link rules, reserved `index.md`/`log.md`, committing what you write | every skill that writes under `docs/` |
-| [`ledger-interfaces.md`](skills/_shared/ledger-interfaces.md) | the decision doc schema and reopening rule | the ledger-driven planning skills |
-| [`pipeline-interfaces.md`](skills/_shared/pipeline-interfaces.md) | epic & issue schemas, status lifecycle, GitHub facts on integration branches | the epic-to-PR skills |
+| [`ledger-interfaces.md`](skills/_shared/ledger-interfaces.md) | the decision doc schema, the batch-triage and deep-dive passes, the reopening rule | the ledger-driven planning skills |
+| [`pipeline-interfaces.md`](skills/_shared/pipeline-interfaces.md) | epic & issue schemas, status lifecycle, the drift register, GitHub facts on integration branches | the epic-to-PR skills |
+| [`review-interfaces.md`](skills/_shared/review-interfaces.md) | severity scale, what makes a finding, GitHub verification, the external analysis pass, the `docs/reviews/` report contract | the planning reviewers, plus `triage-reports` from the reading end |
+| [`feedback-interfaces.md`](skills/_shared/feedback-interfaces.md) | the closing reflex: when it fires, the attribution and generality filters, silence when nothing clears them, `improve-skill` vs `send-feedback` | every skill under `skills/` **except** `send-feedback` |
 | [`authoring-interfaces.md`](meta/_shared/authoring-interfaces.md) | how a skill in this repo is shaped: description contract, progressive disclosure, tiered prescriptiveness | `create-skill`, `improve-skill` |
 
-One file per contract, no generated copies, so an edit is live everywhere at once. The three under `skills/_shared/` are read as `../_shared/<file>` and ship with the plugin; the trade is that a published skill folder is not portable on its own — the repo is the unit. The fourth is read as `<repo>/meta/_shared/<file>`, because its two consumers are installed away from the repo and resolve it first anyway.
+One file per contract, no generated copies, so an edit is live everywhere at once. The five under `skills/_shared/` are read as `../_shared/<file>` and ship with the plugin; the trade is that a published skill folder is not portable on its own — the repo is the unit. The sixth is read as `<repo>/meta/_shared/<file>`, because its two consumers are installed away from the repo and resolve it first anyway.
 
 ## 🛠️ Developing
 

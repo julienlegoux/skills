@@ -52,7 +52,9 @@ The bundle-wide rules — English content, link forms (bundle-relative with a le
 `/`, e.g. `([decision](/mapping/01-canonical-error-style.md))`), reserved files, and
 committing what you write — are defined once in `../_shared/bundle-interfaces.md`,
 and the decision doc schema in `../_shared/ledger-interfaces.md`. Read both before
-writing anything.
+writing anything. A third governs nothing this skill writes:
+`../_shared/feedback-interfaces.md`, the closing reflex for what this run teaches about
+*this skill*, read at the handoff.
 
 ## Step 0: Resume and refresh checks
 
@@ -161,11 +163,11 @@ listing each with status and one-line recommendation.
 
 ## Step 4: Triage, then deep-dive
 
-Present the ledger as one numbered list with one-line recommendations; the user
-marks each **accept** or **discuss** — batch replies expected. Record accepts
-immediately (`decided_via: triage`). Then walk the discuss items one at a time,
-waiting for each answer (`decided_via: discussion`), refreshing any still-open item
-a verdict affects.
+Both passes from `../_shared/ledger-interfaces.md`, run as a single step rather than
+two: what is triaged here is a handful of *ambiguities*, not a checklist of areas, so
+the batch list and the walk-through of whatever the user flags fit in one exchange —
+and there is rarely an excluded list to confirm, because a finding the code answers
+never became a decision at all.
 
 ## Step 5: Confirm, then write the deliverables
 
@@ -227,6 +229,9 @@ steps: `define-change` to plan the change that motivated the mapping, then
 map-codebase → define-change → create-issues → implement-epic. If the code drifts
 later, re-invoking this skill offers the refresh path from Step 0 instead of a
 re-map.
+
+Then close the run per `../_shared/feedback-interfaces.md` — silently, unless this run
+turned up something about this skill that clears both its filters.
 
 ## Revisiting later
 

@@ -1,9 +1,9 @@
 # Authoring interfaces
 
-How a skill **in this repo** is shaped. The three interfaces under `skills/_shared/`
-(`bundle-`, `ledger-`, `pipeline-`) define what skills write into a *user's* project;
-this one defines how the skills themselves are written. Its audience is the two
-meta-skills, `create-skill` and `improve-skill`.
+How a skill **in this repo** is shaped. The interfaces under `skills/_shared/` govern
+what the published skills do — what they write into a *user's* project, and how they
+close a run; this one defines how the skills themselves are written. Its audience is
+the two meta-skills, `create-skill` and `improve-skill`.
 
 Because those two are installed on their own rather than shipped with the plugin,
 they reach this file through the repo they resolve first — `<repo>/meta/_shared/` —
@@ -86,6 +86,17 @@ its contracts and uses `../_shared/<file>`. A skill installed on its own can't �
 When a rule stops fitting part of an interface's audience, **split the interface**
 rather than writing "skip this section if…". Splitting keeps every skill's context
 free of instructions it must reason past.
+
+One of them is not optional: **every new skill under `skills/` points at
+`feedback-interfaces.md`**, the closing reflex that decides whether a run taught
+something about the skill itself worth carrying out of the session, and where it goes.
+Add the pointer when the skill is written — a reflex that depends on someone
+remembering it per skill is one that quietly stops existing. `send-feedback` is the
+single exclusion, because it is the destination: a `send-feedback` run ending by
+proposing feedback about `send-feedback` is a loop with no floor. Skills under `meta/`
+are outside it for a structural reason rather than a judgment call — they do not
+resolve `skills/_shared/` at all, and the contract's routing half has a constant answer
+here anyway, since a clone and push rights are a meta-skill's entry condition.
 
 ## Identity
 

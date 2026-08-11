@@ -51,7 +51,10 @@ planning skills ever did.
 
 The bundle-wide rules — English content, link forms, reserved files, committing what
 you write — are defined once in `../_shared/bundle-interfaces.md`, and the decision
-doc schema in `../_shared/ledger-interfaces.md`. Read both before writing anything.
+doc schema in `../_shared/ledger-interfaces.md`. Read both before writing anything. A
+third governs nothing this skill writes: `../_shared/feedback-interfaces.md`, the
+closing reflex for what this run teaches about *this skill* — it decides the promotion
+check in Step 4 and the end of the run.
 
 ## Step 1: Instantiate the baseline
 
@@ -94,34 +97,25 @@ matters here; number by baseline section order. Create `conventions/index.md`.
 
 ## Step 3: Triage — the batch pass
 
-Show the user:
-
-- A one-line note that the baseline applies by default, with the list of section
-  titles that made it through the stack filter (so what's *not* being asked about is
-  visible, same spirit as N/A marks elsewhere).
-- The numbered deviations ledger, each with a one-line recommendation.
-
-The user marks each **accept** or **discuss**; batch replies expected. They can also
-pull any baseline item into the ledger at this point. Record accepts immediately
-(`decided_via: triage`).
+The batch pass exactly as `../_shared/ledger-interfaces.md` defines it, over the
+deviations ledger. What this phase puts ahead of the list: a one-line note that the
+baseline applies by default, with the section titles that made it through the stack
+filter — that is the contract's self-excluded list here, the standards this skill
+settled without ever opening a decision doc, so what is *not* being asked about stays
+visible. The user can pull any of those items into the ledger right there.
 
 ## Step 4: Deep-dive the flagged items
 
-One at a time, waiting for each answer: question, options, trade-offs,
-recommendation, user's verdict (`decided_via: discussion`). Refresh any still-open
-items a verdict affects.
-
-Label the options **A / B / C** and record a verdict only on an explicit letter or
-an unambiguous restatement of one option. Conversational assent ("yeah that's it",
-voice-input fragments) is not a verdict — you can't tell *which* option it blesses;
-re-ask with the letters rather than guessing, and say why you're re-asking so it
-doesn't read as a loop.
+The deep-dive pass exactly as `../_shared/ledger-interfaces.md` defines it.
 
 **Promotion check:** when a deviation's rationale is not project-specific ("actually I
-always want it this way"), say so and suggest promoting it into `assets/baseline.md`
-via the improve-skill loop, so future projects inherit it instead of re-deciding.
-Note the suggestion in the decision doc's Verdict section; don't edit the baseline
-mid-run unless the user says to.
+always want it this way"), say so and suggest promoting it into `assets/baseline.md`,
+so future projects inherit it instead of re-deciding. This stays a local category
+because its destination is this skill's own asset rather than an issue; which route
+carries the suggestion there is not restated here — `../_shared/feedback-interfaces.md`
+decides between `improve-skill` and `send-feedback`. Note the suggestion in the
+decision doc's Verdict section, and don't edit the baseline mid-run unless the user
+says to.
 
 ## Step 5: Confirm, then write the deliverable
 
@@ -152,6 +146,10 @@ Planning is complete: `split-epics` can now cut `docs/planning/SCOPE.md`, and it
 CONVENTIONS.md into each epic as context — which is how `implement-issue` and
 `code-review`-style checks find the project's standards without this doc being copied
 anywhere.
+
+Then close the run per `../_shared/feedback-interfaces.md` — silently, unless this run
+turned up something about this skill that clears both its filters. A baseline promotion
+is the one category handled in-run, above.
 
 ## Revisiting later
 

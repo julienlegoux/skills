@@ -15,7 +15,9 @@ this run's discoveries somewhere the next run is guaranteed to read.
 The issue schema, the status lifecycle, and the **drift register** (what drift is, its
 two artifacts, the register's format) are defined in
 `../_shared/pipeline-interfaces.md`; the rules for anything written under `docs/` in
-`../_shared/bundle-interfaces.md`. Read both before Step 1.
+`../_shared/bundle-interfaces.md`. Read both before Step 1. What to do with anything
+this run teaches about *this skill* is defined once in
+`../_shared/feedback-interfaces.md` — the closing reflex, read at Step 5.
 
 ## Scope boundary
 
@@ -196,3 +198,6 @@ still happen — an interrupted run is exactly when its discoveries are most lik
 be lost, and a half-cleaned repo is what makes the resume fail.
 
 Commit everything you wrote per `../_shared/bundle-interfaces.md` before reporting.
+
+Then close the run per `../_shared/feedback-interfaces.md` — silently, unless this run
+turned up something about this skill that clears both its filters.

@@ -31,7 +31,9 @@ by walking a decision ledger that the *user* controls.
 every pipeline skill obeys when writing to it — English content, bundle-relative
 links, the reserved `index.md`/`log.md` files, and committing what you write — are
 defined once in `../_shared/bundle-interfaces.md`; the decision doc schema is in
-`../_shared/ledger-interfaces.md`. Read both before writing anything.
+`../_shared/ledger-interfaces.md`. Read both before writing anything. A third governs
+nothing this skill writes: `../_shared/feedback-interfaces.md`, the closing reflex for
+what this run teaches about *this skill*, read at the handoff.
 
 Layout this skill owns:
 
@@ -68,7 +70,13 @@ Before asking anything:
   its positioning, the domain vocabulary. Treat them as settled input, not as a draft to
   re-decide — a scope ledger that re-opens the concept spends the user's attention twice
   on the same question and can end up contradicting the document downstream skills read.
-- Read `references/checklist.md` (the decision areas this skill guarantees coverage of).
+- Read `references/checklist.md` (the decision areas this skill guarantees coverage of)
+  — or `references/checklist-brownfield.md` in its place when the user states the
+  project is an existing, shipped system, which reframes the areas such a project has
+  already answered. That statement is the only route to the sibling: nothing here
+  detects a brownfield program, because *which* checklist a run uses belongs to the
+  guide skill that knows where a project stands and says what runs next, and answering
+  it with detection logic in this skill is how that skill stays unbuilt.
 
 Then, **only for checklist areas the input leaves genuinely blank**, ask orienting
 questions — one at a time, waiting for each answer. These are quick fact-gathering
@@ -141,50 +149,16 @@ rather than patching line by line.
 
 ## Step 3: Triage — the batch pass
 
-Present the full ledger to the user as one numbered list, dependency-ordered:
-
-- Each open decision: number, title, **recommendation in one line**.
-- Then the N/A items with their one-line reasons, so exclusions are visible too.
-
-Ask the user to mark each item **accept** (recommendation becomes the verdict) or
-**discuss** (gets a deep-dive in Step 4). Batch replies are the expected use:
-"accept all", "accept all except 3 and 7", "discuss 2, 5; accept the rest" are all
-fine. So is reclassifying an N/A back to open.
-
-**The N/A list needs its own explicit confirmation** — never fold it into a general
-"accept all". An N/A is you deciding an area doesn't apply, and a wrong N/A silently
-deletes a pillar of the user's project (it has happened: three core pillars auto-N/A'd
-in one session). Before any deep-dive begins, ask the user to confirm the N/A list
-as its own question, and treat "accept all" as covering the open decisions only.
-
-Record the accepts immediately: `status: decided`, `verdict` = the recommended option,
-`decided_via: triage`, fill the Verdict section, refresh `timestamp`, update
-`scope/index.md`.
+The batch pass exactly as `../_shared/ledger-interfaces.md` defines it, over the
+ledger Step 2 built, with `scope/index.md` as the index it keeps current. Its rule
+that a self-excluded list gets its own confirmation lands here on the checklist areas
+Step 2 marked N/A — those areas *are* this skill's coverage guarantee, and an N/A
+waved through inside an "accept all" cancels it silently.
 
 ## Step 4: Deep-dive the flagged items
 
-Walk the *discuss* items strictly in dependency order, **one at a time, waiting for
-each answer**. For each: restate the question, present the options with trade-offs,
-give your recommendation, and let the user decide. Record the verdict
-(`decided_via: discussion`) with the user's rationale.
-
-Keep the presentations terse: one line per option, one short paragraph for the
-recommendation — the detail already lives in the decision doc, and a deep-dive pass
-that re-prints it for every item exhausts the context window mid-ledger. If the user
-asks to go one-by-one over a large set (more than ~15 items), still run a fast
-accept/discuss pass first — "one by one" usually means "don't decide without me",
-not "print every doc"; walking 40 items at full depth serves nobody.
-
-When a verdict names a concept the ledger deferred or hasn't defined yet ("defer
-auth to the plugin system"), define that concept in one clause right in the Verdict
-section — the next reader (and the next skill) shouldn't have to reverse-engineer
-what the deferral meant.
-
-**After every verdict, refresh the still-open decisions.** Re-check each open decision
-whose `depends_on` includes the one just decided (and any others the verdict plausibly
-affects): if its recommendation changes, update the doc and *tell the user what changed
-and why* before moving to the next item. A recommendation made before an upstream
-verdict is stale the moment that verdict lands.
+The deep-dive pass exactly as `../_shared/ledger-interfaces.md` defines it. Nothing
+about it is scope-specific.
 
 ## Step 5: Confirm, then write the deliverable
 
@@ -236,6 +210,9 @@ this is the run's deliverable, and every skill downstream reads it from git.
 Tell the user the natural next steps: `define-specs` (reads SCOPE.md, decides the
 one-way technical doors) and, when planning is done, `split-epics` on
 `docs/planning/SCOPE.md`.
+
+Then close the run per `../_shared/feedback-interfaces.md` — silently, unless this run
+turned up something about this skill that clears both its filters.
 
 ## Revisiting a decision later
 

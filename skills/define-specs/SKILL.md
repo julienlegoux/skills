@@ -51,7 +51,9 @@ root `log.md`.
 
 The bundle-wide rules — English content, link forms, reserved files, committing what
 you write — are defined once in `../_shared/bundle-interfaces.md`, and the decision
-doc schema in `../_shared/ledger-interfaces.md`. Read both before writing anything.
+doc schema in `../_shared/ledger-interfaces.md`. Read both before writing anything. A
+third governs nothing this skill writes: `../_shared/feedback-interfaces.md`, the
+closing reflex for what this run teaches about *this skill*, read at the handoff.
 
 ## Step 1: Intake
 
@@ -80,21 +82,15 @@ every decision with status and one-line recommendation/verdict.
 
 ## Step 3: Triage — the batch pass
 
-One numbered list, dependency-ordered: each open decision with its one-line
-recommendation, then the N/A items with reasons. The user marks each **accept** or
-**discuss** — batch replies expected ("accept all except 4 and 9"). Record accepts
-immediately: `status: decided`, `verdict` = recommendation, `decided_via: triage`,
-Verdict section filled, index updated.
+The batch pass exactly as `../_shared/ledger-interfaces.md` defines it, over the
+ledger Step 2 built, with `specs/index.md` as the index it keeps current.
 
 ## Step 4: Deep-dive the flagged items
 
-Strictly in dependency order, one at a time, waiting for each answer: question,
-options with trade-offs, recommendation, user decides (`decided_via: discussion`).
-
-**After every verdict, refresh the still-open decisions** — dependents first, then
-anything the verdict plausibly affects. If a recommendation changes (choosing a
-different runtime routinely flips hosting, testing, and job-queue recommendations),
-update the doc and tell the user what changed and why before continuing.
+The deep-dive pass exactly as `../_shared/ledger-interfaces.md` defines it. Its
+refresh rule earns its keep in this phase above all others: a verdict that picks a
+different runtime routinely flips the hosting, testing and job-queue recommendations
+hanging off it — which is also why Step 2 numbers the runtime first.
 
 ## Step 5: Confirm, then write the deliverable
 
@@ -136,6 +132,9 @@ Next: `define-conventions` (reads SPECS.md to filter its baseline by stack). Whe
 planning is done, `split-epics` cuts `docs/planning/SCOPE.md` and links SPECS.md into
 each epic as context — anything decided here reaches implementers through that link,
 so it doesn't need copying into epics.
+
+Then close the run per `../_shared/feedback-interfaces.md` — silently, unless this run
+turned up something about this skill that clears both its filters.
 
 ## Revisiting a decision later
 

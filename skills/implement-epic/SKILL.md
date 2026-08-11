@@ -13,7 +13,8 @@ until the epic's board shows all `done`.
 Shared formats, the issue status lifecycle, and the GitHub facts this flow leans on
 live in `../_shared/pipeline-interfaces.md` — read it before Step 1, with
 `../_shared/bundle-interfaces.md` for the bundle-wide rules (English content, link
-forms, committing what you write). The two facts
+forms, committing what you write) and `../_shared/feedback-interfaces.md` for the
+closing reflex on what this run teaches about *this skill*. The two facts
 that bite hardest: on a non-default integration branch **`Closes #N` never
 auto-closes** the issue, and **a CONFLICTING PR gets zero CI runs**.
 
@@ -316,3 +317,8 @@ and the milestone are left as-is and the drift is unpromoted.
 This applies just as much when the run stopped early — an interrupted run is when its
 discoveries are most likely to be lost and a half-cleaned repo is what makes the resume
 fail.
+
+Then close the run per `../_shared/feedback-interfaces.md` — silently, unless this run
+turned up something about this skill that clears both its filters. It is about the skill
+itself, not about the epic: what implementers learned about the *code* already left
+through the drift records.
