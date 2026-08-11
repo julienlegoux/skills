@@ -3,7 +3,7 @@ type: Reference
 title: "Repo architecture"
 description: "How the skills repo is laid out — one folder per skill, shared contracts in _shared/, and a plugin manifest that auto-discovers everything."
 tags: [architecture, repo, plugin]
-timestamp: 2026-08-09
+timestamp: 2026-08-11
 ---
 
 # Repo architecture
@@ -22,9 +22,10 @@ keep them agreeing on the same file formats.
 ├── skills/                       ← the plugin's default skills directory
 │   ├── _shared/
 │   │   ├── bundle-interfaces.md  ← rules for anything written under docs/
-│   │   ├── ledger-interfaces.md  ← the decision doc, for ledger-driven skills
+│   │   ├── ledger-interfaces.md  ← the decision ledger, for ledger-driven skills
 │   │   ├── pipeline-interfaces.md ← epic/issue schemas, for epic-to-PR skills
-│   │   └── review-interfaces.md  ← grading and the report, for the planning reviewers
+│   │   ├── review-interfaces.md  ← grading and the report, for the planning reviewers
+│   │   └── feedback-interfaces.md ← the closing reflex, for every skill but send-feedback
 │   ├── define-scope/
 │   │   ├── SKILL.md
 │   │   └── references/
@@ -93,7 +94,9 @@ standalone tooling around it:
 `send-feedback` is the odd one out, and deliberately shipped rather than kept in
 `meta/`: it exists for people who installed the plugin and have no clone to fix
 anything in. It files an issue on this repo instead — public repo, issues enabled, so
-any GitHub account can, with no token bundled and none needed.
+any GitHub account can, with no token bundled and none needed. It is also the one skill
+excluded from `feedback-interfaces.md`, the closing reflex every other skill under
+`skills/` ends its run with: being the destination, it cannot propose itself as one.
 
 The pipeline skills consume the output contracts in `skills/_shared/`; the meta
 skills consume the authoring one in `meta/_shared/`. See

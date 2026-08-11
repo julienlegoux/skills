@@ -1,12 +1,12 @@
 ---
 name: triage-reports
-description: Turn the findings accumulated across a repo's docs/REPORT_*.md series into one triaged remediation epic — docs/epics/epic-0-<slug>/EPIC_0.md with its milestone and tracking issue — that create-issues consumes unchanged. Use when review reports have piled up and the question is what work they become.
+description: Turn the findings accumulated across a repo's review reports — docs/reviews/*.md, plus legacy docs/REPORT_*.md — into one triaged remediation epic, docs/epics/epic-0-<slug>/EPIC_0.md with its milestone and tracking issue, that create-issues consumes unchanged. Use when review reports have piled up and the question is what work they become.
 ---
 
 # Turn Review Reports into a Remediation Epic
 
 A review never repairs what it reviews — that is what keeps its report trustworthy.
-The cost is that findings pile up in `docs/REPORT_<n>.md` with nothing that turns them
+The cost is that findings pile up in `docs/reviews/` with nothing that turns them
 into work, and a series of nine reports carrying a hundred findings is not something a
 user can act on by hand. This skill is the converter: read the whole series, group the
 findings by the repair that fixes them, let the user triage once, and emit a single
@@ -17,7 +17,8 @@ The epic schema, the status lifecycle and the drift register are defined in
 `../_shared/bundle-interfaces.md`; the report's own shape and severity scale in
 `../_shared/review-interfaces.md`. Read all three before Step 1 — this skill writes an
 epic against schemas it does not own, and reads reports written to a contract it does
-not own either.
+not own either. A fourth owns none of that: `../_shared/feedback-interfaces.md`, the
+closing reflex for what this run teaches about *this skill*, read at Step 7.
 
 ## What epic 0 means
 
@@ -86,8 +87,20 @@ Once the hand-off is done the lane is free, so continue to Step 2.
 
 ## Step 2: Collect the series
 
-Read every `docs/REPORT_<n>.md`. For each, note from its `## Scope` which reviewer wrote
-it, what it reviewed, and when — a report's age is what makes its findings suspect later.
+Read **both** layouts: every report under `docs/reviews/` and every legacy
+`docs/REPORT_<n>.md` at the root of `docs/`. Reports written before the reviews
+directory existed were never moved — that is what keeps the epics linking into them
+valid — so a repo that has run reviews on either side of the change holds both, and a
+pass that reads only one silently drops half the findings.
+
+Skip the `lint` reports (`docs/reviews/<date>-lint-<bundle>.md`, and any legacy
+`docs/LINT_REPORT_<n>.md`): `okf-lint` shares the directory but not the report contract
+— no `## Scope`, a High/Medium/Low scale — and its findings are about a knowledge
+bundle rather than about the plan or the code. Name them in the final report as read
+and skipped, so a user who expected them in the epic knows why they are not.
+
+For each report, note from its `## Scope` which reviewer wrote it, what it reviewed,
+and when — a report's age is what makes its findings suspect later.
 
 Then read `docs/epics/log.md` for creation and retirement notices naming reports already
 consumed, and skip those. A run that re-triages last month's reports asks the user to
@@ -188,3 +201,7 @@ Report: findings read, dropped, and accepted; the epic and its issue link; the d
 entries written; and that `create-issues` can now cut epic 0 into PR-sized issues. Say
 plainly what was left undecided — a group the user deferred is still a finding nobody
 owns.
+
+Then close the run per `../_shared/feedback-interfaces.md` — silently, unless this run
+turned up something about this skill that clears both its filters. A finding from the
+reports is not that; it was triaged above.

@@ -84,7 +84,9 @@ later reader, human or agent, treats it as decided.
 write into, and this skill is usually the one that establishes it. The rules it obeys
 (English on disk whatever language the conversation is in, bundle-relative links, the
 reserved `index.md` / `log.md`, committing what you write) are in
-`../_shared/bundle-interfaces.md`. Read it before writing anything. Note in passing:
+`../_shared/bundle-interfaces.md`. Read it before writing anything, alongside
+`../_shared/feedback-interfaces.md` — the closing reflex for what this run teaches
+about *this skill*, applied once the concept is done. Note in passing:
 `docs/` itself is never a bundle root — OKF v0.1 has no nested bundles, so a root there
 stops the tree validating the moment `docs/planning/` claims its own.
 
@@ -163,3 +165,6 @@ exists. Something deliberately unresolved is a fine answer; leave it named in th
 `define-scope` inherits it as a known question rather than rediscovering it as a gap.
 
 Then hand off: `define-scope` reads `CONCEPT.md` as intake and decides what v1 ships.
+
+Then close the run per `../_shared/feedback-interfaces.md` — silently, unless this run
+turned up something about this skill that clears both its filters.

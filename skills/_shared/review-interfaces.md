@@ -6,8 +6,9 @@ write their report. SKILL.md files point here instead of re-describing these rul
 
 `review-implementation` is not one of them: it reviews shipped code rather than
 planning artifacts and grades against yardsticks of its own. The two audiences share
-exactly one thing — the `docs/REPORT_<n>.md` series — which is why the numbering rule
-below has to hold across all three.
+exactly one thing — the `docs/reviews/` directory and the names written into it —
+which is why the naming rule below has to hold across all three, and why `okf-lint`
+writes its own reports to the same scheme from outside this contract.
 
 Two sibling files govern the *artifacts* under review rather than the review itself:
 `bundle-interfaces.md` (anything written under `docs/` — language, link forms,
@@ -102,14 +103,49 @@ opencode run --dir <repo> --agent plan -m <provider/model> "<the review prompt>"
 
 ## The report
 
-Write a new numbered report under `docs/` in the reviewed repository. Find the next
-number by scanning `docs/REPORT_<number>.md` and taking the next integer; start at
-`docs/REPORT_1.md`. **Never overwrite an existing report** — the series is a history
-of what the artifacts looked like at each point, and an overwritten report erases the
-evidence that a problem was already raised once.
+Write the report to `docs/reviews/<YYYY-MM-DD>-<kind>-<subject>.md` in the reviewed
+repository, creating the directory if it is not there. `<kind>` is the reviewer that
+wrote it — `epics`, `issues`, `implementation`, `lint` — and `<subject>` is what was
+reviewed, in the repo's usual slug form:
+
+```
+docs/reviews/
+  2026-08-09-issues-epic-3.md
+  2026-08-11-implementation-epic-3.md
+  2026-08-11-issues-epic-4.md
+  2026-08-14-issues-epic-4.md
+```
+
+A second report of the same kind and subject on the same day takes a `-2` suffix, then
+`-3`. That is the only case where a name could collide.
+
+This replaces the flat `docs/REPORT_<n>.md` series, and the replacement has to carry
+what the integers were doing:
+
+- The date prefix sorts the directory chronologically for free, which is what the
+  numbers actually provided.
+- **Never overwrite an existing report** stops being a rule three skills must each
+  remember and becomes a property of the name: a distinct date, kind and subject cannot
+  collide. The reports are still the history of what the artifacts looked like at each
+  point, and an overwritten one still erases the evidence that a problem was already
+  raised once — there is simply no longer a way to write one by accident.
+- Nothing scans for the next free integer, so three skills stop coordinating on one
+  counter. That was the fragile part: two reviews in the same session, or two clones
+  both taking number 5, and the series has two report 5s or one that ate the other.
+- The name carries the subject, so a directory listing says which epic each report is
+  about and whether it graded a plan or the code.
+
+Repositories reviewed before this layout still hold `docs/REPORT_<n>.md` at the root,
+and epics link into them (`source: docs/REPORT_1.md#findings`). **Nothing moves** —
+that is what keeps those links valid. Only new reports are born in `docs/reviews/`,
+and `triage-reports` reads both layouts so a repo mid-transition loses no findings.
+
+`docs/reviews/` is a plain directory, not an OKF bundle: reports carry no frontmatter
+and belong to no `index.md`. Where `docs/` is itself a bundle root, add `reviews/` to
+its `.okfignore` so the bundle still validates.
 
 ```markdown
-# <Subject> Review Report <n>
+# <Subject> Review Report
 
 ## Scope
 - Reviewed: <paths or glob>
@@ -141,7 +177,7 @@ Finish by linking the report and summarising the highest-severity findings in th
 response itself. Say plainly when GitHub verification was skipped or the external pass
 did not run — a gap the user does not know about is a gap they cannot close.
 
-Then name what turns the findings into work: `triage-reports` reads the whole
-`docs/REPORT_<n>.md` series, groups the findings by the repair that resolves them, and
+Then name what turns the findings into work: `triage-reports` reads every report under
+`docs/reviews/`, groups the findings by the repair that resolves them, and
 converts what the user accepts into the remediation epic. Offer it; don't run it
 unasked, and don't repair anything here — the section above is why.
