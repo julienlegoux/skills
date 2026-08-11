@@ -31,7 +31,8 @@ Solid arrows are the path work takes; dotted ones are optional entries and hand-
 | 1️⃣ | [`define-scope`](skills/define-scope/SKILL.md) | Turn a raw idea into a decided `docs/planning/SCOPE.md` via a decision ledger *you* triage |
 | 2️⃣ | [`define-specs`](skills/define-specs/SKILL.md) | Decide the one-way technical doors — stack, architecture, data, auth — into `SPECS.md` |
 | 3️⃣ | [`define-conventions`](skills/define-conventions/SKILL.md) | Instantiate your personal conventions baseline; only *deviations* get decided |
-| 4️⃣ | [`split-epics`](skills/split-epics/SKILL.md) | Cut the scope into epic folders, each with a GitHub milestone + tracking issue |
+| 4️⃣ | [`check-prerequisites`](skills/check-prerequisites/SKILL.md) | Probe what the plan depends on — toolchains, services, keys — into `PREREQUISITES.md`, and hand you the list only *you* can close |
+| 5️⃣ | [`split-epics`](skills/split-epics/SKILL.md) | Cut the scope into epic folders, each with a GitHub milestone + tracking issue |
 
 ### 🏗️ Brownfield — change an existing app
 

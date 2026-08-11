@@ -19,10 +19,12 @@ flowchart LR
     A --> B[define-scope]
     B --> C[define-specs]
     C --> D[define-conventions]
-    D --> E[split-epics]
+    D --> P[check-prerequisites]
+    P --> E[split-epics]
 
     A2[existing code] --> M[map-codebase]
     M --> N[define-change]
+    N -.-> P
 
     E --> F[create-issues]
     N --> F
@@ -51,7 +53,8 @@ flowchart LR
 | 1 | `define-scope` | `docs/planning/SCOPE.md` — what v1 is |
 | 2 | `define-specs` | `docs/planning/SPECS.md` — the one-way doors: stack, architecture, data, auth, deployment |
 | 3 | `define-conventions` | `docs/planning/CONVENTIONS.md` — a personal baseline filtered by the stack; only *deviations* get decided |
-| 4 | `split-epics` | `docs/epics/epic-<n>-<slug>/EPIC_<n>.md` + a GitHub milestone and tracking issue per epic |
+| 4 | `check-prerequisites` | `docs/planning/PREREQUISITES.md` — what the plan depends on, probed; and the list of what only the user can supply |
+| 5 | `split-epics` | `docs/epics/epic-<n>-<slug>/EPIC_<n>.md` + a GitHub milestone and tracking issue per epic |
 
 Stage 0 is the odd one out and deliberately so. An idea still forming isn't a set of
 decisions waiting to be triaged — it's a conversation — so `define-concept` has no
@@ -172,6 +175,35 @@ Every arrow in the diagram is a file contract, not a conversation:
 
 Which is why those three files are single-sourced rather than restated in each
 `SKILL.md`. See [Shared interfaces](/shared-interfaces.md).
+
+# The prerequisite gate — the check that runs before the build
+
+Planning decides what the project will use; nothing in it confirms those things exist.
+A stack, a test command, a hosted database and an API key all read the same on the page,
+and three of them can be missing on the machine that will do the work.
+
+`check-prerequisites` closes that gap at the one moment it is cheap: planning is final,
+no epic has been cut, and nothing has been implemented against an assumption. It probes
+what can be probed — running the real command, flags included, because a binary
+answering `--version` proves the binary and not the capability — and sorts the rest into
+the one list only the user can close: accounts, keys, CI secrets, quotas, permissions.
+Both land in `docs/planning/PREREQUISITES.md`.
+
+The register has one writer and three readers. `create-issues` and `implement-issue`
+read it for context; **`implement-epic` gates on it**, stopping before it delegates a
+single issue when an entry that epic needs is neither `ok` nor `waived`. That placement
+is deliberate — it is the last point before compute gets spent, and it fails once, by
+name, instead of inside an implementer's fifth tool call with a half-written branch to
+clean up.
+
+It sits on the greenfield path as a stage and hangs off `define-change` as an optional
+one, because a brownfield change usually builds on what already runs — the exception
+being a change that introduces a dependency the codebase never had.
+
+Its `probed_on` field is what keeps it honest across machines: verifications are facts
+about one machine, so a register carried elsewhere keeps its decisions and re-probes its
+results. That distinction is also why a failed probe never becomes a project standard —
+one laptop's blocked toolchain is not a rule for every future project.
 
 # The drift register — the one contract that flows backwards
 

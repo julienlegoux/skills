@@ -48,6 +48,10 @@ the repo rather than reading as generic filler:
   against a decided standard the code already abandoned sends its implementer into a
   wall someone else already hit; where live drift touches this epic, write the issue
   against reality and cite the entry.
+- `docs/planning/PREREQUISITES.md` if it exists — what the plan depends on and what was
+  verified to exist (`check-prerequisites` writes it). An issue that needs an entry
+  still waiting on the user says so in its body, so the dependency is visible where the
+  work is read rather than only in a register.
 - `CLAUDE.md`, `AGENTS.md`, `CONTRIBUTING.md`, `docs/CONVENTIONS.md` (or similar) —
   coding standards, required testing, commit/branch naming, review expectations.
 - `.github/PULL_REQUEST_TEMPLATE.md` and `.github/ISSUE_TEMPLATE/` — if a template

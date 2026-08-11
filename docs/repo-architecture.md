@@ -30,7 +30,7 @@ keep them agreeing on the same file formats.
 │   ├── define-scope/
 │   │   ├── SKILL.md
 │   │   └── references/
-│   └── ...one folder per skill (18 today)
+│   └── ...one folder per skill (19 today)
 ├── meta/                         ← invisible to the plugin
 │   ├── _shared/authoring-interfaces.md
 │   ├── create-skill/SKILL.md

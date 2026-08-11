@@ -50,11 +50,18 @@ permission stalls) — idle waiting is cheaper than context bloat.
    it is the one place that carries what previous runs learned the hard way, and any
    entry touching this epic goes into the affected implementers' prompts. Without it
    each implementer rediscovers the same wall on its own CI round.
-2. Determine the **integration branch**: the one the user named; else `develop` if
+2. **The prerequisite gate.** Read `docs/planning/PREREQUISITES.md` if it exists — the
+   register `check-prerequisites` writes, of what the plan depends on and what was
+   verified to exist. If any entry whose **Needed by** covers this epic is not `ok` or
+   `waived`, **stop before delegating any issue** and report those entries by name: a
+   missing key or an absent toolchain is the user's to clear, and this is the last
+   moment before compute gets spent on work that cannot finish. Absent register,
+   proceed — the gate reports what exists and never demands the skill have been run.
+3. Determine the **integration branch**: the one the user named; else `develop` if
    it exists; else the repo's default branch. All PRs in this run target it, and
    every implementer must be told about it explicitly — `implement-issue` defaults
    to the default branch otherwise.
-3. **Ask the user to pre-approve merging in your opening message — always.**
+4. **Ask the user to pre-approve merging in your opening message — always.**
    `gh auth status` must work (the flow is built on `gh`), but a clean auth check
    proves nothing about permission gating: restrictive permission modes can deny
    `gh pr merge` even when every other `gh` call works, and there is no preflight
@@ -64,16 +71,19 @@ permission stalls) — idle waiting is cheaper than context bloat.
    `Bash(gh pr merge:*)`). Assume direct `git push` to the integration branch is
    blocked too, and tell implementers so — otherwise each one rediscovers it and
    improvises a workaround.
-4. **Identify the required CI check(s)** for the integration branch now (recipe in
+5. **Identify the required CI check(s)** for the integration branch now (recipe in
    `references/ci-and-merging.md`), so green means the right jobs passed. Failing
    third-party checks that aren't required (preview deploys, review bots) are
    notes to surface to the user — never merge blockers, never fix rounds.
-5. **Scan for human-gates.** Read the issues' scope/acceptance-criteria lines in
+6. **Scan for human-gates.** Read the issues' scope/acceptance-criteria lines in
    `index.md` for actions no agent can perform — DNS changes, third-party
    dashboards, real-device testing, e-mail inboxes. List them in the opening
    message and track them as explicit user-gates on the board; surfacing them
-   mid-run stalls the loop at its least convenient moment.
-6. Build the board: which issues are `done`, `pr-open` (PR to check on),
+   mid-run stalls the loop at its least convenient moment. What the prerequisite
+   register already carries is listed once, not twice — this scan covers what the
+   issues demand of the user *during* the run, the gate covers what had to exist
+   before it started.
+7. Build the board: which issues are `done`, `pr-open` (PR to check on),
    `in-progress` (a previous run started it — resume it, don't restart), `open`
    and unblocked, or blocked and on what.
 
