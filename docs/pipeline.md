@@ -97,10 +97,15 @@ find into work:
 | `review-epics` | plan → epic conversion: epics, milestones, tracking issues against the source plan |
 | `review-issues` | epic → issue conversion: sizing, coverage, sub-issue wiring |
 | `review-implementation` | the code the epic actually shipped — its merged diff against the acceptance criteria, `CONVENTIONS.md`, and the accepted drift |
-| `triage-reports` | the `REPORT_N` series itself → one remediation epic |
+| `triage-reports` | the reports themselves → one remediation epic |
 
-All three reviewers write a prioritized `docs/REPORT_N.md` and none repairs its subject —
-a reviewer that silently edits what it reviews destroys the evidence.
+All three reviewers write a prioritized report into `docs/reviews/`, named
+`<YYYY-MM-DD>-<kind>-<subject>.md`, and none repairs its subject — a reviewer that
+silently edits what it reviews destroys the evidence. The name is what replaced the flat
+`docs/REPORT_<n>.md` series: the date sorts the directory, the kind and subject say what
+was read, and no two reports can claim the same name, so nothing has to scan for the next
+free integer. Reports written before the change stay at the root of `docs/` — that is
+what keeps the epics linking into them valid — and `triage-reports` reads both layouts.
 
 The two planning reviewers will hand their analysis pass to a model outside the Claude
 family when one is reachable — `opencode` on `PATH`, run read-only against the repo —
@@ -117,7 +122,7 @@ time anyone could look.
 # Epic 0 — the remediation lane
 
 Not repairing is what keeps a report trustworthy, and it leaves a gap: findings pile up
-in `docs/REPORT_<n>.md` with nothing that turns them into work. Nine reports carrying a
+in `docs/reviews/` with nothing that turns them into work. Nine reports carrying a
 hundred findings is not something anyone acts on by hand.
 
 `triage-reports` closes it. It reads the **whole series**, groups findings by the repair

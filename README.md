@@ -69,7 +69,7 @@ Audit skills that check the pipeline's output without modifying it:
 | [`review-epics`](skills/review-epics/SKILL.md) | Plan → epic conversion: epics, milestones, tracking issues vs. the source plan |
 | [`review-issues`](skills/review-issues/SKILL.md) | Epic → issue conversion: sizing, coverage, sub-issue wiring |
 
-Both write a prioritized `docs/REPORT_N.md` instead of silently "fixing" things.
+Both write a prioritized report into `docs/reviews/`, named `<YYYY-MM-DD>-<kind>-<subject>.md` — `2026-08-11-issues-epic-4.md` — instead of silently "fixing" things.
 
 ## 📚 Knowledge tooling (OKF)
 
