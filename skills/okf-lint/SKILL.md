@@ -74,13 +74,30 @@ the domain as you go, and look for:
 - **Relationship claims** — prose in doc A asserting something about doc B
   ("joined on X", "part of dataset Y") that doc B doesn't support.
 
-**4. Write the report** to `LINT_REPORT_<N>.md` **next to the bundle root,
-never inside it** (a report inside the bundle would itself be a
-non-conformant concept). Exception: when the bundle root *is* the project
-root there is no "next to" — put the report in the root and make sure
-`LINT_REPORT_*.md` is covered by `.okfignore`, adding the pattern if missing
-(this is the one write to the bundle tree the skill is allowed). `<N>` is
-one more than the highest existing report number, so history is kept.
+**4. Write the report** as `<YYYY-MM-DD>-lint-<bundle-slug>.md`, the naming
+the review family uses (`../_shared/review-interfaces.md`, "The report",
+which also owns the same-day `-2` suffix). Where it lands depends on where
+the bundle is:
+
+- **Bundle under `docs/`** (`docs/planning/`, `docs/epics/`, or `docs/`
+  itself) — the report joins the reviews at
+  `docs/reviews/<YYYY-MM-DD>-lint-<bundle-slug>.md`, so one directory holds
+  every report the repo has produced and a reader sorting it by name sees
+  the lint pass in the same timeline as the reviews.
+- **Bundle anywhere else** (`knowledge/`, a data directory) — the report
+  stays **next to the bundle root, never inside it**: a report inside the
+  bundle would itself be a non-conformant concept.
+- **Bundle root *is* the project root** — there is no "next to", so write
+  `reviews/<YYYY-MM-DD>-lint-<bundle-slug>.md` under that root.
+
+Whenever the report lands inside a bundle's own tree — the last case, or a
+`docs/` that is itself a bundle root — add `reviews/` to that bundle's
+`.okfignore`, creating the file if it is missing. This is the one write to
+the bundle tree the skill is allowed, and without it the next
+`validate_okf.py` run fails on a report that was never meant to be a
+concept. Ignore one directory rather than a filename pattern: a pattern
+with no `/` matches any path segment, so `reviews/` covers the whole
+directory wherever it sits and keeps covering it as reports accumulate.
 
 **5. Close the run** per `../_shared/feedback-interfaces.md` — the reflex for what
 this run taught about *this skill*, as opposed to about the bundle. Read it; it is
@@ -91,7 +108,7 @@ silent unless something clears both its filters, which most runs is nothing.
 Use this template:
 
 ```markdown
-# OKF Lint Report <N> — <bundle path>
+# OKF Lint Report — <bundle path>
 
 Date: <YYYY-MM-DD> · Files read: <n>/<total> · Verdict: <one line>
 
