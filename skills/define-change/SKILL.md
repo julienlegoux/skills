@@ -26,7 +26,9 @@ including `log.md`) — are separate OKF v0.1 bundles. Three shared references d
 what this skill writes, and it reads all three before writing anything:
 `../_shared/bundle-interfaces.md` (English content, bundle and link rules, reserved
 files, committing what you write), `../_shared/ledger-interfaces.md` (the decision
-doc), and `../_shared/pipeline-interfaces.md` (the epic file schema).
+doc), and `../_shared/pipeline-interfaces.md` (the epic file schema). A fourth governs
+nothing it writes: `../_shared/feedback-interfaces.md`, the closing reflex for what
+this run teaches about *this skill*, read at the handoff.
 
 Layout this skill owns:
 
@@ -224,6 +226,9 @@ touch `gh_issue`/`milestone`, and log the update.
 Tell the user the next step: `create-issues` on this epic to break it into PR-sized
 issues, then `implement-epic` to run them. The change ledger stays put — it's the
 durable rationale behind every line of the EPIC file.
+
+Then close the run per `../_shared/feedback-interfaces.md` — silently, unless this run
+turned up something about this skill that clears both its filters.
 
 ## Revisiting a decision later
 

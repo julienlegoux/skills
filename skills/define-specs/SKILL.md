@@ -51,7 +51,9 @@ root `log.md`.
 
 The bundle-wide rules — English content, link forms, reserved files, committing what
 you write — are defined once in `../_shared/bundle-interfaces.md`, and the decision
-doc schema in `../_shared/ledger-interfaces.md`. Read both before writing anything.
+doc schema in `../_shared/ledger-interfaces.md`. Read both before writing anything. A
+third governs nothing this skill writes: `../_shared/feedback-interfaces.md`, the
+closing reflex for what this run teaches about *this skill*, read at the handoff.
 
 ## Step 1: Intake
 
@@ -130,6 +132,9 @@ Next: `define-conventions` (reads SPECS.md to filter its baseline by stack). Whe
 planning is done, `split-epics` cuts `docs/planning/SCOPE.md` and links SPECS.md into
 each epic as context — anything decided here reaches implementers through that link,
 so it doesn't need copying into epics.
+
+Then close the run per `../_shared/feedback-interfaces.md` — silently, unless this run
+turned up something about this skill that clears both its filters.
 
 ## Revisiting a decision later
 

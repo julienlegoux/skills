@@ -31,7 +31,9 @@ by walking a decision ledger that the *user* controls.
 every pipeline skill obeys when writing to it — English content, bundle-relative
 links, the reserved `index.md`/`log.md` files, and committing what you write — are
 defined once in `../_shared/bundle-interfaces.md`; the decision doc schema is in
-`../_shared/ledger-interfaces.md`. Read both before writing anything.
+`../_shared/ledger-interfaces.md`. Read both before writing anything. A third governs
+nothing this skill writes: `../_shared/feedback-interfaces.md`, the closing reflex for
+what this run teaches about *this skill*, read at the handoff.
 
 Layout this skill owns:
 
@@ -202,6 +204,9 @@ this is the run's deliverable, and every skill downstream reads it from git.
 Tell the user the natural next steps: `define-specs` (reads SCOPE.md, decides the
 one-way technical doors) and, when planning is done, `split-epics` on
 `docs/planning/SCOPE.md`.
+
+Then close the run per `../_shared/feedback-interfaces.md` — silently, unless this run
+turned up something about this skill that clears both its filters.
 
 ## Revisiting a decision later
 

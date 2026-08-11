@@ -52,7 +52,9 @@ The bundle-wide rules — English content, link forms (bundle-relative with a le
 `/`, e.g. `([decision](/mapping/01-canonical-error-style.md))`), reserved files, and
 committing what you write — are defined once in `../_shared/bundle-interfaces.md`,
 and the decision doc schema in `../_shared/ledger-interfaces.md`. Read both before
-writing anything.
+writing anything. A third governs nothing this skill writes:
+`../_shared/feedback-interfaces.md`, the closing reflex for what this run teaches about
+*this skill*, read at the handoff.
 
 ## Step 0: Resume and refresh checks
 
@@ -227,6 +229,9 @@ steps: `define-change` to plan the change that motivated the mapping, then
 map-codebase → define-change → create-issues → implement-epic. If the code drifts
 later, re-invoking this skill offers the refresh path from Step 0 instead of a
 re-map.
+
+Then close the run per `../_shared/feedback-interfaces.md` — silently, unless this run
+turned up something about this skill that clears both its filters.
 
 ## Revisiting later
 

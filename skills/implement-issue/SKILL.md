@@ -17,7 +17,9 @@ pr-open → done`, who writes each transition, what every status write must also
 update), and the GitHub facts about non-default integration branches are defined in
 `../_shared/pipeline-interfaces.md` — read it first, alongside
 `../_shared/bundle-interfaces.md` for the rules covering anything written under
-`docs/` (English content, link forms, committing what you write). This skill owns the
+`docs/` (English content, link forms, committing what you write) and
+`../_shared/feedback-interfaces.md` for the closing reflex on what this run teaches
+about *this skill*, applied at Step 9. This skill owns the
 `open → in-progress → pr-open` transitions and the `pr-open → done` reconcile of
 *earlier* runs' issues (merging happens outside this skill).
 
@@ -275,3 +277,9 @@ End with a summary the user can act on:
 - **Follow-ups**: out-of-scope discoveries worth turning into new issues.
 - **Next up**: which issue becomes unblocked once this PR merges — the natural next
   invocation of this skill.
+
+Then close the run per `../_shared/feedback-interfaces.md` — silently, unless this run
+turned up something about this skill that clears both its filters; delegated by a
+supervisor, that goes in this report rather than to a user who isn't there. Drift is
+not it: that is the *project's* standard proving wrong, and it already has a record and
+a register.

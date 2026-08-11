@@ -51,7 +51,10 @@ planning skills ever did.
 
 The bundle-wide rules — English content, link forms, reserved files, committing what
 you write — are defined once in `../_shared/bundle-interfaces.md`, and the decision
-doc schema in `../_shared/ledger-interfaces.md`. Read both before writing anything.
+doc schema in `../_shared/ledger-interfaces.md`. Read both before writing anything. A
+third governs nothing this skill writes: `../_shared/feedback-interfaces.md`, the
+closing reflex for what this run teaches about *this skill* — it decides the promotion
+check in Step 4 and the end of the run.
 
 ## Step 1: Instantiate the baseline
 
@@ -106,10 +109,13 @@ visible. The user can pull any of those items into the ledger right there.
 The deep-dive pass exactly as `../_shared/ledger-interfaces.md` defines it.
 
 **Promotion check:** when a deviation's rationale is not project-specific ("actually I
-always want it this way"), say so and suggest promoting it into `assets/baseline.md`
-via the improve-skill loop, so future projects inherit it instead of re-deciding.
-Note the suggestion in the decision doc's Verdict section; don't edit the baseline
-mid-run unless the user says to.
+always want it this way"), say so and suggest promoting it into `assets/baseline.md`,
+so future projects inherit it instead of re-deciding. This stays a local category
+because its destination is this skill's own asset rather than an issue; which route
+carries the suggestion there is not restated here — `../_shared/feedback-interfaces.md`
+decides between `improve-skill` and `send-feedback`. Note the suggestion in the
+decision doc's Verdict section, and don't edit the baseline mid-run unless the user
+says to.
 
 ## Step 5: Confirm, then write the deliverable
 
@@ -140,6 +146,10 @@ Planning is complete: `split-epics` can now cut `docs/planning/SCOPE.md`, and it
 CONVENTIONS.md into each epic as context — which is how `implement-issue` and
 `code-review`-style checks find the project's standards without this doc being copied
 anywhere.
+
+Then close the run per `../_shared/feedback-interfaces.md` — silently, unless this run
+turned up something about this skill that clears both its filters. A baseline promotion
+is the one category handled in-run, above.
 
 ## Revisiting later
 
