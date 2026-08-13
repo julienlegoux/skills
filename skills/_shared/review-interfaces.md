@@ -67,177 +67,21 @@ files are the artifact under review; GitHub is corroboration, not the subject.
 
 ## Delegating the analysis pass to another model
 
-A review reads better when the reviewer did not write the thing. When the analysis
-runs on a model from a different family than the session conducting the review, it is
-not re-reading its own reasoning — which is exactly where a self-review is weakest.
+A reviewer that did not write the thing catches what a self-review is blind to. Hand
+the analysis pass to a model from another family whenever one is reachable.
 
-This is capability-detected, never required. Probe once with
-`command -v external-reviewer`. If it is absent, run the review natively and say
-nothing about it: most users do not have it, and a skill that advertises tooling the
-user never asked for is noise. Record `external review: not available` in the report's
-Scope and move on.
+Probe once with `command -v external-reviewer`:
 
-**The native review is the unconditional path.** It runs whenever no external report
-came back — the binary absent, no reviewer configured on this machine, a run that
-failed — and it is never skipped, shortened, or made conditional on the external pass
-having been tried. Everything below only ever *adds* a second opinion to a review that
-already stands on its own.
+- Absent — run the review natively, record `external review: not available` in the
+  report's Scope, and say nothing else about it.
+- Present — read `external-reviewer.md`, beside this file, and follow it.
 
-When the binary is present, use it for the analysis pass — no need to ask first.
+The native review runs whenever no external report came back, and is never skipped,
+shortened, or made conditional on the external pass having been tried.
 
-### The invocation
-
-```bash
-external-reviewer review \
-  --allow docs/planning \
-  --allow docs/epics \
-  --tier standard \
-  /path/to/repo < request.json
-```
-
-`request.json` is the whole of what the reviewer is told:
-
-```json
-{"system": "…the reviewer's instructions, from the block below…", "task": "…what to review, this time…"}
-```
-
-- Both fields are **required and non-empty, and they are the only two accepted**. The
-  object is decoded strictly: a mistyped key (`"systm"`) is an error rather than a
-  silently missing prompt, and nothing after the object is read. The binary carries no
-  default system prompt and substitutes none — that text is this file's job, which is
-  why it is written out below rather than assumed.
-- Write `request.json` to a temp directory, **not** into the repository under review —
-  the reviewed tree stays untouched by the review, and a stray file in it is a
-  diff the user did not ask for. Both prompts are multi-line text inside JSON strings,
-  so build the object and let the writer escape it; hand-typing `\n` is where a
-  request object stops parsing.
-- Pipe it rather than typing it: `--system <text> --prompt <text>` exist as a by-hand
-  shorthand for the same two values, but they are a **pair** (giving one without the
-  other is a usage error), giving them means stdin is not read at all, and a
-  multi-kilobyte prompt through shell quoting is exactly where an invocation breaks on
-  Windows. Skills use the request object.
-- **stdout is the reviewer's markdown report and nothing else**; every diagnostic —
-  the resolved model, warnings, errors, the closing `done` line — is on stderr. Keep
-  stderr. Never `2>/dev/null`: on a run that produced no report it is the only place
-  that says why, and on one that succeeded it is where the resolved model's name comes
-  from.
-
-### Choosing the tier, not the model
-
-`--tier light|standard|heavy` asks for a **weight**, and never for a vendor. Which
-model a weight resolves to is the user's machine-local assignment, so "pick a model
-from a family other than this session's" stops being a judgment this skill re-makes
-every run. It defaults to `standard` when omitted.
-
-- `light` — a small read: three issue files against one epic.
-- `standard` — an ordinary full pass; the default, and the right answer most of the time.
-- `heavy` — a full plan against a dozen epics, or an audit that has to hold many
-  cross-references at once.
-
-`--model <provider>/<id>` also exists, bypasses tiers entirely, and cannot be combined
-with `--tier`. Skills do not use it: a vendor named in a shared contract is a pin that
-rots, which is the whole reason tiers exist.
-
-Nothing here names a family either. `--exclude-family` already defaults to `anthropic`,
-so the reviewer comes from a different family than the session running this skill
-without anyone asking for it — the entire point of delegating. Pass the flag only when
-the user asked for something specific, and pass a real family name: an unrecognised one
-is a usage error **by design**, because a typo that quietly disabled the exclusion would
-hand the review straight back to the family it was meant to exclude.
-
-### What the reviewer may read
-
-`--allow <path>` is repo-relative, repeatable, and **required** — a run with none is a
-usage error. It is the reach of the run: nothing outside the granted subtrees is
-readable through any of the reviewer's tools, so the exposure of a review is visible in
-the command line that produced it. `--allow .` grants the whole repository; prefer the
-subtrees the task actually needs.
-
-The `task` is the reviewer's only orientation — the binary injects no file listing, no
-README, no repository path. Name the artifacts in it, repo-relative and spelled as the
-grant spells them.
-
-### The system prompt
-
-Send this as `"system"`, adapted only where a run genuinely differs:
-
-```
-You are reviewing a repository you did not write, for the people who did.
-
-You see it through four read-only tools — list, read_file, search and git_read —
-and they are the only way you see it. Nothing has been summarised, excerpted, or
-chosen on your behalf, and no file is in front of you until you read it. Read
-what you need: the reading is the review.
-
-Report leads, not findings. A lead says what looks wrong, where, and what would
-confirm it. Do not assert a defect you have not read in the file — name the file
-and the line, say what you suspect, and say what would settle it. Say plainly
-when you are uncertain.
-
-Volume is not the goal. A review that confirms the work is sound is a legitimate
-outcome, and inventing a defect in order to have something to report costs the
-reader more than saying nothing would have.
-
-You cannot edit, commit, or reach GitHub — not as a rule you might break, but as
-a property of the tools you have. Do not propose to.
-
-When you have read enough, write a markdown report as your final message: the
-leads, each with its location and what would confirm it, and what you checked
-that looked right. That final message is the whole deliverable; nothing else you
-emit is read.
-```
-
-### What comes back, and what to do about it
-
-Read the exit code — it is the branch, and the three cases want different things:
-
-- **Exit 0** — the report is on stdout. What comes back are **leads, not findings**:
-  the external session has no memory of how these artifacts were produced and will
-  occasionally read a deliberate convention as a defect. Verify each lead against the
-  files before it enters the report; an unverified finding costs the user more than a
-  missed one. Name the tier and the resolved `provider/model` in the report's Scope, so
-  a later reader knows who looked — the pair is on stderr, on the line reading
-  `model   <provider>/<id>  auth=<source>`.
-  A run that hit its ceiling also exits 0, with `stop=bounds` on the `done` line and
-  whatever report it had — occasionally none at all. Use what came back the same way,
-  and say in Scope that it was cut short.
-- **Exit 1** — no reviewer resolved on this machine: nothing was reached, so there is
-  nothing to report about it. Run natively and record `external review: not available`,
-  exactly as for an absent binary. This is the silent-fallback case **by design** — a
-  machine with no reviewer configured must not put a line about an unrequested
-  capability into every report it writes. It is not a silent *run*, though: stderr
-  carries one `warn` line naming the tier, the rule that refused it, and the layer that
-  assigned the model, and that line is the answer to "why didn't it run?" when the user
-  asks. Another reason not to discard stderr.
-- **Exit 2** — reached and failed: either a malformed invocation (`stop=usage`) or a
-  machine that is wrong while the invocation is right (`stop=failed`), with one
-  `error:` line on stderr saying which. Run natively and record
-  `external review: failed (<the error: line>)` in the report's Scope — a reviewer that
-  broke is a fact the reader needs, unlike one that was never there. Ignore stdout on
-  this path even when it is not empty: the one failure that can leave bytes there is a
-  partially written report, and stderr says so, with the byte counts.
-
-If it hangs, crashes, or returns nothing usable, that is the native path too. Never
-block a review on it.
-
-For a large surface, **batch by area** — one pass for coverage, one for ordering and
-dependencies, one for schema and GitHub metadata — rather than one prompt asking for
-everything. Each pass then keeps the whole surface in view instead of truncating it.
-Each is its own invocation with its own `task`; the system prompt does not change
-between them.
-
-### When the user asks how to set it up
-
-`external-reviewer tiers` prints which tiers resolve on this machine right now: the
-config file that was read, each tier's assigned model and where the assignment came
-from, and — when a tier does not resolve — which rule refused it. That is the command
-to point a user at. This skill never writes that config and never prompts for one.
-
-Two statuses are worth recognising when reading it back: `unassigned` means nothing
-names a model for that weight, and `excluded by family: unknown` means the provider's
-model ids carry no vendor segment the classifier can read. Every `github-copilot` model
-is in that second state today, so a tier assigned there resolves to nothing however
-correctly it is configured, and every review through it exits 1.
+What comes back is leads, not findings. The external session has no memory of how these
+artifacts were produced and will read a deliberate convention as a defect. Verify each
+lead against the files before it enters the report.
 
 ## The report
 
@@ -289,7 +133,7 @@ its `.okfignore` so the bundle still validates.
 - Reviewed: <paths or glob>
 - Reviewed against: <path>
 - GitHub verification: verified | not verified (<reason>)
-- External review: <tier> — <provider/model> | not available | failed (<reason>)
+- External review: <tier> — <provider/model> [(cut short)] | not available | failed (<reason>)
 
 ## Findings
 
