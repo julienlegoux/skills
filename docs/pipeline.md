@@ -3,7 +3,7 @@ type: Reference
 title: "The idea-to-PR pipeline"
 description: "The chain of skills that carries work from a raw idea (or an existing codebase) to merged pull requests, and what each hand-off passes along."
 tags: [pipeline, workflow, planning, implementation]
-timestamp: 2026-08-11
+timestamp: 2026-08-13
 ---
 
 # The idea-to-PR pipeline
@@ -108,10 +108,13 @@ free integer. Reports written before the change stay at the root of `docs/` — 
 what keeps the epics linking into them valid — and `triage-reports` reads both layouts.
 
 The two planning reviewers will hand their analysis pass to a model outside the Claude
-family when one is reachable — `opencode` on `PATH`, run read-only against the repo —
-because a reviewer that did not write the thing catches what a self-review is blind to.
-It is capability-detected: absent the tool, the review runs natively and says nothing
-about it. What comes back is treated as leads to verify, never as findings to publish.
+family when one is reachable — `external-reviewer` on `PATH`, given a weight tier and an
+explicit grant of the subtrees it may read, run against the repo through four read-only
+tools — because a reviewer that did not write the thing catches what a self-review is
+blind to. It is capability-detected: absent the tool, or with no reviewer configured on
+the machine, the review runs natively and says nothing about it. The native pass is
+unconditional either way. What comes back is treated as leads to verify, never as
+findings to publish.
 
 Why the third one exists: every PR in an epic was reviewed alone and passed alone. The
 duplication between issue 3 and issue 7, the abstraction four implementers each
