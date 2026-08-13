@@ -67,39 +67,21 @@ files are the artifact under review; GitHub is corroboration, not the subject.
 
 ## Delegating the analysis pass to another model
 
-A review reads better when the reviewer did not write the thing. When the analysis
-runs on a model from a different family than the session conducting the review, it is
-not re-reading its own reasoning — which is exactly where a self-review is weakest.
+A reviewer that did not write the thing catches what a self-review is blind to. Hand
+the analysis pass to a model from another family whenever one is reachable.
 
-This is capability-detected, never required. Probe once with `command -v opencode`.
-If it is absent, run the review natively and say nothing about it: most users do not
-have it, and a skill that advertises tooling the user never asked for is noise. Record
-`external review: not available` in the report's Scope and move on.
+Probe once with `command -v external-reviewer`:
 
-When it is present, use it for the analysis pass — no need to ask first:
+- Absent — run the review natively, record `external review: not available` in the
+  report's Scope, and say nothing else about it.
+- Present — read `external-reviewer.md`, beside this file, and follow it.
 
-```
-opencode run --dir <repo> --agent plan -m <provider/model> "<the review prompt>"
-```
+The native review runs whenever no external report came back, and is never skipped,
+shortened, or made conditional on the external pass having been tried.
 
-- `--agent plan` is read-only. The external session cannot touch the repo, so this
-  skill keeps sole ownership of the report. Never pass `--auto`.
-- **Match the model to the weight of the review, not to the largest number
-  available.** Three issue files against one epic is a small read; a full plan against
-  a dozen epics, or an audit that has to hold many cross-references at once, earns a
-  heavier model. `opencode models` lists what is authenticated — pick from a family
-  other than the one running this session, since that difference is the entire point.
-  Pinning a model id here would rot within months; the judgment does not.
-- For a large surface, **batch by area** — one pass for coverage, one for ordering and
-  dependencies, one for schema and GitHub metadata — rather than one prompt asking for
-  everything. Each pass then keeps the whole surface in view instead of truncating it.
-- What comes back are **leads, not findings**. The external session has no memory of
-  how these artifacts were produced and will occasionally flag a deliberate convention
-  as a defect. Verify each lead against the files before it enters the report; an
-  unverified finding costs the user more than a missed one.
-- If it errors, hangs, or returns nothing usable, fall back to the native review.
-  Never block a review on it.
-- Name the model in the report's Scope, so a later reader knows who looked.
+What comes back is leads, not findings. The external session has no memory of how these
+artifacts were produced and will read a deliberate convention as a defect. Verify each
+lead against the files before it enters the report.
 
 ## The report
 
@@ -151,7 +133,7 @@ its `.okfignore` so the bundle still validates.
 - Reviewed: <paths or glob>
 - Reviewed against: <path>
 - GitHub verification: verified | not verified (<reason>)
-- External review: <provider/model> | not available
+- External review: <tier> — <provider/model> [(cut short)] | not available | failed (<reason>)
 
 ## Findings
 

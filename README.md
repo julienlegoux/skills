@@ -110,6 +110,7 @@ New-Item -ItemType Junction -Path "$HOME\.claude\skills\improve-skill" -Target "
 │   │   ├── ledger-interfaces.md  ← the decision doc, for ledger-driven skills
 │   │   ├── pipeline-interfaces.md ← epic/issue schemas, for epic-to-PR skills
 │   │   ├── review-interfaces.md  ← grading and the report, for the reviewers
+│   │   ├── external-reviewer.md  ← the optional external pass, read only when it is installed
 │   │   └── feedback-interfaces.md ← the closing reflex, for every published skill
 │   ├── define-scope/SKILL.md
 │   ├── define-specs/SKILL.md
@@ -133,7 +134,7 @@ What the skills agree on lives in `skills/_shared/`, split by audience so no ski
 | [`bundle-interfaces.md`](skills/_shared/bundle-interfaces.md) | English content, bundle & link rules, reserved `index.md`/`log.md`, committing what you write | every skill that writes under `docs/` |
 | [`ledger-interfaces.md`](skills/_shared/ledger-interfaces.md) | the decision doc schema, the batch-triage and deep-dive passes, the reopening rule | the ledger-driven planning skills |
 | [`pipeline-interfaces.md`](skills/_shared/pipeline-interfaces.md) | epic & issue schemas, status lifecycle, the drift register, GitHub facts on integration branches | the epic-to-PR skills |
-| [`review-interfaces.md`](skills/_shared/review-interfaces.md) | severity scale, what makes a finding, GitHub verification, the external analysis pass, the `docs/reviews/` report contract | the planning reviewers, plus `triage-reports` from the reading end |
+| [`review-interfaces.md`](skills/_shared/review-interfaces.md) | severity scale, what makes a finding, GitHub verification, the probe that hands the analysis pass to an external model (invocation in `external-reviewer.md`), the `docs/reviews/` report contract | the planning reviewers, plus `triage-reports` from the reading end |
 | [`feedback-interfaces.md`](skills/_shared/feedback-interfaces.md) | the closing reflex: when it fires, the attribution and generality filters, silence when nothing clears them, `improve-skill` vs `send-feedback` | every skill under `skills/` **except** `send-feedback` |
 | [`authoring-interfaces.md`](meta/_shared/authoring-interfaces.md) | how a skill in this repo is shaped: description contract, progressive disclosure, tiered prescriptiveness | `create-skill`, `improve-skill` |
 

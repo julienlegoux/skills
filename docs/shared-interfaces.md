@@ -3,7 +3,7 @@ type: Contract
 title: "Shared interfaces"
 description: "The five _shared/ contracts, split by audience, read in place by the skills that obey them."
 tags: [contracts, shared, architecture]
-timestamp: 2026-08-11
+timestamp: 2026-08-13
 ---
 
 # Shared interfaces
@@ -23,7 +23,7 @@ don't apply to it. A skill that never writes an epic shouldn't ship the epic sch
 | [`bundle-interfaces.md`](../skills/_shared/bundle-interfaces.md) | English-only content, the two bundles (`docs/planning/`, `docs/epics/`) and their link forms, reserved `index.md`/`log.md`, committing what you write | every skill that writes under `docs/` |
 | [`ledger-interfaces.md`](../skills/_shared/ledger-interfaces.md) | the decision doc schema, the two passes run over a ledger — batch triage, then deep-dive — and the reopening rule | the ledger-driven planning skills |
 | [`pipeline-interfaces.md`](../skills/_shared/pipeline-interfaces.md) | epic & issue schemas, their status lifecycles, the drift register (`docs/planning/DRIFT.md` and the per-epic records behind it), GitHub facts about non-default integration branches | the epic-to-PR skills |
-| [`review-interfaces.md`](../skills/_shared/review-interfaces.md) | severity scale, what makes a finding, GitHub verification policy, delegating the analysis pass to an external model, the `docs/reviews/<date>-<kind>-<subject>.md` contract | the planning review skills — `review-epics`, `review-issues` — plus `triage-reports`, which obeys the report contract from the reading end |
+| [`review-interfaces.md`](../skills/_shared/review-interfaces.md) | severity scale, what makes a finding, GitHub verification policy, the probe that hands the analysis pass to an external model, the `docs/reviews/<date>-<kind>-<subject>.md` contract | the planning review skills — `review-epics`, `review-issues` — plus `triage-reports`, which obeys the report contract from the reading end |
 | [`feedback-interfaces.md`](../skills/_shared/feedback-interfaces.md) | the closing reflex: when it fires, the attribution and generality filters a lesson must clear, silence when nothing does, and the routing between `improve-skill` and `send-feedback` | every skill under `skills/` **except** `send-feedback` |
 | [`authoring-interfaces.md`](../meta/_shared/authoring-interfaces.md) | how a skill in this repo is shaped: anatomy, the description contract, progressive disclosure, tiered prescriptiveness, identity | the meta skills — `create-skill`, `improve-skill` |
 
@@ -35,6 +35,14 @@ does not share and whose audience is smaller. The last lives in `meta/_shared/`,
 alongside its only two consumers, and governs how the skills themselves are written; it
 exists because `create-skill` and `improve-skill` need the same answer to "what does a
 good skill here look like", and a rule stated twice is a rule that drifts.
+
+`skills/_shared/external-reviewer.md` sits beside them without being one of them. It is
+not a contract any skill obeys but the manual for an optional external binary: how to
+invoke it, what it may read, what its exit codes mean. It lives in `_shared/` for the
+reason the contracts do — two skills need the same copy, and a copy in each would
+drift — and behind `review-interfaces.md`'s capability probe rather than in it, because
+a machine without the binary would otherwise load a page of instructions it cannot act
+on. A reference read on a condition, not a rule read every run.
 
 There is no audience registry to maintain: a skill joins an audience by pointing at
 the file, and leaves it by deleting the pointer. Point at an interface when the skill
@@ -90,6 +98,6 @@ files at it. That is the whole operation — see [Skill lifecycle](/skill-lifecy
 
 # Citations
 
-* `skills/_shared/bundle-interfaces.md`, `skills/_shared/ledger-interfaces.md`, `skills/_shared/pipeline-interfaces.md`, `skills/_shared/review-interfaces.md`, `skills/_shared/feedback-interfaces.md`
+* `skills/_shared/bundle-interfaces.md`, `skills/_shared/ledger-interfaces.md`, `skills/_shared/pipeline-interfaces.md`, `skills/_shared/review-interfaces.md`, `skills/_shared/feedback-interfaces.md`, `skills/_shared/external-reviewer.md`
 * `meta/_shared/authoring-interfaces.md`
 * `improve-skill/SKILL.md` — "How to write skill edits — the structural rules"
