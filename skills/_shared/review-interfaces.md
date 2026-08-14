@@ -68,12 +68,15 @@ files are the artifact under review; GitHub is corroboration, not the subject.
 ## Delegating the analysis pass to another model
 
 A reviewer that did not write the thing catches what a self-review is blind to. Hand
-the analysis pass to a model from another family whenever one is reachable.
+the analysis pass to a model from another family whenever one is reachable. Reaching one
+takes `external-reviewer` installed and pointed at a model on this machine, which is what
+`/lx:setup` does.
 
 Probe once with `command -v external-reviewer`:
 
-- Absent — run the review natively, record `external review: not available` in the
-  report's Scope, and say nothing else about it.
+- Absent — go straight to the native review, record `external review: not available` in
+  the report's Scope, and carry on. `/lx:setup` is the answer if the user asks why the
+  pass did not run; it is not something to raise on their behalf mid-review.
 - Present — read `external-reviewer.md`, beside this file, and follow it.
 
 The native review runs whenever no external report came back, and is never skipped,

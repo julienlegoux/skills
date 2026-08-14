@@ -1,6 +1,6 @@
 {
   "name": "lx",
-  "description": "Idea-to-PR workflow skills for greenfield (define-concept/scope/specs/conventions, check-prerequisites, split-epics) and brownfield (map-codebase, define-change), plus create-issues, implement-issue/epic, close-epic, review-epics/issues/implementation, triage-reports, OKF docs tooling and send-feedback.",
+  "description": "Idea-to-PR workflow skills for greenfield (define-concept/scope/specs/conventions, check-prerequisites, split-epics) and brownfield (map-codebase, define-change), plus create-issues, implement-issue/epic, close-epic, review-epics/issues/implementation, triage-reports, OKF docs tooling, send-feedback and setup.",
   "version": "0.7.0",
   "author": {
     "name": "Julien Legoux"

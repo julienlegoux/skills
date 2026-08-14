@@ -73,6 +73,14 @@ All three write a prioritized report into `docs/reviews/`, named `<YYYY-MM-DD>-<
 | [`okf-docs`](skills/okf-docs/SKILL.md) | Write & structurally validate docs in Google's **Open Knowledge Format** — markdown + YAML frontmatter bundles readable by humans and agents alike |
 | [`okf-lint`](skills/okf-lint/SKILL.md) | Semantic linter for OKF bundles: contradictions, index drift, duplicate concepts, stale timestamps — everything a mechanical validator can't see |
 
+## 🧰 Machine setup
+
+| Skill | What it does |
+|---|---|
+| [`setup`](skills/setup/SKILL.md) | Prepare *your machine* for the skills above — today, the [`external-reviewer`](https://github.com/julienlegoux/external-reviewer) CLI the review skills hand their analysis pass to: install it, get a credential in place, and choose which model answers for `light` / `standard` / `heavy` |
+
+The one skill whose deliverable is outside any repository: a binary on your `PATH`, a credential in your own store, and one config file under your profile. The reviewers detect it on their own — nothing to pass, and everything still runs natively without it.
+
 ## 🗣️ Feedback
 
 | Skill | What it does |
