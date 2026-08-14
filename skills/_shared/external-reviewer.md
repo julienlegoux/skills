@@ -112,7 +112,7 @@ and whatever report it had, sometimes none: use what came back and mark the Scop
 **1** — no reviewer resolved on this machine. Run natively and record `external review:
 not available`, exactly as for an absent binary. Nothing else goes in the report; the
 `warn` line in `diag.log` naming the tier and the rule that refused it is the answer if
-the user asks why it did not run.
+the user asks why it did not run, and `/lx:setup` is what closes it.
 
 **2** — reached and failed. The `error:` line in `diag.log` says which half it was, and
 the two want opposite things.
@@ -141,13 +141,17 @@ the surface needs it rather than by default.
 
 ## When the user asks how to set it up
 
-`external-reviewer tiers` prints which tiers resolve on this machine: the config file
-that was read, each tier's assigned model and where the assignment came from, and which
-rule refused a tier that does not resolve. Point the user at it. Never write that config
-and never prompt for one.
+Point them at `/lx:setup`, which walks the install, the credential and the tier
+assignments, and writes the config file with them. `external-reviewer tiers` is the same
+diagnosis without the repair: the config file that was read, each tier's assigned model
+and where the assignment came from, and which rule refused a tier that does not resolve.
 
-Two statuses to recognise in that output: `unassigned` means nothing names a model for
-that weight, and `excluded by family: unknown` means the provider's model ids carry no
-vendor segment the classifier can read. Every `github-copilot` model was in that second
-state as of 2026-08, so a tier assigned there resolves to nothing however correctly it is
-configured, and every review through it exits 1.
+Never write that config from a review. A run that reconfigures the reviewer mid-review
+has changed who is reviewing, and the report no longer says who looked.
+
+Two statuses answer the common questions without opening the setup skill: `unassigned`
+means nothing names a model for that weight, and `excluded by family: unknown` means the
+provider's model ids carry no vendor segment the classifier can read. Every
+`github-copilot` model was in that second state as of 2026-08, so a tier assigned there
+resolves to nothing however correctly it is configured, and every review through it
+exits 1.

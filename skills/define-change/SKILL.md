@@ -227,6 +227,12 @@ Tell the user the next step: `create-issues` on this epic to break it into PR-si
 issues, then `implement-epic` to run them. The change ledger stays put — it's the
 durable rationale behind every line of the EPIC file.
 
+Where this change introduces something the codebase didn't already depend on — a new
+service, a hosted dependency, a key, a toolchain — mention `check-prerequisites` in the
+same breath, once: it probes those and returns what only the user can supply, before
+`implement-epic` gates on the same list. Brownfield mostly builds on what already runs,
+so this is a pointer for the changes that add a dependency, not a standing step.
+
 Then close the run per `../_shared/feedback-interfaces.md` — silently, unless this run
 turned up something about this skill that clears both its filters.
 

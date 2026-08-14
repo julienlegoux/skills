@@ -247,5 +247,11 @@ Report a final summary to the user: epics created, issue numbers/links, the comm
 pushed, and a reminder that `create-issues` can now be run per epic to break each one
 into PR-sized issues.
 
+If `docs/planning/PREREQUISITES.md` does not exist, add one line to that summary:
+`check-prerequisites` probes what the plan depends on — toolchains, services, keys —
+and hands back the list of what only the user can supply. Say it once and don't insist:
+it is cheapest now, before implementers meet those gaps one issue at a time, but it is
+the user's call and epics are already usable without it.
+
 Then close the run per `../_shared/feedback-interfaces.md` — silently, unless this run
 turned up something about this skill that clears both its filters.

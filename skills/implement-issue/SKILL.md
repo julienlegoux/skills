@@ -106,6 +106,10 @@ The issue file recorded conventions as of creation time; verify against the repo
   them: a decided standard plus its live drift is what the code actually looks like,
   and it is the difference between following a convention and rediscovering why the
   last three issues couldn't.
+- `docs/planning/PREREQUISITES.md` if it exists — what the plan depends on, and which
+  entries were verified rather than assumed (`check-prerequisites` writes it). When this
+  issue needs something the register lists as unsatisfied, say so and stop rather than
+  improvising around it: the register already names who has to clear it.
 - `CLAUDE.md` / `AGENTS.md` / `CONTRIBUTING.md` — test requirements, commit style,
   anything that belongs in the Definition of Done.
 - How tests actually run here (test runner, lint, typecheck, build) — find the real
