@@ -9,8 +9,9 @@ This file is the maintainer's dial: change a line here and every future build fo
 
 ## Code
 
-- A formatter and a linter run in CI with the stack's community-standard settings;
-  warnings are errors. Style is never a review topic.
+- A formatter and a linter run with the project's checks — in CI where there is one,
+  in the local check command otherwise — with the stack's community-standard
+  settings; warnings are errors. Style is never a review topic.
 - Follow the language's community naming and layout. No house style.
 - Fail fast. Never swallow an error: handle it meaningfully or let it propagate with
   context. Messages say what was being attempted, not only what broke.

@@ -29,8 +29,10 @@ folder, a tool you ran) never appears in the conversation.
   sensible default exists, state it as your assumption instead of asking.
 - **Converse.** Two or three questions per turn, the ones that change the most
   first, in their vocabulary, following up on what they say. Stop as soon as you
-  could describe the first version back to them and they would recognise it. A
-  complete brief earns zero questions.
+  could describe the first version back to them and they would recognise it.
+- **Ask before the plan, or not at all.** What decides is not how detailed the brief
+  is but whether something is still open that would change an outcome and has no
+  sensible default. If so, ask it now; if not, ask nothing.
 - **Cut the first version yourself**: the smallest thing that solves their problem end
   to end. Everything else goes under "later", visibly, so nothing they said is lost.
 
@@ -64,8 +66,9 @@ let a fresh session build the right thing without this conversation:
 
 Read the plan back in their language, without jargon: what they will be able to do,
 what is left for later, what you need from them, and anything that costs money or
-becomes publicly visible. Then ask for the go — once. If they correct something,
-adjust and show only what changed.
+becomes publicly visible. It states your assumptions and carries no questions —
+one whose answer would change the plan belonged to the interview. Then ask for the
+go — once. If they correct something, adjust and show only what changed.
 
 Collect what you need from them now. A build that stops at milestone three for an API
 key has failed at the one thing this stage exists for.

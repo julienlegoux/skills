@@ -68,17 +68,20 @@ Passing tests show the tests pass. Before calling a milestone done, use the prod
 the way the plan's outcomes describe: start it, exercise each outcome, and for an
 interface, look at it rendered at phone and desktop widths. Do it on data you made
 for the purpose — never on the user's own files or accounts, unless the plan says
-so. Fix what you find.
+so — and stop every process you started for it: a server left on a port answers the
+next build's requests. Fix what you find.
 
-At the end of each milestone, and once over the whole build at the end, run `review`
-— whatever the size of the plan; a small one gets a small review, not none.
-Fix the findings that survive its verification, then verify again. Reviews feed the
-loop; they do not produce a backlog for the user.
+At the end of each milestone, and once over the whole build at the end, run the
+`review` skill — your own rereading is not it, whatever the size of the plan. Fix the
+findings that survive its verification, then verify again. Reviews feed the loop;
+they do not produce a backlog for the user.
 
 ## Finishing
 
 The build is finished when every outcome in the plan is demonstrably true on the
-integration branch, or when the only things left are waiting on the user. Report in
+integration branch, `review` has run over the whole of it and its findings are fixed,
+and nothing the build started is still running — or when the only things left are
+waiting on the user. Report in
 their language, without jargon: what they can now do and how to start using it, where
 the result differs from the plan and why, and what is left with what it needs from
 them.

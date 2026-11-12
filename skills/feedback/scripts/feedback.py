@@ -46,7 +46,7 @@ NOTE_LEN = 1500
 # --- the skills on disk -----------------------------------------------------
 
 def normalise(text):
-    return " ".join(re.sub(r"[*`]", "", text).split())
+    return " ".join(re.sub(r"[*`]|(?:^|(?<=\s))#+\s", "", text).split())
 
 
 def skill_files(skill):
@@ -72,7 +72,7 @@ def locate(skill, fragment):
             at = text.find(needle)
             if at < 0:
                 continue
-            end = text.find(". ", at + len(needle))
+            end = text.find(". ", at + len(needle) - 1)
             sentence = text[at:end + 1] if end >= 0 else text[at:]
             return f"{path.relative_to(ROOT).as_posix()}:{line_no}", sentence[:300]
     return None
