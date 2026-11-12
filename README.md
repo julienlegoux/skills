@@ -39,6 +39,8 @@ Everyone can use the skills; only their maintainer's sessions feed them. That ke
 
 To close the loop, schedule a session on this repo with the prompt `Run the improve-skills skill`, and review the pull requests it opens.
 
+To feed it on purpose, [`exercise-loop.md`](.claude/exercise-loop.md) is a prompt for a loop that takes one tiny project after another through the whole pipeline, plays the user, and reports where a run departs from what the skills say. Start a session in an empty folder and run `/loop Read <repo>/.claude/exercise-loop.md and do one iteration of it`.
+
 Issues other people file are for a person to read: the loop counts only what maintainers posted. Reports say nothing of the project they came from — no names, paths or code — because the tracker is public. `LX_FEEDBACK=off` disables reporting on a machine.
 
 ## Documentation tooling (OKF)
@@ -56,6 +58,7 @@ Independent of the pipeline.
 ├── .claude-plugin/          ← marketplace "lx-engine", plugin "lx"
 ├── skills/                  ← the plugin: one folder per skill, auto-discovered
 ├── .claude/skills/          ← improve-skills: loads only in a clone of this repo
+├── .claude/exercise-loop.md ← prompt for a loop that exercises the pipeline
 ├── evals/                   ← behaviour the skills must keep (`claude plugin eval .`)
 ├── CLAUDE.md                ← how a skill here is written
 └── README.md
