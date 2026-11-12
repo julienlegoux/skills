@@ -20,8 +20,9 @@ Reviewers are Claude models for now, so independence comes from the fresh contex
 from another vendor. If a reviewer from another model family becomes reachable, it
 joins here as one more reviewer; nothing else changes.
 
-Without subagents, review in the current session and say plainly that the review was
-not independent.
+Where you cannot start one — a session that is itself a subagent usually cannot —
+there is no review: rereading your own work is not one. Say the work is unreviewed
+and hand it back to whoever started you, who can have it reviewed.
 
 ## Lenses
 
@@ -31,7 +32,8 @@ one reviewer holding all four is enough.
 
 - **Does it do what the plan says?** For each outcome in the plan, find the code that
   delivers it and judge whether it really does: missing, happy-path only, stubbed,
-  hard-coded, behind a flag left off.
+  hard-coded, behind a flag left off. A technical decision of the plan that was not
+  followed is a finding too.
 - **Is it correct and safe?** Logic errors, unhandled failures, races, leaks, unsafe
   input handling, authorisation gaps, secrets in code or config. Each finding comes
   with a concrete failure: the input or state, and the wrong result.
@@ -45,7 +47,8 @@ one reviewer holding all four is enough.
   mocked until only the wiring is tested. Where reading cannot settle it, break the
   implementation on purpose and watch.
 
-A recorded deviation is settled, not a finding.
+A recorded deviation is settled when the plan could not work as written; one made
+for convenience is a finding.
 
 ## Leads, then findings
 

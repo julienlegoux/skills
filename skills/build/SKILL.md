@@ -13,11 +13,15 @@ product, not for a project to supervise.
 
 Every question the plan left open is yours to settle: pick the option that best serves
 the plan's outcomes and the standards in `references/standards.md` (the project's own
-documented conventions win where they exist), and write the decision down. When
-reality contradicts the plan — a pinned version that cannot work, an approach that
-fails — take the nearest path that still delivers the outcome and record the
-deviation. A recorded decision can be revisited; a build parked on a question cannot
-finish.
+documented conventions win where they exist), and write the decision down. A
+recorded decision can be revisited; a build parked on a question cannot finish.
+
+What the plan did settle is not open. Its outcomes and its technical decisions are
+what the user approved, and the one you drop may be the one that decides, for them,
+whether the product works. Depart from the plan only where it cannot work — a pinned
+version that fails, an approach that breaks — never because another path is easier;
+then take the nearest path that still delivers what was asked, and record it. Nothing
+in the plan is dropped or put off.
 
 Stop for exactly two things:
 
@@ -80,8 +84,8 @@ they do not produce a backlog for the user.
 
 The build is finished when every outcome in the plan is demonstrably true on the
 integration branch, `review` has run over the whole of it and its findings are fixed,
-and nothing the build started is still running — or when the only things left are
-waiting on the user. Report in
+and nothing the build started is still running — or when what is left is out of your
+hands: waiting on the user, or on a review you have no means to start. Report in
 their language, without jargon: what they can now do and how to start using it, where
 the result differs from the plan and why, and what is left with what it needs from
 them.

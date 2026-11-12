@@ -33,8 +33,10 @@ folder, a tool you ran) never appears in the conversation.
 - **Ask before the plan, or not at all.** What decides is not how detailed the brief
   is but whether something is still open that would change an outcome and has no
   sensible default. If so, ask it now; if not, ask nothing.
-- **Cut the first version yourself**: the smallest thing that solves their problem end
-  to end. Everything else goes under "later", visibly, so nothing they said is lost.
+- **Cut the first version yourself, but never what they asked for.** Trim what you
+  would have added; what they named is in. The feature you put off may be the one
+  that decides, for them, whether the thing works. If it cannot all fit, say what
+  you would leave out and let them choose.
 
 On an existing codebase the same applies, with more to read first: the code tells you
 the stack, the conventions and the blast radius of the change. None of that is a
@@ -47,7 +49,8 @@ later sessions and tools read it. If one already exists, this is a change to a l
 plan: extend it with new milestones rather than starting over. Shape is yours; it must
 let a fresh session build the right thing without this conversation:
 
-- **Need** — the problem, the users, what they do today.
+- **Need** — the problem, the users, what they do today, and what they asked for
+  in their own words, so every later stage can check nothing was dropped.
 - **Outcomes** — what a user can do when this is done, each one observable enough to
   be checked by running the product. These are the build's definition of done.
 - **Not in this version** — what was parked, and why.
