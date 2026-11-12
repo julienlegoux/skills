@@ -70,9 +70,10 @@ adjust and show only what changed.
 Collect what you need from them now. A build that stops at milestone three for an API
 key has failed at the one thing this stage exists for.
 
-Their go authorises everything the plan describes. Commit the plan, then invoke
-`build` in the same turn — do not ask whether to start, and do not come back until the
-product is finished or something only they can do stands in the way.
+Their go authorises everything the plan describes. Commit the plan — initialising a
+repository if the folder is not one, since `build` resumes from its history — then
+invoke `build` in the same turn: do not ask whether to start, and do not come back
+until the product is finished or something only they can do stands in the way.
 
 If this skill's own instructions caused a problem during the run, that is for
 `feedback` — silently, never as a question to the user.

@@ -40,7 +40,7 @@ KINDS = ("wrong", "contradictory", "missing", "wasted")
 TITLE = re.compile(r"^\[lx:([a-z0-9-]+)\] (%s): (.+)$" % "|".join(KINDS))
 MAINTAINERS = {"OWNER", "MEMBER", "COLLABORATOR"}
 PREFIX_LEN = 60
-NOTE_LEN = 600
+NOTE_LEN = 1500
 
 
 # --- the skills on disk -----------------------------------------------------
@@ -220,7 +220,7 @@ def cmd_report(args):
 
 def note_of(body):
     """The free-text part of an occurrence this script filed."""
-    parts = [p.strip() for p in (body or "").split("\n\n")]
+    parts = [p.strip() for p in (body or "").replace("\r\n", "\n").split("\n\n")]
     parts = [p for p in parts if p and not p.startswith(("**Skill**", ">", "<sub>"))]
     return " ".join(" ".join(parts).split())[:NOTE_LEN]
 

@@ -45,6 +45,9 @@ python scripts/feedback.py report --skill <skill> \
 - `missing` — a gap you or the user had to fill; quote the heading it belongs under.
 - `wasted` — a required step that added nothing.
 
+`python` here means whatever runs Python 3 on this machine — `python3`, `python` or
+`py`. If one fails to start, try the next rather than dropping the report.
+
 The quote is the address: every session that trips on the same sentence lands on the
 same issue, which is how occurrences add up without anyone comparing descriptions.
 The script refuses a quote that is not in the skill.

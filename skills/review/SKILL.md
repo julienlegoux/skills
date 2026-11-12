@@ -26,7 +26,8 @@ not independent.
 ## Lenses
 
 Run them concurrently, one reviewer each. A reviewer holding every lens over a large
-change degrades in exactly the way the review exists to catch.
+change degrades in exactly the way the review exists to catch; on a small change,
+one reviewer holding all four is enough.
 
 - **Does it do what the plan says?** For each outcome in the plan, find the code that
   delivers it and judge whether it really does: missing, happy-path only, stubbed,

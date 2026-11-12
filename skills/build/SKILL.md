@@ -51,7 +51,7 @@ Independent units can run in parallel, each in an isolated worktree when the har
 offers subagents. Integrate them one at a time. Units that touch the same files are
 not independent, whatever the dependency graph says. On a long build, delegating units
 also keeps your own context for coordination — but that is a means; on a small plan,
-just build it.
+write the units yourself.
 
 Integrate on the branch the user named, else `develop` if the repo has one, else the
 default branch. With a remote and CI: one pull request per unit, merged once the
@@ -66,9 +66,12 @@ are not:
 
 Passing tests show the tests pass. Before calling a milestone done, use the product
 the way the plan's outcomes describe: start it, exercise each outcome, and for an
-interface, look at it rendered at phone and desktop widths. Fix what you find.
+interface, look at it rendered at phone and desktop widths. Do it on data you made
+for the purpose — never on the user's own files or accounts, unless the plan says
+so. Fix what you find.
 
-At the end of each milestone, and once over the whole build at the end, run `review`.
+At the end of each milestone, and once over the whole build at the end, run `review`
+— whatever the size of the plan; a small one gets a small review, not none.
 Fix the findings that survive its verification, then verify again. Reviews feed the
 loop; they do not produce a backlog for the user.
 
