@@ -21,8 +21,9 @@ Both must hold:
 - **It would happen on another project.** Name the class of failure, not this
   project's incident.
 
-Wasted effort counts as much as breakage — "this step was dead weight" is the signal
-that lets a skill get shorter.
+It counts whether or not you got past it: a detour you found your way out of is
+still friction the skill caused. And wasted effort counts as much as breakage — "this
+step was dead weight" is the signal that lets a skill get shorter.
 
 Most runs produce nothing. Then do nothing, and say nothing.
 

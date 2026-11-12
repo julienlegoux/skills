@@ -39,7 +39,7 @@ Everyone can use the skills; only their maintainer's sessions feed them. That ke
 
 To close the loop, schedule a session on this repo with the prompt `Run the improve-skills skill`, and review the pull requests it opens.
 
-To feed it on purpose, [`exercise-prompts.md`](.claude/exercise-prompts.md) holds requests written the way someone who has never coded and has no time would write them, ready to paste after `/loop`: each one goes through the whole pipeline with no one to ask.
+To feed it on purpose, [`exercise-loop.md`](.claude/exercise-loop.md) is a prompt to paste after `/loop` in an empty folder: the session invents small projects, runs each through the pipeline on a subagent while playing the user who asked for it, then takes a second look at each run and reports the friction the run did not report itself.
 
 Issues other people file are for a person to read: the loop counts only what maintainers posted. Reports say nothing of the project they came from — no names, paths or code — because the tracker is public. `LX_FEEDBACK=off` disables reporting on a machine.
 
@@ -58,7 +58,7 @@ Independent of the pipeline.
 ├── .claude-plugin/          ← marketplace "lx-engine", plugin "lx"
 ├── skills/                  ← the plugin: one folder per skill, auto-discovered
 ├── .claude/skills/          ← improve-skills: loads only in a clone of this repo
-├── .claude/exercise-prompts.md ← requests to loop the pipeline on
+├── .claude/exercise-loop.md ← prompt for a loop that exercises the pipeline
 ├── evals/                   ← behaviour the skills must keep (`claude plugin eval .`)
 ├── CLAUDE.md                ← how a skill here is written
 └── README.md

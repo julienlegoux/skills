@@ -70,12 +70,6 @@ adjust and show only what changed.
 Collect what you need from them now. A build that stops at milestone three for an API
 key has failed at the one thing this stage exists for.
 
-Someone who says up front not to ask them anything has given the go in advance. Ask
-nothing, not even for confirmation: settle what you would have asked, write those
-choices into the plan as assumptions, keep to what can be built without anything from
-them, and go straight to `build`. What you would have read back goes in the final
-report instead.
-
 Their go authorises everything the plan describes. Commit the plan, then invoke
 `build` in the same turn — do not ask whether to start, and do not come back until the
 product is finished or something only they can do stands in the way.
