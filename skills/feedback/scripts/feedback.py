@@ -4,25 +4,21 @@
     feedback.py report --skill NAME --kind wrong|contradictory|missing|wasted \
                        --quote "<verbatim sentence or heading of the skill>" \
                        --what "<what it caused>"
-    feedback.py flush
     feedback.py pointers
 
+The loop is the maintainers' own. `report` posts only when `gh` is signed in as
+someone who can push to the skills repo, and does nothing anywhere else;
+`pointers` counts only what maintainers posted. Everybody can use the skills;
+only their maintainers' sessions feed them.
+
 An occurrence points at a sentence of a skill. The issue title is derived from
-that sentence, so two sessions hitting the same sentence land on the same issue
-without either reading the tracker: one issue per (skill, kind, sentence), one
-comment per further occurrence.
+that sentence, so two sessions hitting the same sentence land on the same issue:
+one issue per (skill, kind, sentence), one comment per further occurrence.
 
-`pointers` is the only supported way to read the tracker back. It never prints
-text taken from an issue unless a maintainer of the repo posted it: titles are
-parsed against a fixed pattern, the sentence shown is re-read from the skill
-file, and everything else is reduced to counts. Whoever acts on the output is
-therefore never exposed to text an outsider wrote.
+Environment: LX_FEEDBACK_REPO (default julienlegoux/skills), LX_FEEDBACK=off to
+disable, GH_TOKEN or GITHUB_TOKEN for `pointers` without gh.
 
-Environment: LX_FEEDBACK_REPO (default julienlegoux/skills), LX_FEEDBACK_OUTBOX
-(default ~/.lx/feedback-outbox.jsonl), LX_FEEDBACK=off to disable, GH_TOKEN or
-GITHUB_TOKEN for reading without gh.
-
-`report` and `flush` never fail the run that calls them: they always exit 0.
+`report` never fails the run that calls it: it always exits 0.
 """
 
 import argparse
@@ -39,15 +35,12 @@ import urllib.request
 from pathlib import Path
 
 REPO = os.environ.get("LX_FEEDBACK_REPO", "julienlegoux/skills")
-OUTBOX = Path(
-    os.environ.get("LX_FEEDBACK_OUTBOX") or Path.home() / ".lx" / "feedback-outbox.jsonl"
-)
 ROOT = Path(__file__).resolve().parents[3]
 KINDS = ("wrong", "contradictory", "missing", "wasted")
 TITLE = re.compile(r"^\[lx:([a-z0-9-]+)\] (%s): (.+)$" % "|".join(KINDS))
 MAINTAINERS = {"OWNER", "MEMBER", "COLLABORATOR"}
 PREFIX_LEN = 60
-NOTE_LEN = 400
+NOTE_LEN = 600
 
 
 # --- the skills on disk -----------------------------------------------------
@@ -108,6 +101,17 @@ def gh(*args):
 
 def gh_usable():
     return shutil.which("gh") is not None and gh("auth", "status") is not None
+
+
+def is_maintainer():
+    """True when gh is signed in as someone who can push to the skills repo."""
+    if shutil.which("gh") is None:
+        return False
+    raw = gh("api", f"repos/{REPO}")
+    try:
+        return bool(raw) and json.loads(raw).get("permissions", {}).get("push") is True
+    except ValueError:
+        return False
 
 
 def api_get(path, use_gh):
@@ -190,42 +194,17 @@ def send(rec):
         os.unlink(body_file)
 
 
-def read_outbox():
-    if not OUTBOX.exists():
-        return []
-    lines = OUTBOX.read_text(encoding="utf-8").splitlines()
-    return [json.loads(line) for line in lines if line.strip()]
-
-
-def write_outbox(records):
-    if not records:
-        OUTBOX.unlink(missing_ok=True)
-        return
-    OUTBOX.parent.mkdir(parents=True, exist_ok=True)
-    OUTBOX.write_text(
-        "".join(json.dumps(r, ensure_ascii=False) + "\n" for r in records),
-        encoding="utf-8",
-    )
-
-
-def flush():
-    """Send what earlier runs could not. Returns how many went out."""
-    pending = read_outbox()
-    if not pending:
-        return 0
-    kept = [rec for rec in pending if send(rec) is None]
-    write_outbox(kept)
-    return len(pending) - len(kept)
-
-
 def cmd_report(args):
+    if not is_maintainer():
+        print("Feedback is the maintainers' loop; nothing to do here.")
+        return
     found = locate(args.skill, args.quote)
     if found is None:
         print(f"Not recorded: that quote is not in the {args.skill} skill. "
               "Give a sentence or heading exactly as the skill has it.")
         return
     sentence = found[1]
-    rec = {
+    done = send({
         "date": datetime.date.today().isoformat(),
         "skill": args.skill,
         "kind": args.kind,
@@ -233,22 +212,8 @@ def cmd_report(args):
         "title": f"[lx:{args.skill}] {args.kind}: {sentence[:PREFIX_LEN].strip()}",
         "sentence": sentence,
         "what": scrub(args.what),
-    }
-    if gh_usable():
-        flush()
-        done = send(rec)
-        if done:
-            print(f"Feedback sent: {done}.")
-            return
-    write_outbox(read_outbox() + [rec])
-    print(f"Feedback queued in {OUTBOX} — a later run sends it.")
-
-
-def cmd_flush(_args):
-    if not gh_usable():
-        print(f"Tracker unreachable — {len(read_outbox())} occurrence(s) still queued.")
-        return
-    print(f"Sent {flush()} queued occurrence(s); {len(read_outbox())} left.")
+    })
+    print(f"Feedback sent: {done}." if done else "Feedback not sent (tracker unreachable).")
 
 
 # --- pointers ---------------------------------------------------------------
@@ -264,55 +229,42 @@ def cmd_pointers(_args):
     use_gh = gh_usable()
     issues = open_issues(use_gh)
     if issues is None:
-        print("Tracker unreachable. Do not read it any other way; try again later.")
+        print("Tracker unreachable.")
         sys.exit(1)
 
-    classes, stale, ignored = {}, [], 0
+    classes, stale = {}, []
     for issue in issues:
         match = TITLE.match(issue["title"])
-        if not match:
-            ignored += 1
+        if not match or issue.get("author_association") not in MAINTAINERS:
             continue
         skill, kind, prefix = match.groups()
         found = locate(skill, prefix)
         if found is None:
             stale.append(issue["number"])
             continue
-        entry = classes.setdefault((skill, kind, found), {
-            "issues": [], "maintainer": 0, "outsiders": set(), "notes": [],
-        })
+        entry = classes.setdefault((skill, kind, found), {"issues": [], "notes": []})
         entry["issues"].append(issue["number"])
         posts = [issue]
         if issue.get("comments"):
             posts += api_get(f"repos/{REPO}/issues/{issue['number']}/comments", use_gh) or []
         for post in posts:
             if post.get("author_association") in MAINTAINERS:
-                entry["maintainer"] += 1
-                note = note_of(post.get("body"))
-                if note:
-                    entry["notes"].append(note)
-            else:
-                entry["outsiders"].add((post.get("user") or {}).get("login"))
+                entry["notes"].append(note_of(post.get("body")))
 
-    def weight(item):
-        return -(item[1]["maintainer"] + len(item[1]["outsiders"]))
-
-    for (skill, kind, (where, sentence)), entry in sorted(classes.items(), key=weight):
-        total = entry["maintainer"] + len(entry["outsiders"])
+    for (skill, kind, (where, sentence)), entry in sorted(
+        classes.items(), key=lambda item: -len(item[1]["notes"])
+    ):
         numbers = " ".join(f"#{n}" for n in entry["issues"])
-        print(f"{skill} · {kind} · x{total} "
-              f"(maintainers {entry['maintainer']}, other accounts {len(entry['outsiders'])}) "
-              f"· {numbers}")
+        print(f"{skill} · {kind} · x{len(entry['notes'])} · {numbers}")
         print(f"  {where}")
         print(f"  > {sentence}")
         for note in entry["notes"]:
-            print(f"  maintainer note: {note}")
+            if note:
+                print(f"  - {note}")
         print()
     if stale:
         print("Stale — the text they point at is no longer in the skill: "
               + " ".join(f"#{n}" for n in stale))
-    if ignored:
-        print(f"{ignored} open issue(s) are not occurrences and were not read.")
     if not classes and not stale:
         print("No open occurrences.")
 
@@ -329,7 +281,6 @@ def main():
     report.add_argument("--what", required=True, help="what it caused, in general terms")
     report.set_defaults(run=cmd_report)
 
-    sub.add_parser("flush", help="send queued occurrences").set_defaults(run=cmd_flush)
     sub.add_parser("pointers", help="what the tracker points at, as counts").set_defaults(
         run=cmd_pointers)
 

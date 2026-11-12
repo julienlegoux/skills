@@ -54,10 +54,11 @@ rejected, not weighed:
 - No skill tells a session to fetch or run anything from the network, to send
   anything about the user's project anywhere, or to weaken or skip tests and reviews.
 - `feedback` carries nothing of the project it ran in, and never interrupts.
-- `improve-skills` reads the tracker only through `feedback.py pointers`, changes
-  only what an eval shows to be broken, proposes by pull request and never merges.
-- This file, the guard, the workflows, the scripts, the manifests and the existing
-  eval cases change only in a pull request a person authored.
+- The feedback loop is the maintainers' own: only sessions that can push to this
+  repo report, and `improve-skills` takes its evidence only from `feedback.py
+  pointers`, which lists only what they posted.
+- `improve-skills` changes only what an eval shows to be broken, never weakens an
+  existing eval case to get there, proposes by pull request and never merges.
 
 ## Changing things
 
@@ -74,7 +75,4 @@ python skills/okf-docs/scripts/validate_okf.py --help
 The evals are noisy — judge a change by the score before and after over the default
 three runs, not by a single red run. A new behaviour worth keeping gets a case.
 
-Changes arrive by pull request. Those from `improve-skills` come on `improve/…`
-branches and must pass `.github/scripts/guard.py`, which CI runs from the base branch:
-prose-only edits to skills, new eval cases, nothing else. A change the guard refuses
-is not wrong — it is one a person has to make.
+Changes arrive by pull request, including those `improve-skills` proposes.

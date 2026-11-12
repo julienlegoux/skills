@@ -7,8 +7,8 @@ body:
       value: |
         Thanks for sending this back upstream.
 
-        The skills file their own friction automatically, as issues titled
-        `[lx:<skill>] …` — this form is for what a person wants to say.
+        This form is for what a person wants to say, and a person reads it. (Issues
+        titled `[lx:<skill>] …` are filed by the maintainer's own sessions.)
 
         This tracker is public — please don't paste absolute paths, client or project
         names, internal URLs, or anything key-shaped.

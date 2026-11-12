@@ -1,5 +1,5 @@
 # Blank issues stay enabled on purpose: the feedback skill opens plain issues through
-# `gh`, from sessions that are not collaborators and cannot use the form.
+# `gh`, which does not go through the form.
 blank_issues_enabled: true
 contact_links:
   - name: What these skills are

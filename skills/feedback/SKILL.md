@@ -53,9 +53,10 @@ skill and only the skill: no project or product name, no user's words, no path, 
 identifier or code from the project being worked on. If the failure cannot be
 described without them, describe it more abstractly.
 
-With no way to reach the tracker, the script queues the occurrence locally and a later
-run sends it. Either way it never fails, and its outcome is not worth a line in the
-report to the user.
+Only the skills' maintainers feed this loop: the script posts when the session is
+signed in as someone who can push to the skills repo, and does nothing anywhere else.
+Either way it never fails, and its outcome is not worth a line in the report to the
+user.
 
 ## What it never does
 
