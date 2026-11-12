@@ -34,7 +34,7 @@ improves the skills acts on the count. One command, and no reading of the tracke
 
 ```bash
 python scripts/feedback.py report --skill <skill> \
-  --kind <wrong|contradictory|missing|wasted|ignored> \
+  --kind <wrong|contradictory|missing|wasted> \
   --quote "<the sentence or heading of the skill at fault, exactly as written>" \
   --what "<what it caused, and what would have been right>"
 ```
@@ -43,8 +43,6 @@ python scripts/feedback.py report --skill <skill> \
 - `contradictory` — two instructions conflict; quote one of them.
 - `missing` — a gap you or the user had to fill; quote the heading it belongs under.
 - `wasted` — a required step that added nothing.
-- `ignored` — the skill says it and a run did not do it; for whoever observes a run
-  from outside, since the run itself cannot see this one.
 
 The quote is the address: every session that trips on the same sentence lands on the
 same issue, which is how occurrences add up without anyone comparing descriptions.

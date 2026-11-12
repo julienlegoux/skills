@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Record, and read back, occurrences of friction caused by an lx skill.
 
-    feedback.py report --skill NAME --kind wrong|contradictory|missing|wasted|ignored \
+    feedback.py report --skill NAME --kind wrong|contradictory|missing|wasted \
                        --quote "<verbatim sentence or heading of the skill>" \
                        --what "<what it caused>"
     feedback.py pointers
@@ -36,7 +36,7 @@ from pathlib import Path
 
 REPO = os.environ.get("LX_FEEDBACK_REPO", "julienlegoux/skills")
 ROOT = Path(__file__).resolve().parents[3]
-KINDS = ("wrong", "contradictory", "missing", "wasted", "ignored")
+KINDS = ("wrong", "contradictory", "missing", "wasted")
 TITLE = re.compile(r"^\[lx:([a-z0-9-]+)\] (%s): (.+)$" % "|".join(KINDS))
 MAINTAINERS = {"OWNER", "MEMBER", "COLLABORATOR"}
 PREFIX_LEN = 60
