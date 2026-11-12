@@ -1,0 +1,27 @@
+name: guard
+
+# Pull requests opened by improve-skills (branch `improve/…`) must be prose-only
+# changes to the skills. `pull_request_target` runs this file and the script from
+# the base branch, so a pull request cannot rewrite its own check; the pull
+# request's content is only ever diffed, never executed.
+
+on:
+  pull_request_target:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  guard:
+    if: startsWith(github.head_ref, 'improve/')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Fetch the pull request as data
+        run: git fetch origin "pull/${{ github.event.pull_request.number }}/head:pr-head"
+      - name: Check the shape of the change
+        run: python3 .github/scripts/guard.py "${{ github.event.pull_request.base.sha }}" pr-head

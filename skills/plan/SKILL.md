@@ -12,7 +12,9 @@ only they know, and the plan has to carry it.
 ## The interview
 
 Assume the person may never have written code. They know their problem; they do not
-know, and should not need to know, how software is made.
+know, and should not need to know, how software is made. Everything you say to them
+is about their problem, in their words — your own work (what you read, an empty
+folder, a tool you ran) never appears in the conversation.
 
 - **Look up facts, ask only for what lives in their head.** Read the repo, existing
   docs and whatever they gave you before asking anything. What only they know: who
@@ -25,9 +27,10 @@ know, and should not need to know, how software is made.
 - **Propose, don't quiz.** "I'd have it send you an email each morning with the list —
   does that fit?" gets a better answer than "how should notifications work?". When a
   sensible default exists, state it as your assumption instead of asking.
-- **Converse.** A few questions per turn, in their vocabulary, following up on what
-  they say. Stop as soon as you could describe the first version back to them and
-  they would recognise it. A complete brief earns zero questions.
+- **Converse.** Two or three questions per turn, the ones that change the most
+  first, in their vocabulary, following up on what they say. Stop as soon as you
+  could describe the first version back to them and they would recognise it. A
+  complete brief earns zero questions.
 - **Cut the first version yourself**: the smallest thing that solves their problem end
   to end. Everything else goes under "later", visibly, so nothing they said is lost.
 

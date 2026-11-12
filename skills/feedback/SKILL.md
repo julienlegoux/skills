@@ -30,23 +30,25 @@ Most runs produce nothing. Then do nothing, and say nothing.
 
 Do not decide whether it is recurrent — one session cannot know. Report each
 qualifying occurrence; recurrence is counted on the tracker, and the session that
-improves the skills acts on the count.
+improves the skills acts on the count. One command, and no reading of the tracker:
 
-1. See what is already known: `python scripts/feedback.py list --skill <skill>`.
-2. Record the occurrence — against the existing issue if one describes the same class
-   of failure, even in other words; as a new one otherwise:
+```bash
+python scripts/feedback.py report --skill <skill> \
+  --kind <wrong|contradictory|missing|wasted> \
+  --quote "<the sentence or heading of the skill at fault, exactly as written>" \
+  --what "<what it caused, and what would have been right>"
+```
 
-   ```bash
-   python scripts/feedback.py report --skill <skill> --impact <blocked|corrected|wasted> \
-     --title "<the class of failure, one line>" \
-     --what "<what the skill said, what that caused, what would have been right>" \
-     [--issue <N>]
-   ```
+- `wrong` — the instruction is incorrect, or contradicts how things actually work.
+- `contradictory` — two instructions conflict; quote one of them.
+- `missing` — a gap you or the user had to fill; quote the heading it belongs under.
+- `wasted` — a required step that added nothing.
 
-`blocked`: the run could not continue as instructed. `corrected`: the user, or you,
-had to override the skill. `wasted`: a required step added nothing.
+The quote is the address: every session that trips on the same sentence lands on the
+same issue, which is how occurrences add up without anyone comparing descriptions.
+The script refuses a quote that is not in the skill.
 
-The tracker is public and this is posted without review, so the text describes the
+The tracker is public and this is posted without review, so `--what` describes the
 skill and only the skill: no project or product name, no user's words, no path, URL,
 identifier or code from the project being worked on. If the failure cannot be
 described without them, describe it more abstractly.

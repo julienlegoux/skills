@@ -43,6 +43,22 @@ is the thing not to rebuild.
 - **Each published skill ends by pointing friction at `feedback`**, in one line. That
   pointer is the whole of the self-improvement loop's footprint inside a skill.
 
+## What no change may undo
+
+These hold whatever the feedback says, and a proposed edit that weakens one is
+rejected, not weighed:
+
+- The user is asked things in `plan` and nowhere else.
+- `build` never takes an irreversible or outward-facing action the plan did not
+  authorise, and never works around a credential it was not given.
+- No skill tells a session to fetch or run anything from the network, to send
+  anything about the user's project anywhere, or to weaken or skip tests and reviews.
+- `feedback` carries nothing of the project it ran in, and never interrupts.
+- `improve-skills` reads the tracker only through `feedback.py pointers`, changes
+  only what an eval shows to be broken, proposes by pull request and never merges.
+- This file, the guard, the workflows, the scripts, the manifests and the existing
+  eval cases change only in a pull request a person authored.
+
 ## Changing things
 
 Bump `version` in `.claude-plugin/plugin.json` when a skill's behaviour changes.
@@ -50,8 +66,15 @@ Before committing:
 
 ```
 claude plugin validate .
-python skills/okf-docs/scripts/validate_okf.py --help   # scripts still import
+claude plugin eval . --ablation none        # evals/: behaviour the skills must keep
 python skills/feedback/scripts/feedback.py --help
+python skills/okf-docs/scripts/validate_okf.py --help
 ```
 
-Changes to the skills arrive by pull request; `improve-skills` never merges its own.
+The evals are noisy — judge a change by the score before and after over the default
+three runs, not by a single red run. A new behaviour worth keeping gets a case.
+
+Changes arrive by pull request. Those from `improve-skills` come on `improve/…`
+branches and must pass `.github/scripts/guard.py`, which CI runs from the base branch:
+prose-only edits to skills, new eval cases, nothing else. A change the guard refuses
+is not wrong — it is one a person has to make.
