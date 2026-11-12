@@ -1,173 +1,73 @@
-**Claude Code skills for taking a project from raw idea to merged PR** — greenfield or brownfield — plus documentation tooling and a self-improvement loop.
+**Claude Code skills that take a need to a finished product** — the user says what they want, answers a few questions, says go, and comes back to something that works.
 
-This repo is a [Claude Code plugin marketplace](https://code.claude.com/docs/en/plugin-marketplaces). One command installs everything:
+This repo is a [Claude Code plugin marketplace](https://code.claude.com/docs/en/plugin-marketplaces):
 
 ```
 /plugin marketplace add julienlegoux/skills
 /plugin install lx@lx-engine
 ```
 
-Skills are then namespaced: `/lx:define-scope`, `/lx:okf-docs`.
+Skills are then namespaced: `/lx:plan`, `/lx:build`.
 
----
+## The pipeline
 
-## 🗺️ The planning-to-PR pipeline
-
-The core of this repo is a chain of skills that carries work all the way to reviewable pull requests. Each skill's output is the next skill's input. There are two entry points — a new project, or an existing codebase — and they converge on the same epic → issue → PR machinery, which then *loops*: an epic closes, its review reports become the next epic.
-
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="assets/pipeline-dark.png">
-  <source media="(prefers-color-scheme: light)" srcset="assets/pipeline-light.png">
-  <img alt="The pipeline: two entry points (raw idea, existing code) feed the Plan stage; Plan feeds Build (create-issues → implement-epic → implement-issue → merged PR → close-epic); close-epic loops back for the next epic, and the opt-in review skills write their reports into docs/reviews/, which triage-reports turns into epic 0 and feeds back into create-issues." src="assets/pipeline-light.png">
-</picture>
-
-Solid arrows are the path work takes; dotted ones are optional entries and hand-offs (`implement-issue` runs standalone too, and every review skill is opt-in).
-
-### 🌱 Greenfield — plan a new project
-
-| Stage | Skill | What it does |
-|---|---|---|
-| 0️⃣ | [`define-concept`](skills/define-concept/SKILL.md) | *Optional.* Talk a still-forming idea into shape and record what *you* validate into `CONCEPT.md` — no ledger, no checklist |
-| 1️⃣ | [`define-scope`](skills/define-scope/SKILL.md) | Turn a raw idea into a decided `docs/planning/SCOPE.md` via a decision ledger *you* triage |
-| 2️⃣ | [`define-specs`](skills/define-specs/SKILL.md) | Decide the one-way technical doors — stack, architecture, data, auth — into `SPECS.md` |
-| 3️⃣ | [`define-conventions`](skills/define-conventions/SKILL.md) | Instantiate your personal conventions baseline; only *deviations* get decided |
-| 4️⃣ | [`check-prerequisites`](skills/check-prerequisites/SKILL.md) | Probe what the plan depends on — toolchains, services, keys — into `PREREQUISITES.md`, and hand you the list only *you* can close |
-| 5️⃣ | [`split-epics`](skills/split-epics/SKILL.md) | Cut the scope into epic folders, each with a GitHub milestone + tracking issue |
-
-### 🏗️ Brownfield — change an existing app
-
-| Stage | Skill | What it does |
-|---|---|---|
-| 1️⃣ | [`map-codebase`](skills/map-codebase/SKILL.md) | Reverse-engineer `SPECS.md` + `CONVENTIONS.md` by reading the code, not interviewing you |
-| 2️⃣ | [`define-change`](skills/define-change/SKILL.md) | Audit one change's blast radius, decide *how it lands*, emit an `EPIC_N.md` `create-issues` consumes unchanged |
-
-### 🔨 Build — both paths
-
-| Skill | What it does |
-|---|---|
-| [`create-issues`](skills/create-issues/SKILL.md) | Turn one epic into right-sized GitHub sub-issues (~one 500-line PR each) |
-| [`implement-issue`](skills/implement-issue/SKILL.md) | Take one issue from `open` to a focused, test-first PR — bookkeeping included |
-| [`implement-epic`](skills/implement-epic/SKILL.md) | Supervise a whole epic: delegate each issue to `implement-issue`, watch CI, merge green PRs, repeat |
-| [`close-epic`](skills/close-epic/SKILL.md) | Land the epic: verify its real state against GitHub and git, promote drift into `DRIFT.md`, close the milestone, clean up worktrees and branches |
-
-### 🔍 Review companions
-
-Audit skills that check the pipeline's output without modifying it:
-
-| Skill | Reviews |
-|---|---|
-| [`review-epics`](skills/review-epics/SKILL.md) | Plan → epic conversion: epics, milestones, tracking issues vs. the source plan |
-| [`review-issues`](skills/review-issues/SKILL.md) | Epic → issue conversion: sizing, coverage, sub-issue wiring |
-| [`review-implementation`](skills/review-implementation/SKILL.md) | The code an epic actually shipped: its merged diff vs. the acceptance criteria, `CONVENTIONS.md` and the accepted drift |
-
-All three write a prioritized report into `docs/reviews/`, named `<YYYY-MM-DD>-<kind>-<subject>.md` — `2026-08-11-issues-epic-4.md` — instead of silently "fixing" things. And that report is itself an input:
-
-| Skill | What it does |
-|---|---|
-| [`triage-reports`](skills/triage-reports/SKILL.md) | Fold the accumulated reports into one triaged remediation epic (`epic-0`) that `create-issues` consumes unchanged — which is what closes the loop |
-
-## 📚 Knowledge tooling (OKF)
-
-| Skill | What it does |
-|---|---|
-| [`okf-docs`](skills/okf-docs/SKILL.md) | Write & structurally validate docs in Google's **Open Knowledge Format** — markdown + YAML frontmatter bundles readable by humans and agents alike |
-| [`okf-lint`](skills/okf-lint/SKILL.md) | Semantic linter for OKF bundles: contradictions, index drift, duplicate concepts, stale timestamps — everything a mechanical validator can't see |
-
-## 🧰 Machine setup
-
-| Skill | What it does |
-|---|---|
-| [`setup`](skills/setup/SKILL.md) | Prepare *your machine* for the skills above — today, the [`external-reviewer`](https://github.com/julienlegoux/external-reviewer) CLI the review skills hand their analysis pass to: install it, get a credential in place, and choose which model answers for `light` / `standard` / `heavy` |
-
-The one skill whose deliverable is outside any repository: a binary on your `PATH`, a credential in your own store, and one config file under your profile. The reviewers detect it on their own — nothing to pass, and everything still runs natively without it.
-
-## 🗣️ Feedback
-
-| Skill | What it does |
-|---|---|
-| [`send-feedback`](skills/send-feedback/SKILL.md) | File what just went wrong as an issue on this repo — your words quoted verbatim, context offered rather than assumed, private paths redacted, nothing posted without your OK |
-
-Ships **in** the plugin on purpose: it exists for people who don't have a clone to fix
-things in. The repo is public with issues enabled, so any GitHub account can file one —
-via `gh` if it's authenticated, otherwise a prefilled browser URL. No token is ever
-bundled and none is needed.
-
-## 🔁 Meta — *not shipped in the plugin*
-
-These two author the repo itself: they need a clone, git, and push rights, so installing the plugin can't make them useful. They live in `meta/` and are installed by hand — fork the repo and junction them in:
-
-```powershell
-New-Item -ItemType Junction -Path "$HOME\.claude\skills\improve-skill" -Target "<repo>\meta\improve-skill"
+```
+need ──▶ plan ──"go"──▶ build ──▶ finished product
+          │               ▲ │
+     the only stage       │ └─▶ review ─┐
+     that asks the user   └── fixes ◀───┘
 ```
 
 | Skill | What it does |
 |---|---|
-| [`create-skill`](meta/create-skill/SKILL.md) | Add a skill to this repo — prove the need repeats, place it against the existing ones, draft it to the authoring contract |
-| [`improve-skill`](meta/improve-skill/SKILL.md) | Fold lessons from the current session back into the skill that caused them: diagnose → propose → apply → commit |
+| [`plan`](skills/plan/SKILL.md) | Interviews the user about the need — never about technology — and writes `docs/PLAN.md`: outcomes, technical decisions, milestones, and what only the user can supply. Ends on a single go. |
+| [`build`](skills/build/SKILL.md) | Carries the approved plan to the product: slices the work, implements, integrates, reviews, fixes, and verifies by using the result. Makes and records its own decisions in `docs/PROGRESS.md`; stops only for what a human alone can supply. |
+| [`review`](skills/review/SKILL.md) | Reviews a body of changes with fresh-context reviewers that did not write the code, verifies what they report, and returns ranked findings. `build` runs it at every milestone; it also runs on request. |
 
----
+`plan` hands off to `build` on its own. `/lx:build` resumes a build that was interrupted.
 
-## 📦 Repo layout
+Quality rules are not negotiated per project: they are fixed in [`standards.md`](skills/build/references/standards.md), and a project's own documented conventions override them. Edit that file to change how everything gets built.
+
+## The skills improve themselves
+
+| Piece | What it does |
+|---|---|
+| [`feedback`](skills/feedback/SKILL.md) | When a skill's own instructions cause a problem — a wrong instruction, something the user had to correct, a required step that was dead weight — the running session records one occurrence, without asking anyone. One issue per class of failure on this repo, titled `[lx:<skill>] …`; each further occurrence is a comment, so the comment count is the recurrence. No `gh`? It queues locally and a later run sends it. |
+| [`improve-skills`](.claude/skills/improve-skills/SKILL.md) | In a clone of this repo: reads the accumulated occurrences, acts on what recurs or is confirmed by reading the skill, and proposes the edits as one pull request. It never merges its own work. |
+
+To close the loop, schedule a session on this repo with the prompt `Run the improve-skills skill`, and review the pull requests it opens.
+
+What a session sends is about the skill only — no project names, paths or code — because the tracker is public and nothing is reviewed before posting. `LX_FEEDBACK=off` disables it; `LX_FEEDBACK_REPO` and `LX_FEEDBACK_OUTBOX` redirect it, which is how a host application collects occurrences from users who have no GitHub account.
+
+## Documentation tooling (OKF)
+
+Independent of the pipeline.
+
+| Skill | What it does |
+|---|---|
+| [`okf-docs`](skills/okf-docs/SKILL.md) | Write and structurally validate docs in Google's **Open Knowledge Format** — markdown + YAML frontmatter bundles readable by humans and agents alike |
+| [`okf-lint`](skills/okf-lint/SKILL.md) | Semantic linter for OKF bundles: contradictions, index drift, duplicate concepts, stale timestamps |
+
+## Repo layout
 
 ```
-├── .claude-plugin/
-│   ├── marketplace.json          ← marketplace "lx-engine"
-│   └── plugin.json               ← plugin "lx" (bundles every skill below)
-├── skills/                       ← the plugin: published, auto-discovered
-│   ├── _shared/
-│   │   ├── bundle-interfaces.md  ← rules for anything written under docs/
-│   │   ├── ledger-interfaces.md  ← the decision doc, for ledger-driven skills
-│   │   ├── pipeline-interfaces.md ← epic/issue schemas, for epic-to-PR skills
-│   │   ├── review-interfaces.md  ← grading and the report, for the reviewers
-│   │   ├── external-reviewer.md  ← the optional external pass, read only when it is installed
-│   │   └── feedback-interfaces.md ← the closing reflex, for every published skill
-│   ├── define-scope/SKILL.md
-│   ├── define-specs/SKILL.md
-│   └── ...one folder per skill
-├── meta/                         ← outside the plugin, installed by hand
-│   ├── _shared/authoring-interfaces.md
-│   ├── create-skill/SKILL.md
-│   └── improve-skill/SKILL.md
-├── docs/                         ← documentation bundle
+├── .claude-plugin/          ← marketplace "lx-engine", plugin "lx"
+├── skills/                  ← the plugin: one folder per skill, auto-discovered
+├── .claude/skills/          ← improve-skills: loads only in a clone of this repo
+├── CLAUDE.md                ← how a skill here is written
 └── README.md
 ```
 
-Every folder under `skills/` holds one skill (`SKILL.md` + supporting files) and is auto-discovered by the plugin. `_shared/` has no `SKILL.md`, so discovery skips it — and anything outside `skills/` is invisible to the plugin entirely, which is what keeps `meta/` local.
+## Developing
 
-### Shared contracts
-
-What the skills agree on lives in `skills/_shared/`, split by audience so no skill carries rules that don't apply to it:
-
-| Interface | Defines | Audience |
-|---|---|---|
-| [`bundle-interfaces.md`](skills/_shared/bundle-interfaces.md) | English content, bundle & link rules, reserved `index.md`/`log.md`, committing what you write | every skill that writes under `docs/` |
-| [`ledger-interfaces.md`](skills/_shared/ledger-interfaces.md) | the decision doc schema, the batch-triage and deep-dive passes, the reopening rule | the ledger-driven planning skills |
-| [`pipeline-interfaces.md`](skills/_shared/pipeline-interfaces.md) | epic & issue schemas, status lifecycle, the drift register, GitHub facts on integration branches | the epic-to-PR skills |
-| [`review-interfaces.md`](skills/_shared/review-interfaces.md) | severity scale, what makes a finding, GitHub verification, the probe that hands the analysis pass to an external model (invocation in `external-reviewer.md`), the `docs/reviews/` report contract | the planning reviewers, plus `triage-reports` from the reading end |
-| [`feedback-interfaces.md`](skills/_shared/feedback-interfaces.md) | the closing reflex: when it fires, the attribution and generality filters, silence when nothing clears them, `improve-skill` vs `send-feedback` | every skill under `skills/` **except** `send-feedback` |
-| [`authoring-interfaces.md`](meta/_shared/authoring-interfaces.md) | how a skill in this repo is shaped: description contract, progressive disclosure, tiered prescriptiveness | `create-skill`, `improve-skill` |
-
-One file per contract, no generated copies, so an edit is live everywhere at once. The five under `skills/_shared/` are read as `../_shared/<file>` and ship with the plugin; the trade is that a published skill folder is not portable on its own — the repo is the unit. The sixth is read as `<repo>/meta/_shared/<file>`, because its two consumers are installed away from the repo and resolve it first anyway.
-
-## 🛠️ Developing
-
-There is no install step. Point your skills directory at the clone once — the plugin at the repo root, then each `meta/` skill on its own — and the file you edit is the file Claude Code runs:
+Point your skills directory at the clone and the file you edit is the file Claude Code runs:
 
 ```powershell
-New-Item -ItemType Junction -Path "$HOME\.claude\skills\lx-engine"     -Target "<repo>"
-New-Item -ItemType Junction -Path "$HOME\.claude\skills\create-skill"  -Target "<repo>\meta\create-skill"
-New-Item -ItemType Junction -Path "$HOME\.claude\skills\improve-skill" -Target "<repo>\meta\improve-skill"
+New-Item -ItemType Junction -Path "$HOME\.claude\skills\lx-engine" -Target "<repo>"
 ```
 
-Then, after editing: `/reload-plugins` in the session, and
+After editing, `/reload-plugins` in the session, then `claude plugin validate .`. The authoring rules are in [`CLAUDE.md`](CLAUDE.md) — the short version: a line stays only if a capable model would get it wrong without it.
 
-```
-claude plugin validate .
-claude plugin details lx@skills-dir    # confirms what was actually discovered
-```
-
-Or let [`improve-skill`](meta/improve-skill/SKILL.md) run the loop — it diagnoses, edits and commits in one pass.
-
-## 📄 License
+## License
 
 Personal toolkit — use freely, adapt liberally.

@@ -1,7 +1,7 @@
 {
   "name": "lx",
-  "description": "Idea-to-PR workflow skills for greenfield (define-concept/scope/specs/conventions, check-prerequisites, split-epics) and brownfield (map-codebase, define-change), plus create-issues, implement-issue/epic, close-epic, review-epics/issues/implementation, triage-reports, OKF docs tooling, send-feedback and setup.",
-  "version": "0.8.0",
+  "description": "Need-to-product skills: plan interviews the user and writes the plan, build carries it to the finished product unattended, review checks the work with independent reviewers, feedback records where the skills got in the way. Plus OKF documentation tooling.",
+  "version": "1.0.0",
   "author": {
     "name": "Julien Legoux"
   }

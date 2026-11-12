@@ -7,9 +7,8 @@ body:
       value: |
         Thanks for sending this back upstream.
 
-        You can file this by hand, or let the skills do it for you: run
-        `/lx:send-feedback` in the session where it happened and it will fill this in,
-        redact anything private, and show you the exact text before anything is posted.
+        The skills file their own friction automatically, as issues titled
+        `[lx:<skill>] …` — this form is for what a person wants to say.
 
         This tracker is public — please don't paste absolute paths, client or project
         names, internal URLs, or anything key-shaped.
@@ -19,7 +18,7 @@ body:
     attributes:
       label: Which skill
       description: The skill this is about — or `lx` if it's about the plugin as a whole.
-      placeholder: implement-issue
+      placeholder: build
     validations:
       required: true
 
@@ -49,6 +48,6 @@ body:
     attributes:
       label: Version and environment
       description: "Output of `claude plugin list` for the `lx@…` entry, plus OS."
-      placeholder: lx@lx-engine 0.3.0 — Windows 11, Claude Code 2.x
+      placeholder: lx@lx-engine 1.0.0 — Windows 11, Claude Code 2.x
     validations:
       required: false

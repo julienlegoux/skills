@@ -1,6 +1,6 @@
 {
   "name": "lx-engine",
-  "description": "Julien's Claude Code skills: idea-to-PR workflow (greenfield + brownfield) and OKF documentation tooling.",
+  "description": "Julien's Claude Code skills: need-to-product workflow and OKF documentation tooling.",
   "owner": {
     "name": "Julien Legoux"
   },
@@ -8,7 +8,7 @@
     {
       "name": "lx",
       "source": "./",
-      "description": "Idea-to-PR workflow skills for greenfield (define-concept/scope/specs/conventions, split-epics) and brownfield (map-codebase, define-change), plus create-issues, implement-issue/epic, close-epic, review-epics/issues and OKF docs tooling."
+      "description": "Need-to-product skills: plan interviews the user and writes the plan, build carries it to the finished product unattended, review checks the work with independent reviewers, feedback records where the skills got in the way. Plus OKF documentation tooling."
     }
   ]
 }

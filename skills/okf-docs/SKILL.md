@@ -126,10 +126,8 @@ pitch the planning-skill chain or other follow-on workflows unprompted. The user
 who wanted docs got docs; upselling a pipeline they didn't ask about reads as
 noise, and they know where the other skills are.
 
-The one thing that still follows the deliverable is the closing reflex in
-`../_shared/feedback-interfaces.md` — what this run taught about *this skill*, and
-where that lesson goes. Read it; on most runs it is silent, which is exactly why it
-isn't the upsell the paragraph above bans.
+If this skill's own instructions caused a problem during the run, that is for
+`feedback` — silently, never as a question to the user.
 
 ## Quick reference
 
